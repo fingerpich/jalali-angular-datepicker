@@ -16,12 +16,13 @@ import {ICalendarConfig} from '../dp-calendar/config/calendar-config.model';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormControl, NG_VALIDATORS, Validator} from '@angular/forms';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IObDayPickerApi} from './dp-day-picker.api';
+import {DpTimePickerComponent} from '../dp-time-picker/dp-time-picker.component';
 
 @Component({
   selector: 'dp-day-picker',
   templateUrl: './dp-day-picker.component.html',
   styleUrls: ['./dp-day-picker.component.less'],
-  entryComponents: [DpCalendarComponent],
+  entryComponents: [DpCalendarComponent, DpTimePickerComponent],
   providers: [
     DayPickerService,
     {
