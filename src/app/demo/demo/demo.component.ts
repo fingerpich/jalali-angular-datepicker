@@ -1,6 +1,6 @@
 import {Component, ViewChild, HostListener} from '@angular/core';
 import {DatePickerComponent} from '../../date-picker/date-picker.component';
-import {Moment} from 'moment';
+import {Moment} from 'jalali-moment';
 import {IDatePickerConfig} from '../../date-picker/date-picker-config.model';
 import debounce from '../../common/decorators/decorators';
 import {DayCalendarComponent} from '../../day-calendar/day-calendar.component';

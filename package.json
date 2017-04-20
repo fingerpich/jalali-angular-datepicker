@@ -35,6 +35,7 @@
     "angular-datepicker"
   ],
   "dependencies": {
+    "jalali-moment": "0.0.3",
     "moment": "^2.17.1",
     "moment-jalaali": "^0.6.1"
   },

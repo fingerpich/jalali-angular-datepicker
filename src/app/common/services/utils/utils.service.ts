@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import * as moment from 'moment';
-import {Moment, unitOfTime} from 'moment';
+import * as moment from 'jalali-moment';
+import {Moment, unitOfTime} from 'jalali-moment';
 import {CalendarValue, ECalendarValue, SingleCalendarValue} from '../../types/calendar-value';
 
 @Injectable()

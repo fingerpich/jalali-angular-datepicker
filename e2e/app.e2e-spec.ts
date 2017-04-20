@@ -1,6 +1,6 @@
 import {DemoPage} from './app.po';
 import {protractor, browser} from 'protractor';
-import * as moment from 'moment';
+import * as moment from 'jalali-moment';
 
 describe('ng2-date-picker App', () => {
   let page: DemoPage;

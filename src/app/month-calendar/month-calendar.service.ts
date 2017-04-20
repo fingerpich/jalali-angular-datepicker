@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import * as moment from 'moment';
-import {Moment} from 'moment';
+import * as moment from 'jalali-moment';
+import {Moment} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IMonth} from './month.model';
 import {IMonthCalendarConfig} from './month-calendar-config';

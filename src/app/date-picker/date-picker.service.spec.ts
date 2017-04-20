@@ -1,7 +1,7 @@
 import {TestBed, inject} from '@angular/core/testing';
 import {DatePickerService} from './date-picker.service';
-import * as moment from 'moment';
-import {Moment} from 'moment';
+import * as moment from 'jalali-moment';
+import {Moment} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 
 describe('Service: DatePicker', () => {

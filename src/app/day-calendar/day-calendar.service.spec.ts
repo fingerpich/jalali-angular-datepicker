@@ -1,7 +1,7 @@
 import {TestBed, inject} from '@angular/core/testing';
 import {DayCalendarService} from './day-calendar.service';
-import * as moment from 'moment';
-import {Moment} from 'moment';
+import * as moment from 'jalali-moment';
+import {Moment} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDayCalendarConfig} from './day-calendar-config.model';
 

@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import {IMonth} from './month.model';
 import {MonthCalendarService} from './month-calendar.service';
-import {Moment} from 'moment';
+import {Moment} from 'jalali-moment';
 import {IMonthCalendarConfig} from './month-calendar-config';
 import {
   NG_VALUE_ACCESSOR,

@@ -1,6 +1,6 @@
 import {ICalendar} from '../common/models/calendar.model';
 import {WeekDays} from '../common/types/week-days.type';
-import {Moment} from 'moment';
+import {Moment} from 'jalali-moment';
 
 export interface IDayCalendarConfig extends ICalendar {
   isDayDisabledCallback?: (date: Moment) => boolean;

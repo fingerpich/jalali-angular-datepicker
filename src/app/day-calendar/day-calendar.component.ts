@@ -10,8 +10,8 @@ import {
   HostBinding
 } from '@angular/core';
 import {DayCalendarService} from './day-calendar.service';
-import * as moment from 'moment';
-import {Moment} from 'moment';
+import * as moment from 'jalali-moment';
+import {Moment} from 'jalali-moment';
 import {IDayCalendarConfig} from './day-calendar-config.model';
 import {IDay} from './day.model';
 import {

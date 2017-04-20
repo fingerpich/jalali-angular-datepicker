@@ -13,8 +13,8 @@ import {
   OnDestroy,
   HostBinding
 } from '@angular/core';
-import * as moment from 'moment';
-import {Moment} from 'moment';
+import * as moment from 'jalali-moment';
+import {Moment} from 'jalali-moment';
 import {DatePickerService} from './date-picker.service';
 import {IDatePickerConfig} from './date-picker-config.model';
 import {
