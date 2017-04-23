@@ -28,22 +28,22 @@ export class DemoComponent {
   placeholder: string = 'Choose a date...';
 
   config: IDatePickerConfig = {
-    firstDayOfWeek: 'su',
-    format: 'DD-MM-YYYY',
-    monthFormat: 'MMM, YYYY',
+    firstDayOfWeek: 'sa',
+    format: 'jDD-jMM-jYYYY',
+    monthFormat: 'jMMMM, jYYYY',
     disableKeypress: false,
     allowMultiSelect: false,
     closeOnSelect: undefined,
     closeOnSelectDelay: 100,
     onOpenDelay: 0,
     weekdayNames: {
-      su: 'sun',
-      mo: 'mon',
-      tu: 'tue',
-      we: 'wed',
-      th: 'thu',
-      fr: 'fri',
-      sa: 'sat'
+      su: 'ی',
+      mo: 'د',
+      tu: 'س',
+      we: 'چ',
+      th: 'پ',
+      fr: 'ج',
+      sa: 'ش'
     },
     appendTo: document.body,
     drops: 'down',
@@ -51,7 +51,7 @@ export class DemoComponent {
     showNearMonthDays: true,
     showWeekNumbers: false,
     enableMonthSelector: true,
-    yearFormat: 'YYYY',
+    yearFormat: 'jYYYY',
     showGoToCurrent: true
   };
   isAtTop: boolean = true;
@@ -66,9 +66,6 @@ export class DemoComponent {
     this.config = {...this.config};
   };
 
-  createCustomWeekDays() {
-    this.config.weekdayNames = this.config.weekdayNames || {};
-  }
 
   openCalendar() {
     this.dayPicker.api.open();

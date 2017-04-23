@@ -1,6 +1,7 @@
 import {ICalendar} from '../common/models/calendar.model';
 import {WeekDays} from '../common/types/week-days.type';
 import {Moment} from 'jalali-moment';
+import {ECalendarSystem} from "../common/types/calendar-type";
 
 export interface IDayCalendarConfig extends ICalendar {
   isDayDisabledCallback?: (date: Moment) => boolean;
@@ -9,6 +10,7 @@ export interface IDayCalendarConfig extends ICalendar {
   showNearMonthDays?: boolean;
   showWeekNumbers?: boolean;
   firstDayOfWeek?: WeekDays;
+  calendarSystem?: ECalendarSystem;
   format?: string;
   allowMultiSelect?: boolean;
   monthFormat?: string;

@@ -24,7 +24,7 @@ import {
 } from '@angular/forms';
 import {CalendarValue, ECalendarValue, SingleCalendarValue} from '../common/types/calendar-value';
 import {UtilsService} from '../common/services/utils/utils.service';
-import {ECalendarType} from '../common/types/calendar-type';
+import {ECalendarType, ECalendarSystem} from '../common/types/calendar-type';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
 import {IMonth} from '../month-calendar/month.model';
 
@@ -106,6 +106,9 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
       .generateWeekdays(this.componentConfig.firstDayOfWeek, this.componentConfig.weekdayNames);
     this.inputValueType = this.utilsService.getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
     this.monthCalendarConfig = this.dayCalendarService.getMonthCalendarConfig(this.componentConfig);
+  }
+  isJalali() {
+    return this.componentConfig.calendarSystem != ECalendarSystem.gregorian;
   }
 
   ngOnChanges(changes: SimpleChanges) {

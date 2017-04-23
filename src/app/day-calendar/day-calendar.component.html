@@ -11,7 +11,7 @@
   </dp-calendar-nav>
 
   <div class="dp-calendar-wrapper"
-       [ngClass]="{'dp-hide-near-month': !componentConfig.showNearMonthDays}">
+       [ngClass]="{'dp-hide-near-month': !componentConfig.showNearMonthDays,'rtl':isJalali()}">
     <div class="dp-weekdays">
       <span class="dp-calendar-weekday" *ngFor="let weekday of weekdays">{{weekday}}</span>
     </div>
@@ -28,7 +28,7 @@
               'dp-next-month': day.nextMonth,
               'dp-current-day': day.currentDay
             }">
-        {{day.date.format('DD')}}
+        {{day.formatedDate}}
       </button>
     </div>
   </div>

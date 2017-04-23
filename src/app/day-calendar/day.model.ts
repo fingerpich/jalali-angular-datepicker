@@ -2,6 +2,7 @@ import {Moment} from 'jalali-moment';
 
 export interface IDay {
   date: Moment;
+  formatedDate: string;
   selected?: boolean;
   currentMonth?: boolean;
   prevMonth?: boolean;

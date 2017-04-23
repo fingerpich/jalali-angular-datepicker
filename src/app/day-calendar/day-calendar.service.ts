@@ -7,11 +7,12 @@ import {IDay} from './day.model';
 import {FormControl} from '@angular/forms';
 import {IDayCalendarConfig} from './day-calendar-config.model';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
-
+import {ECalendarSystem} from "../common/types/calendar-type";
+import unitOfTime = moment.unitOfTime;
 @Injectable()
 export class DayCalendarService {
   readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
-  readonly DEFAULT_CONFIG: IDayCalendarConfig = {
+  readonly GREGORIAN_DEFAULT_CONFIG: IDayCalendarConfig = {
     weekdayNames: {
       su: 'sun',
       mo: 'mon',
@@ -27,14 +28,40 @@ export class DayCalendarService {
     format: 'DD-MM-YYYY',
     allowMultiSelect: false,
     monthFormat: 'MMM, YYYY',
-    enableMonthSelector: true
+    enableMonthSelector: true,
   };
+  readonly JALALI_DEFAULT_CONFIG: IDayCalendarConfig = {
+    weekdayNames: {
+      su: 'ی',
+      mo: 'د',
+      tu: 'س',
+      we: 'چ',
+      th: 'پ',
+      fr: 'ج',
+      sa: 'ش'
+    },
+    showNearMonthDays: true,
+    showWeekNumbers: false,
+    firstDayOfWeek: 'sa',
+    format: 'jDD-jMM-jYYYY',
+    allowMultiSelect: false,
+    monthFormat: 'jMMMM, jYYYY',
+    enableMonthSelector: true,
+  };
+  DEFAULT_CONFIG: IDayCalendarConfig = this.JALALI_DEFAULT_CONFIG;
 
   constructor(private utilsService: UtilsService) {
+    moment.loadPersian();
   }
 
+  private getMonthFormat(config=this.DEFAULT_CONFIG):unitOfTime.Base{
+    return (config.calendarSystem!=ECalendarSystem.gregorian)?"jMonth":"month";
+  }
+  private getDayFormat(config=this.DEFAULT_CONFIG):string{
+    return (config.calendarSystem!=ECalendarSystem.gregorian)?"jDD":"DD"
+  }
   private removeNearMonthWeeks(currentMonth: Moment, monthArray: IDay[][]): IDay[][] {
-    if (monthArray[monthArray.length - 1].find((day) => day.date.isSame(currentMonth, 'month'))) {
+    if (monthArray[monthArray.length - 1].find((day) => day.date.isSame(currentMonth, this.getMonthFormat()))) {
       return monthArray;
     } else {
       return monthArray.slice(0, -1);
@@ -42,6 +69,7 @@ export class DayCalendarService {
   }
 
   getConfig(config: IDayCalendarConfig): IDayCalendarConfig {
+    this.DEFAULT_CONFIG=(!config || (config.calendarSystem != ECalendarSystem.gregorian))?this.JALALI_DEFAULT_CONFIG:this.GREGORIAN_DEFAULT_CONFIG;
     return {...this.DEFAULT_CONFIG, ...this.utilsService.clearUndefined(config)};
   }
 
@@ -56,7 +84,7 @@ export class DayCalendarService {
 
   generateMonthArray(config: IDayCalendarConfig, month: Moment, selected: Moment[]): IDay[][] {
     let monthArray: IDay[][] = [];
-    const firstDayOfMonth = month.clone().startOf('month');
+    const firstDayOfMonth = month.clone().startOf(this.getMonthFormat(config));
     const firstDayOfWeekIndex = this.DAYS.indexOf(config.firstDayOfWeek);
 
     const firstDayOfBoard = firstDayOfMonth;
@@ -64,13 +92,16 @@ export class DayCalendarService {
       firstDayOfBoard.subtract(1, 'day');
     }
     const current = firstDayOfBoard.clone();
+    const actionMonthFormat=this.getMonthFormat(config);
+    const actionDayFormat=this.getDayFormat(config);
     const daysOfCalendar: IDay[] = this.utilsService.createArray(42).reduce((array: IDay[]) => {
       array.push({
         date: current.clone(),
+        formatedDate: current.clone().format(actionDayFormat),
         selected: !!selected.find(selectedDay => current.isSame(selectedDay, 'day')),
-        currentMonth: current.isSame(month, 'month'),
-        prevMonth: current.isSame(month.clone().subtract(1, 'month'), 'month'),
-        nextMonth: current.isSame(month.clone().add(1, 'month'), 'month'),
+        currentMonth: current.isSame(month, actionMonthFormat),
+        prevMonth: current.isSame(month.clone().subtract(1, actionMonthFormat), actionMonthFormat),
+        nextMonth: current.isSame(month.clone().add(1, actionMonthFormat), actionMonthFormat),
         currentDay: current.isSame(moment(), 'day')
       });
       current.add(1, 'd');
@@ -202,18 +233,18 @@ export class DayCalendarService {
     if (config.monthFormatter) {
       return config.monthFormatter(month);
     }
-
+    if(config.calendarSystem!=ECalendarSystem.gregorian)month.locale('fa');
     return month.format(config.monthFormat);
   }
 
   // todo:: add unit tests
   shouldShowLeft(min: Moment, currentMonthView: Moment): boolean {
-    return min ? min.isBefore(currentMonthView, 'month') : true;
+    return min ? min.isBefore(currentMonthView, this.getMonthFormat()) : true;
   }
 
   // todo:: add unit tests
   shouldShowRight(max: Moment, currentMonthView: Moment): boolean {
-    return max ? max.isAfter(currentMonthView, 'month') : true;
+    return max ? max.isAfter(currentMonthView, this.getMonthFormat()) : true;
   }
 
   generateDaysIndexMap(firstDayOfWeek: WeekDays) {
