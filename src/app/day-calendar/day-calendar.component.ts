@@ -83,7 +83,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     return this._selected;
   }
 
-  constructor(private dayCalendarService: DayCalendarService,
+  constructor(public dayCalendarService: DayCalendarService,
               public utilsService: UtilsService) {
   }
 
@@ -171,7 +171,8 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
   }
 
   dayClicked(day: IDay) {
-    this.selected = this.dayCalendarService.updateSelected(this.componentConfig, this.selected, day);
+    this.selected = this.utilsService
+      .updateSelected(this.componentConfig.allowMultiSelect, this.selected, day);
     this.weeks = this.dayCalendarService
       .generateMonthArray(this.componentConfig, this.currentDateView, this.selected);
     this.onSelect.emit(day);
@@ -179,6 +180,10 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
 
   getNavLabel(): string {
     return this.dayCalendarService.getHeaderLabel(this.componentConfig, this.currentDateView);
+  }
+
+  getDayBtnText(day: IDay): string {
+    return this.dayCalendarService.getDayBtnText(this.componentConfig, day.date);
   }
 
   onLeftNav() {

@@ -1,9 +1,9 @@
 import {Moment} from 'jalali-moment';
+import {IDate} from '../common/models/date.model';
 
-export interface IDay {
+export interface IDay extends IDate {
   date: Moment;
-  formatedDate: string;
-  selected?: boolean;
+  selected: boolean;
   currentMonth?: boolean;
   prevMonth?: boolean;
   nextMonth?: boolean;

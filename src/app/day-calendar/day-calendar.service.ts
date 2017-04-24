@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import * as moment from 'jalali-moment';
-import {Moment} from 'jalali-moment';
+import {Moment,unitOfTime} from 'jalali-moment';
 import {WeekDays} from '../common/types/week-days.type';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDay} from './day.model';
@@ -8,7 +8,6 @@ import {FormControl} from '@angular/forms';
 import {IDayCalendarConfig} from './day-calendar-config.model';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
 import {ECalendarSystem} from "../common/types/calendar-type";
-import unitOfTime = moment.unitOfTime;
 @Injectable()
 export class DayCalendarService {
   readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
@@ -29,6 +28,7 @@ export class DayCalendarService {
     allowMultiSelect: false,
     monthFormat: 'MMM, YYYY',
     enableMonthSelector: true,
+    dayBtnFormat: 'DD'
   };
   readonly JALALI_DEFAULT_CONFIG: IDayCalendarConfig = {
     weekdayNames: {
@@ -47,6 +47,7 @@ export class DayCalendarService {
     allowMultiSelect: false,
     monthFormat: 'jMMMM, jYYYY',
     enableMonthSelector: true,
+    dayBtnFormat: 'jDD'
   };
   DEFAULT_CONFIG: IDayCalendarConfig = this.JALALI_DEFAULT_CONFIG;
 
@@ -56,9 +57,6 @@ export class DayCalendarService {
 
   private getMonthFormat(config=this.DEFAULT_CONFIG):unitOfTime.Base{
     return (config.calendarSystem!=ECalendarSystem.gregorian)?"jMonth":"month";
-  }
-  private getDayFormat(config=this.DEFAULT_CONFIG):string{
-    return (config.calendarSystem!=ECalendarSystem.gregorian)?"jDD":"DD"
   }
   private removeNearMonthWeeks(currentMonth: Moment, monthArray: IDay[][]): IDay[][] {
     if (monthArray[monthArray.length - 1].find((day) => day.date.isSame(currentMonth, this.getMonthFormat()))) {
@@ -93,11 +91,9 @@ export class DayCalendarService {
     }
     const current = firstDayOfBoard.clone();
     const actionMonthFormat=this.getMonthFormat(config);
-    const actionDayFormat=this.getDayFormat(config);
     const daysOfCalendar: IDay[] = this.utilsService.createArray(42).reduce((array: IDay[]) => {
       array.push({
         date: current.clone(),
-        formatedDate: current.clone().format(actionDayFormat),
         selected: !!selected.find(selectedDay => current.isSame(selectedDay, 'day')),
         currentMonth: current.isSame(month, actionMonthFormat),
         prevMonth: current.isSame(month.clone().subtract(1, actionMonthFormat), actionMonthFormat),
@@ -217,17 +213,6 @@ export class DayCalendarService {
     };
   }
 
-  updateSelected(config: IDayCalendarConfig, currentlySelected: Moment[], day: IDay): Moment[] {
-    const isSelected = !day.selected;
-    if (config.allowMultiSelect) {
-      return isSelected
-        ? currentlySelected.concat([day.date])
-        : currentlySelected.filter(date => !date.isSame(day.date, 'day'));
-    } else {
-      return isSelected ? [day.date] : [];
-    }
-  }
-
   // todo:: add unit tests
   getHeaderLabel(config: IDayCalendarConfig, month: Moment): string {
     if (config.monthFormatter) {
@@ -265,7 +250,17 @@ export class DayCalendarService {
       isNavHeaderBtnClickable: true,
       allowMultiSelect: false,
       yearFormat: componentConfig.yearFormat,
-      yearFormatter: componentConfig.yearFormatter
+      yearFormatter: componentConfig.yearFormatter,
+      monthBtnFormat: componentConfig.monthBtnFormat,
+      monthBtnFormatter: componentConfig.monthBtnFormatter,
     });
+  }
+
+  getDayBtnText(config: IDayCalendarConfig, day: Moment): string {
+    if (config.dayBtnFormatter) {
+      return config.dayBtnFormatter(day);
+    }
+
+    return day.format(config.dayBtnFormat);
   }
 }

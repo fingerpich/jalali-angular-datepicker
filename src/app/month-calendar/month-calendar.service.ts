@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import * as moment from 'jalali-moment';
-import {Moment} from 'jalali-moment';
+import {Moment,unitOfTime} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IMonth} from './month.model';
 import {IMonthCalendarConfig} from './month-calendar-config';
@@ -14,26 +14,25 @@ export class MonthCalendarService {
     allowMultiSelect: false,
     yearFormat: 'YYYY',
     format: 'MM-YYYY',
-    isNavHeaderBtnClickable: false
+    isNavHeaderBtnClickable: false,
+    monthBtnFormat: 'MMM'
   };
   readonly JALALI_DEFAULT_CONFIG: IMonthCalendarConfig = {
     allowMultiSelect: false,
     yearFormat: 'jYYYY',
     format: 'jMMMM-jYYYY',
-    isNavHeaderBtnClickable: false
+    isNavHeaderBtnClickable: false,
+    monthBtnFormat: 'jMMMM'
   };
   DEFAULT_CONFIG:IMonthCalendarConfig = this.JALALI_DEFAULT_CONFIG;
 
   constructor(private utilsService: UtilsService) {
   }
-  getMomentMonthFormat(config = this.DEFAULT_CONFIG){
+  getMomentMonthFormat(config = this.DEFAULT_CONFIG):unitOfTime.Base{
     return (config.calendarSystem!=ECalendarSystem.gregorian)?'jMonth':'month';
   }
-  getMomentYearFormat(config = this.DEFAULT_CONFIG){
-    return (config.calendarSystem!=ECalendarSystem.gregorian)?'jYear':'year';
-  }
-  getMonthFormat(config = this.DEFAULT_CONFIG){
-    return (config.calendarSystem!=ECalendarSystem.gregorian)?'jMMMM':'MMM';
+  getMomentYearFormat(config = this.DEFAULT_CONFIG):unitOfTime.Base{
+    return (config.calendarSystem!=ECalendarSystem.gregorian)?'year':'year';
   }
 
   getConfig(config: IMonthCalendarConfig): IMonthCalendarConfig {
@@ -50,13 +49,11 @@ export class MonthCalendarService {
 
   generateYear(year: Moment, selected: Moment[] = null): IMonth[][] {
     const index = year.clone().startOf(this.getMomentYearFormat());
-    const monthFormat = this.getMonthFormat();
     const momentMonthFormat = this.getMomentMonthFormat();
     return this.utilsService.createArray(3).map(() => {
       return this.utilsService.createArray(4).map(() => {
         const month = {
           date: index.clone(),
-          formatedDate: index.clone().format(monthFormat),
           selected: !!selected.find(s => index.isSame(s, momentMonthFormat)),
           currentMonth: index.isSame(moment(), momentMonthFormat)
         };
@@ -158,14 +155,11 @@ export class MonthCalendarService {
     return year.format(config.yearFormat);
   }
 
-  updateSelected(config: IMonthCalendarConfig, currentlySelected: Moment[], month: IMonth): Moment[] {
-    const isSelected = !month.selected;
-    if (config.allowMultiSelect) {
-      return isSelected
-        ? currentlySelected.concat([month.date])
-        : currentlySelected.filter(date => !date.isSame(month.date, this.getMomentMonthFormat(config)));
-    } else {
-      return isSelected ? [month.date] : [];
+  getMonthBtnText(config: IMonthCalendarConfig, month: Moment) {
+    if (config.monthBtnFormatter) {
+      return config.monthBtnFormatter(month);
     }
+
+    return month.format(config.monthBtnFormat);
   }
 }

@@ -12,10 +12,10 @@ import {DayCalendarComponent} from '../../day-calendar/day-calendar.component';
   styleUrls: ['./demo.component.less']
 })
 export class DemoComponent {
-  @ViewChild('dayPicker') dayPicker: DatePickerComponent;
+  @ViewChild('datePicker') datePicker: DatePickerComponent;
   demoFormat = 'DD-MM-YYYY';
   readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
-  pickerMode = 'popup';
+  pickerMode = 'dayPicker';
 
   date: Moment;
   dates: Moment[] = [];
@@ -52,7 +52,9 @@ export class DemoComponent {
     showWeekNumbers: false,
     enableMonthSelector: true,
     yearFormat: 'jYYYY',
-    showGoToCurrent: true
+    showGoToCurrent: true,
+    dayBtnFormat: 'jDD',
+    monthBtnFormat: 'jMMMM'
   };
   isAtTop: boolean = true;
 
@@ -68,11 +70,11 @@ export class DemoComponent {
 
 
   openCalendar() {
-    this.dayPicker.api.open();
+    this.datePicker.api.open();
   }
 
   closeCalendar() {
-    this.dayPicker.api.close();
+    this.datePicker.api.close();
   }
 
   log(item) {

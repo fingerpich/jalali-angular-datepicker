@@ -176,4 +176,15 @@ describe('Service: Calendar', () => {
 
         expect(service.generateMonthArray(config, moment('27-04-2017', 'DD-MM-YYYY'), []).length).toBe(6);
       }));
+
+  it('should check getDayBtnText method',
+    inject([DayCalendarService],
+      (service: DayCalendarService) => {
+        const date = moment('05-04-2017', 'DD-MM-YYYY');
+        expect(service.getDayBtnText({dayBtnFormat: 'DD'}, date)).toEqual('05');
+        expect(service.getDayBtnText({dayBtnFormat: 'D'}, date)).toEqual('5');
+        expect(service.getDayBtnText({dayBtnFormatter: (m => 'bla')}, date)).toEqual('bla');
+        expect(service.getDayBtnText({dayBtnFormat: 'DD', dayBtnFormatter: (m => m.format('D'))}, date))
+          .toEqual('5');
+      }));
 });

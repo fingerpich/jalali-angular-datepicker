@@ -5,7 +5,7 @@ import {Moment} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {FormControl} from '@angular/forms';
 import {IDayCalendarConfig} from '../day-calendar/day-calendar-config.model';
-import {IDay} from '../day-calendar/day.model';
+import {IDate} from '../common/models/date.model';
 
 @Injectable()
 export class DatePickerService {
@@ -61,7 +61,11 @@ export class DatePickerService {
       monthFormatter: pickerConfig.monthFormatter,
       enableMonthSelector: pickerConfig.enableMonthSelector,
       yearFormat: pickerConfig.yearFormat,
-      yearFormatter: pickerConfig.yearFormatter
+      yearFormatter: pickerConfig.yearFormatter,
+      dayBtnFormat: pickerConfig.dayBtnFormat,
+      dayBtnFormatter: pickerConfig.dayBtnFormatter,
+      monthBtnFormat: pickerConfig.monthBtnFormat,
+      monthBtnFormatter: pickerConfig.monthBtnFormatter
     };
   }
 
@@ -130,17 +134,6 @@ export class DatePickerService {
 
       return !isValid ? errors : null;
     };
-  }
-
-  updateSelected(config: IDatePickerConfig, currentlySelected: Moment[], day: IDay): Moment[] {
-    const isSelected = !day.selected;
-    if (config.allowMultiSelect) {
-      return isSelected
-        ? currentlySelected.concat([day.date])
-        : currentlySelected.filter(date => !date.isSame(day.date, 'day'));
-    } else {
-      return isSelected ? [day.date] : [];
-    }
   }
 
   pickerClosed() {
