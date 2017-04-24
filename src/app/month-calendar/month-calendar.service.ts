@@ -32,7 +32,7 @@ export class MonthCalendarService {
     return (config.calendarSystem!=ECalendarSystem.gregorian)?'jMonth':'month';
   }
   getMomentYearFormat(config = this.DEFAULT_CONFIG):unitOfTime.Base{
-    return (config.calendarSystem!=ECalendarSystem.gregorian)?'year':'year';
+    return (config.calendarSystem!=ECalendarSystem.gregorian)?'jYear':'year';
   }
 
   getConfig(config: IMonthCalendarConfig): IMonthCalendarConfig {
