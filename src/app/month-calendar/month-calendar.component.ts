@@ -159,12 +159,12 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
   }
 
   onLeftNav() {
-    this.currentDateView = this.currentDateView.subtract(1, 'year');
+    this.monthCalendarService.decreaseYear(this.currentDateView);
     this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
   }
 
   onRightNav() {
-    this.currentDateView.add(1, 'year');
+    this.monthCalendarService.increaseYear(this.currentDateView);
     this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
   }
 
