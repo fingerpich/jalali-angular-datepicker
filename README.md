@@ -1,10 +1,11 @@
-[![Build Status](https://travis-ci.org/vlio20/angular-datepicker.svg?branch=master)](https://travis-ci.org/vlio20/angular-datepicker)  
-[![npm version](https://badge.fury.io/js/ng2-date-picker.svg)](https://badge.fury.io/js/ng2-date-picker)
-[![Package Quality](http://npm.packagequality.com/shield/ng2-date-picker.svg)](http://packagequality.com/#?package=ng2-date-picker)
+[![Build Status](https://travis-ci.org/fingerpich/jalali-angular-datepicker.svg?branch=master)](https://travis-ci.org/fingerpich/jalali-angular-datepicker) 
+[![npm version](https://badge.fury.io/js/jalali-angular-datepicker.svg)](https://badge.fury.io/js/jalali-angular-datepicker)
+[![Package Quality](http://npm.packagequality.com/shield/jalali-angular-datepicker.svg)](http://packagequality.com/#?package=jalali-angular-datepicker)
 
-# Date Picker
-This is a configurable date-picker build for Angular2 applications and uses MomentJS as its dependency.   
-[DEMO](https://vlio20.github.io/angular-datepicker/)
+# Jalali Date Picker
+This is a configurable jalali date-picker build for Angular2 applications and uses MomentJS as its dependency.
+It does not depend on bootstrap or jquery or any other library. 
+[DEMO](https://fingerpich.github.io/jalali-angular-datepicker/)
 
 ## Screenshots
 ![Imgur](http://i.imgur.com/4ZV7r5e.png) 
@@ -14,9 +15,9 @@ This is a configurable date-picker build for Angular2 applications and uses Mome
 
 ## Installation:
 1. Download from npm:
-`npm install ng2-date-picker --save`  
+`npm install jalali-angular-datepicker --save`  
 2. import the `DpDatePickerModule` module:  
- `import {DpDatePickerModule} from 'ng2-date-picker';`  
+ `import {DpDatePickerModule} from 'jalali-angular-datepicker';`  
 3. Add `DpDatePickerModule` to your module imports:  
 ```ts
  @NgModule({
@@ -81,13 +82,14 @@ Here are the available configurations:
 | dayBtnFormatter           | `(Moment) => String` | `undefined`                                                               | The formatter (callback function) of the day button in the calendar.                                                                                                                                                                                                          |
 | monthBtnFormat            | `string`             | `DD`                                                                      | The month format of the month button in the calendar.                                                                                                                                                                                                                         |
 | monthBtnFormatter         | `(Moment) => String` | `undefined`                                                               | The formatter (callback function) of the month button in the calendar.                                                                                                                                                                                                        |
+| calendarSystem            | `ECalendarSystem`    | `ECalendarSystem.jalali`                                                            | If ngModel provided as `String` the format is required, this format also will be used as the input format style.                                                                                                                                                    |
 
 ### API:
 In order to use the date-picker api user the `@ViewChild` annotation in the date-picker containing component class, take at the example bellow:  
 Container component:
 ```ts  
 import {Component, ViewChild} from '@angular/core';
-import {DayPickerComponent} from 'ng2-date-picker';
+import {DayPickerComponent} from 'jalali-angular-datepicker';
 
 @Component({
 selector: 'my-container',
@@ -166,6 +168,7 @@ Here are the available configurations:
 | dayBtnFormatter           | `(Moment) => String` | `undefined`                                                               | The formatter (callback function) of the day button in the calendar.                                                                                                                                                                                                          |
 | monthBtnFormat            | `string`             | `DD`                                                                      | The month format of the month button in the calendar.                                                                                                                                                                                                                         |
 | monthBtnFormatter         | `(Moment) => String` | `undefined`                                                               | The formatter (callback function) of the month button in the calendar.                                                                                                                                                                                                        |
+| calendarSystem            | `ECalendarSystem`    | `ECalendarSystem.jalali`                                                            | If ngModel provided as `String` the format is required, this format also will be used as the input format style.                                                                                                                                                    |
 
 ## Inline - Month Calendar
 
@@ -203,3 +206,4 @@ Here are the available configurations:
 | isMonthDisabledCallback   | `(Moment) => boolean`| `undefined`                                                               | Callback which should indicate if specific month is disabled (month selector).                                                                                                                                                                                                |
 | monthBtnFormat            | `string`             | `DD`                                                                      | The month format of the month button in the calendar.                                                                                                                                                                                                                         |
 | monthBtnFormatter         | `(Moment) => String` | `undefined`                                                               | The formatter (callback function) of the month button in the calendar.                                                                                                                                                                                                        |
+| calendarSystem            | `ECalendarSystem`    | `ECalendarSystem.jalali`                                                            | If ngModel provided as `String` the format is required, this format also will be used as the input format style.                                                                                                                                                    |
