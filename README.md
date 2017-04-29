@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/fingerpich/jalali-angular-datepicker.svg?branch=master)](https://travis-ci.org/fingerpich/jalali-angular-datepicker) 
-[![npm version](https://badge.fury.io/js/jalali-angular-datepicker.svg)](https://badge.fury.io/js/jalali-angular-datepicker)
-[![Package Quality](http://npm.packagequality.com/shield/jalali-angular-datepicker.svg)](http://packagequality.com/#?package=jalali-angular-datepicker)
+[![npm version](https://badge.fury.io/js/ng2-jalali-date-picker.svg)](https://badge.fury.io/js/ng2-jalali-date-picker)
+[![Package Quality](http://npm.packagequality.com/shield/ng2-jalali-date-picker.svg)](http://packagequality.com/#?package=ng2-jalali-date-picker)
 
 # Jalali Date Picker
 This is a configurable jalali date-picker build for Angular2 applications and uses MomentJS as its dependency.
@@ -15,7 +15,7 @@ It does not depend on bootstrap or jquery or any other library.
 
 ## Installation:
 1. Download from npm:
-`npm install jalali-angular-datepicker --save`  
+`npm install ng2-jalali-date-picker --save`  
 2. import the `DpDatePickerModule` module:  
  `import {DpDatePickerModule} from 'jalali-angular-datepicker';`  
 3. Add `DpDatePickerModule` to your module imports:  
