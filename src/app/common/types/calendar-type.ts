@@ -1,6 +1,6 @@
 export type CalendarType = 'day' | 'month';
 export enum ECalendarSystem {
-  Jalali,
+  jalali,
   gregorian
 }
 export enum ECalendarType {

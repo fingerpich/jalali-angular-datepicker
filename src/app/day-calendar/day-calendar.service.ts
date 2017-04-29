@@ -247,6 +247,7 @@ export class DayCalendarService {
       min: componentConfig.min,
       max: componentConfig.max,
       format: componentConfig.format,
+      calendarSystem: componentConfig.calendarSystem,
       isNavHeaderBtnClickable: true,
       allowMultiSelect: false,
       yearFormat: componentConfig.yearFormat,

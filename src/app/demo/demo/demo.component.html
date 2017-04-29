@@ -213,6 +213,24 @@
 
     <div class="dp-option">
       <span class="dp-option-header">
+        Calendar System
+      </span>
+      <div class="dp-option-playground">
+        <label>Jalali
+          <input id="jalaliCalendarSystem" type="radio" [(ngModel)]="config.calendarSystem" name="calendarSystem"
+                 [value]="0"
+                 (ngModelChange)="changeCalendarSystem()">
+        </label>
+        <label>Gregorian
+          <input id="gregorianCalendarSystem" type="radio" [(ngModel)]="config.calendarSystem" name="calendarSystem"
+                 [value]="1"
+                 (ngModelChange)="changeCalendarSystem()">
+        </label>
+      </div>
+    </div>
+
+    <div class="dp-option">
+      <span class="dp-option-header">
         First Day of The week (firstDayOfWeek):
       </span>
       <div class="dp-option-playground">

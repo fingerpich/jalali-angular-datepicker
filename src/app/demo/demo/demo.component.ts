@@ -1,9 +1,11 @@
 import {Component, ViewChild, HostListener} from '@angular/core';
 import {DatePickerComponent} from '../../date-picker/date-picker.component';
+import * as moment from 'jalali-moment';
 import {Moment} from 'jalali-moment';
 import {IDatePickerConfig} from '../../date-picker/date-picker-config.model';
 import debounce from '../../common/decorators/decorators';
 import {DayCalendarComponent} from '../../day-calendar/day-calendar.component';
+import {ECalendarSystem} from "../../common/types/calendar-type";
 
 @Component({
   selector: 'dp-demo',
@@ -13,7 +15,6 @@ import {DayCalendarComponent} from '../../day-calendar/day-calendar.component';
 })
 export class DemoComponent {
   @ViewChild('datePicker') datePicker: DatePickerComponent;
-  demoFormat = 'DD-MM-YYYY';
   readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
   pickerMode = 'dayPicker';
 
@@ -26,16 +27,10 @@ export class DemoComponent {
   validationMinDate: Moment;
   validationMaxDate: Moment;
   placeholder: string = 'Choose a date...';
-
-  config: IDatePickerConfig = {
+  jalaliSystemDefaults:IDatePickerConfig = {
     firstDayOfWeek: 'sa',
     format: 'jDD-jMM-jYYYY',
     monthFormat: 'jMMMM, jYYYY',
-    disableKeypress: false,
-    allowMultiSelect: false,
-    closeOnSelect: undefined,
-    closeOnSelectDelay: 100,
-    onOpenDelay: 0,
     weekdayNames: {
       su: 'ی',
       mo: 'د',
@@ -45,23 +40,55 @@ export class DemoComponent {
       fr: 'ج',
       sa: 'ش'
     },
+    yearFormat: 'jYYYY',
+    dayBtnFormat: 'jDD',
+    monthBtnFormat: 'jMMMM',
+  };
+  gregorianSystemDefaults:IDatePickerConfig = {
+    firstDayOfWeek: 'su',
+    format: 'DD-MM-YYYY',
+    monthFormat: 'MMMM, YYYY',
+    weekdayNames: {
+      su: 'sun',
+      mo: 'mon',
+      tu: 'tue',
+      we: 'wed',
+      th: 'thu',
+      fr: 'fri',
+      sa: 'sat'
+    },
+    yearFormat: 'YYYY',
+    dayBtnFormat: 'DD',
+    monthBtnFormat: 'MMM',
+  };
+  dpconfig: IDatePickerConfig = {
+    disableKeypress: false,
+    allowMultiSelect: false,
+    closeOnSelect: undefined,
+    closeOnSelectDelay: 100,
+    onOpenDelay: 0,
     appendTo: document.body,
     drops: 'down',
     opens: 'right',
     showNearMonthDays: true,
     showWeekNumbers: false,
     enableMonthSelector: true,
-    yearFormat: 'jYYYY',
     showGoToCurrent: true,
-    dayBtnFormat: 'jDD',
-    monthBtnFormat: 'jMMMM'
+    calendarSystem: ECalendarSystem.jalali
   };
+  config:IDatePickerConfig ={...this.dpconfig, ...this.jalaliSystemDefaults};
   isAtTop: boolean = true;
 
   @HostListener('document:scroll')
   @debounce(100)
   updateIsAtTop() {
     this.isAtTop = document.body.scrollTop === 0;
+  }
+
+  changeCalendarSystem() {
+    const defaultCalSys=(this.config.calendarSystem==ECalendarSystem.jalali)?this.jalaliSystemDefaults:this.gregorianSystemDefaults;
+    this.date = moment();
+    this.config = {...this.config, ...defaultCalSys};
   }
 
   configChanged() {

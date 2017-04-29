@@ -56,6 +56,7 @@ export class DatePickerService {
       showWeekNumbers: pickerConfig.showWeekNumbers,
       firstDayOfWeek: pickerConfig.firstDayOfWeek,
       format: pickerConfig.format,
+      calendarSystem: pickerConfig.calendarSystem,
       allowMultiSelect: pickerConfig.allowMultiSelect,
       monthFormat: pickerConfig.monthFormat,
       monthFormatter: pickerConfig.monthFormatter,
