@@ -6,12 +6,6 @@
 This is a configurable jalali date-picker build for Angular2 applications and uses MomentJS as its dependency. 
 [DEMO](https://fingerpich.github.io/jalali-angular-datepicker/)
 
-## Screenshots
-![Imgur](http://i.imgur.com/4ZV7r5e.png) 
-
-![Imgur](http://i.imgur.com/Kho8Joq.png)
-
-
 ## Installation:
 1. Download from npm:
 `npm install ng2-jalali-date-picker --save`  
@@ -30,6 +24,15 @@ This is a configurable jalali date-picker build for Angular2 applications and us
 
 ## Usage
 Put the dp-date-picker component wherever you need it.
+
+
+## Example
+    <dp-date-picker
+      [(ngModel)]="dateObject"
+      type="day"
+      placeholder="تاریخ"
+      theme="dp-material">
+    </dp-date-picker>
 
 
 ### Attributes:  

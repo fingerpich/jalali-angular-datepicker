@@ -1,7 +1,7 @@
 {
   "name": "ng2-jalali-date-picker",
   "author": "Mojtaba Zarei",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "license": "MIT",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build:demo": "rm -rf dist/ && ng build --prod --bh /jalali-angular-datepicker/",
+    "build:demo": "rm -rf dist/*.js && ng build --prod --bh /jalali-angular-datepicker/",
     "build:prod": "node build.js && ngc && cp package.json bin && cp README.md bin",
     "release": "npm run build:prod && npm publish bin",
     "pack": "cd bin && npm pack"
