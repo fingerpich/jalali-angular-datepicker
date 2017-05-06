@@ -1,3 +1,5 @@
+import {ECalendarValue} from '../common/types/calendar-value-enum';
+import {SingleCalendarValue} from '../common/types/single-calendar-value';
 import {
   Component,
   OnInit,
@@ -22,9 +24,9 @@ import {
   ValidationErrors,
   FormControl
 } from '@angular/forms';
-import {CalendarValue, ECalendarValue, SingleCalendarValue} from '../common/types/calendar-value';
+import {CalendarValue} from '../common/types/calendar-value';
 import {UtilsService} from '../common/services/utils/utils.service';
-import {ECalendarType, ECalendarSystem} from '../common/types/calendar-type';
+import {ECalendarType, ECalendarSystem} from '../common/types/calendar-type-enum';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
 import {IMonth} from '../month-calendar/month.model';
 
@@ -54,6 +56,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
   @Input() maxDate: Moment;
   @HostBinding('class') @Input() theme: string;
   @Output() onSelect: EventEmitter<IDay> = new EventEmitter();
+  @Output() onMonthSelect: EventEmitter<IMonth> = new EventEmitter();
   @Output() onNavHeaderBtnClick: EventEmitter<ECalendarType> = new EventEmitter();
 
   CalendarType = ECalendarType;
@@ -65,7 +68,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
   currentDateView: Moment;
   inputValue: CalendarValue;
   inputValueType: ECalendarValue;
-  validateFn: (FormControl, string) => {[key: string]: any};
+  validateFn: (inputVal: CalendarValue) => {[key: string]: any};
   currentCalendarType: ECalendarType = ECalendarType.Day;
   monthCalendarConfig: IMonthCalendarConfig;
 
@@ -147,7 +150,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
 
   validate(formControl: FormControl): ValidationErrors | any {
     if (this.minDate || this.maxDate) {
-      return this.validateFn(formControl, this.componentConfig.format);
+      return this.validateFn(formControl.value);
     } else {
       return () => null;
     }
@@ -158,10 +161,8 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
   }
 
   initValidators() {
-    this.validateFn = this.dayCalendarService.createValidator({
-      minDate: this.utilsService.convertToMoment(this.minDate, this.componentConfig.format),
-      maxDate: this.utilsService.convertToMoment(this.maxDate, this.componentConfig.format)
-    }, this.componentConfig.format);
+    this.validateFn = this.utilsService.createValidator(
+      {minDate: this.minDate, maxDate: this.maxDate}, this.componentConfig.format, 'day');
 
     this.onChangeCallback(this.processOnChangeCallback(this.selected));
   }
@@ -222,6 +223,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     this.currentCalendarType = ECalendarType.Day;
     this.weeks = this.dayCalendarService
       .generateMonthArray(this.componentConfig, this.currentDateView, this.selected);
+    this.onMonthSelect.emit(month);
   }
 
   moveCalendarsBy(current: Moment, amount: number, granularity: moment.unitOfTime.Base = 'month') {

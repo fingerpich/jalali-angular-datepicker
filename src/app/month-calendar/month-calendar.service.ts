@@ -5,7 +5,7 @@ import {UtilsService} from '../common/services/utils/utils.service';
 import {IMonth} from './month.model';
 import {IMonthCalendarConfig} from './month-calendar-config';
 import {FormControl} from '@angular/forms';
-import {ECalendarSystem} from "../common/types/calendar-type";
+import {ECalendarSystem} from "../common/types/calendar-type-enum";
 
 @Injectable()
 export class MonthCalendarService {
@@ -81,7 +81,7 @@ export class MonthCalendarService {
       validators.push({
         key: 'minDate',
         isValid: () => {
-          const _isValid = value.every(val => val.isSameOrAfter(minDate, this.getMomentMonthFormat()));
+          const _isValid = value.every(val => val.isSameOrAfter(minDate, 'month'));
           isValid = isValid ? _isValid : false;
           return _isValid;
         }
@@ -92,7 +92,7 @@ export class MonthCalendarService {
       validators.push({
         key: 'maxDate',
         isValid: () => {
-          const _isValid = value.every(val => val.isSameOrBefore(maxDate, this.getMomentMonthFormat()));
+          const _isValid = value.every(val => val.isSameOrBefore(maxDate, 'month'));
           isValid = isValid ? _isValid : false;
           return _isValid;
         }

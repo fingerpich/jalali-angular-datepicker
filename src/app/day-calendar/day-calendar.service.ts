@@ -7,7 +7,7 @@ import {IDay} from './day.model';
 import {FormControl} from '@angular/forms';
 import {IDayCalendarConfig} from './day-calendar-config.model';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
-import {ECalendarSystem} from "../common/types/calendar-type";
+import {ECalendarSystem} from "../common/types/calendar-type-enum";
 @Injectable()
 export class DayCalendarService {
   readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
@@ -144,73 +144,6 @@ export class DayCalendarService {
     }
 
     return !!(config.max && day.date.isAfter(config.max, 'day'));
-  }
-
-  createValidator({minDate, maxDate}, dateFormat: string): (FormControl, string) => {[key: string]: any} {
-    let isValid: boolean;
-    let value: Moment[];
-    const validators = [];
-
-    if (minDate) {
-      validators.push({
-        key: 'minDate',
-        isValid: () => {
-          const _isValid = value.every(val => val.isSameOrAfter(minDate, 'day'));
-          isValid = isValid ? _isValid : false;
-          return _isValid;
-        }
-      });
-    }
-
-    if (maxDate) {
-      validators.push({
-        key: 'maxDate',
-        isValid: () => {
-          const _isValid = value.every(val => val.isSameOrBefore(maxDate, 'day'));
-          isValid = isValid ? _isValid : false;
-          return _isValid;
-        }
-      });
-    }
-
-    return function validateInput(formControl: FormControl, format: string) {
-      isValid = true;
-
-      if (formControl.value) {
-        if (typeof formControl.value === 'string') {
-          const dateStrings = formControl.value.split(',').map(date => date.trim());
-          const validDateStrings = dateStrings
-            .filter(date => this.utilsService.isDateValid(date, format));
-          value = validDateStrings.map(dateString => moment(dateString, dateFormat));
-        } else if (!Array.isArray(formControl.value)) {
-          value = [formControl.value];
-        } else {
-          value = formControl.value.map(val => this.utilsService.convertToMoment(val, dateFormat));
-        }
-      } else {
-        return null;
-      }
-
-      if (!value.every(val => val.isValid())) {
-        return {
-          format: {
-            given: formControl.value
-          }
-        };
-      }
-
-      const errors = validators.reduce((map, err) => {
-        if (!err.isValid()) {
-          map[err.key] = {
-            given: value
-          };
-        }
-
-        return map;
-      }, {});
-
-      return !isValid ? errors : null;
-    };
   }
 
   // todo:: add unit tests

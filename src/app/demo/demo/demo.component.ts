@@ -1,11 +1,12 @@
-import {Component, ViewChild, HostListener} from '@angular/core';
+import debounce from '../../common/decorators/decorators';
+import {IDatePickerConfig} from '../../date-picker/date-picker-config.model';
 import {DatePickerComponent} from '../../date-picker/date-picker.component';
+import {DatePickerDirective} from '../../date-picker/date-picker.directive';
+import {Component, HostListener, ViewChild} from '@angular/core';
+import { FormControl, NgForm, FormGroup, Validators, Validator, AbstractControl } from '@angular/forms';
 import * as moment from 'jalali-moment';
 import {Moment} from 'jalali-moment';
-import {IDatePickerConfig} from '../../date-picker/date-picker-config.model';
-import debounce from '../../common/decorators/decorators';
-import {DayCalendarComponent} from '../../day-calendar/day-calendar.component';
-import {ECalendarSystem} from "../../common/types/calendar-type";
+import {ECalendarSystem} from "../../common/types/calendar-type-enum";
 
 @Component({
   selector: 'dp-demo',
@@ -15,22 +16,39 @@ import {ECalendarSystem} from "../../common/types/calendar-type";
 })
 export class DemoComponent {
   @ViewChild('datePicker') datePicker: DatePickerComponent;
+  @ViewChild('dateDirectivePicker') dateDirectivePicker: DatePickerDirective;
+  demoFormat = 'DD-MM-YYYY';
   readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
   pickerMode = 'dayPicker';
 
   date: Moment;
   dates: Moment[] = [];
-
   material: boolean = true;
   required: boolean = false;
   disabled: boolean = false;
   validationMinDate: Moment;
   validationMaxDate: Moment;
   placeholder: string = 'Choose a date...';
-  jalaliSystemDefaults:IDatePickerConfig = {
+
+  formGroup: FormGroup = new FormGroup({
+    datePicker: new FormControl({ value: this.date, disabled: this.disabled }, [
+      this.required ? Validators.required : () => undefined,
+      control => this.validationMinDate && this.config && moment(control.value, this.config.format).isBefore(this.validationMinDate)
+        ? {minDate: 'minDate Invalid'} : undefined,
+      control => this.validationMaxDate && this.config && moment(control.value, this.config.format).isAfter(this.validationMaxDate)
+        ? {maxDate: 'maxDate Invalid'} : undefined,
+    ]),
+  });
+
+  jalaliSystemDefaults: IDatePickerConfig = {
     firstDayOfWeek: 'sa',
     format: 'jDD-jMM-jYYYY',
     monthFormat: 'jMMMM, jYYYY',
+    disableKeypress: false,
+    allowMultiSelect: false,
+    closeOnSelect: undefined,
+    closeOnSelectDelay: 100,
+    onOpenDelay: 0,
     weekdayNames: {
       su: 'ی',
       mo: 'د',
@@ -40,14 +58,27 @@ export class DemoComponent {
       fr: 'ج',
       sa: 'ش'
     },
+    appendTo: document.body,
+    drops: 'down',
+    opens: 'right',
+    showNearMonthDays: true,
+    showWeekNumbers: false,
+    enableMonthSelector: true,
     yearFormat: 'jYYYY',
+    showGoToCurrent: true,
+    calendarSystem: ECalendarSystem.jalali,
     dayBtnFormat: 'jDD',
-    monthBtnFormat: 'jMMMM',
+    monthBtnFormat: 'jMMMM'
   };
-  gregorianSystemDefaults:IDatePickerConfig = {
+  gregorianSystemDefaults: IDatePickerConfig = {
     firstDayOfWeek: 'su',
     format: 'DD-MM-YYYY',
-    monthFormat: 'MMMM, YYYY',
+    monthFormat: 'MMM, YYYY',
+    disableKeypress: false,
+    allowMultiSelect: false,
+    closeOnSelect: undefined,
+    closeOnSelectDelay: 100,
+    onOpenDelay: 0,
     weekdayNames: {
       su: 'sun',
       mo: 'mon',
@@ -57,26 +88,19 @@ export class DemoComponent {
       fr: 'fri',
       sa: 'sat'
     },
-    yearFormat: 'YYYY',
-    dayBtnFormat: 'DD',
-    monthBtnFormat: 'MMM',
-  };
-  dpconfig: IDatePickerConfig = {
-    disableKeypress: false,
-    allowMultiSelect: false,
-    closeOnSelect: undefined,
-    closeOnSelectDelay: 100,
-    onOpenDelay: 0,
     appendTo: document.body,
     drops: 'down',
     opens: 'right',
     showNearMonthDays: true,
     showWeekNumbers: false,
     enableMonthSelector: true,
+    yearFormat: 'YYYY',
     showGoToCurrent: true,
-    calendarSystem: ECalendarSystem.jalali
+    calendarSystem: ECalendarSystem.gregorian,
+    dayBtnFormat: 'DD',
+    monthBtnFormat: 'MMM'
   };
-  config:IDatePickerConfig ={...this.dpconfig, ...this.jalaliSystemDefaults};
+  config:IDatePickerConfig ={...this.jalaliSystemDefaults};
   isAtTop: boolean = true;
 
   @HostListener('document:scroll')
@@ -91,17 +115,27 @@ export class DemoComponent {
     this.config = {...this.config, ...defaultCalSys};
   }
 
+  modeChanged() {
+    this.config.hideInputContainer = false;
+    this.config.inputElementContainer = undefined;
+    this.formGroup.get('datePicker').setValue(this.date);
+  }
+
+  validatorsChanged() {
+    this.formGroup.get('datePicker').updateValueAndValidity();
+  }
+
   configChanged() {
     this.config = {...this.config};
   };
 
 
   openCalendar() {
-    this.datePicker.api.open();
+    (this.datePicker || this.dateDirectivePicker).api.open();
   }
 
   closeCalendar() {
-    this.datePicker.api.close();
+    (this.datePicker || this.dateDirectivePicker).api.close();
   }
 
   log(item) {

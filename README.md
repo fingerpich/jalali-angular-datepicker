@@ -145,7 +145,7 @@ i.e.
 ### Configuration:  
 In order to provide configurations to the day-calendar you need to pass it to the `dp-day-calendar` component:  
 ```html
-<dp-date-picker [(ngModel)]="selectedDate" [config]="config"></dp-date-picker>
+<dp-day-calendar [(ngModel)]="selectedDate" [config]="config"></dp-day-calendar>
 ```
 Here are the available configurations:  
 
@@ -209,3 +209,44 @@ Here are the available configurations:
 | monthBtnFormat            | `string`             | `DD`                                                                      | The month format of the month button in the calendar.                                                                                                                                                                                                                         |
 | monthBtnFormatter         | `(Moment) => String` | `undefined`                                                               | The formatter (callback function) of the month button in the calendar.                                                                                                                                                                                                        |
 | calendarSystem            | `ECalendarSystem`    | `ECalendarSystem.jalali`                                                            | If ngModel provided as `String` the format is required, this format also will be used as the input format style.                                                                                                                                                    |
+
+
+
+## Directive
+
+You can use the `[dpDayPicker]` directive to attach the picker to any component with an `ngModel` or a `FormControl` (using reactive forms).
+
+i.e.
+```html
+<input name="someName" [(ngModel)]="selectedDate" [dpDayPicker]="config" />
+```
+
+or using reactive forms:
+```html
+<input name="someName" formControlName="selectedDate" [dpDayPicker]="config" />
+<!-- OR -->
+<input name="someName" [formControl]="selectedDateFormControl" [dpDayPicker]="config" />
+```
+
+or with `@angular/material`:
+```html
+<md-input-container>
+  <input mdInput name="someName" [(ngModel)]="selectedDate" [dpDayPicker]="config" theme="dp-material" attachTo=".mat-input-wrapper" />
+</md-input-container>
+```
+
+### Attributes:  
+| Name                 | Type                | Default                                                                  | Description                                                                                                                                                                                                                                        |
+|----------------------|:-------------------:|:------------------------------------------------------------------------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| type                 | `'day'`\|`'month'`         | `'day'`                                                                    | the type of the calender which will be displayed in the picker                                                                                                                                                                                     |
+| attachTo             | `ElementRef`\|`string` | `undefined`                                                                | the element used to position the picker.  If `attachTo` is a `string`, it is used as a css selector to match any parent of the directive's host component.  If `attachTo` is `undefined`, the host component itself is used.                         |
+| theme                | `string       `       | `''`                                                                     | Theme is a class added to the popup container (and inner components) - this will allow styling of the calendar when it's appended to outer element (for example - body). There is a built in theme named dp-material, you can find it in the demo. | 
+| config               | `IDatePickerDirectiveConfig` | See Below                                                                | Configuration object - see description below.                                                                                                                                                                                                      | 
+
+### Configuration:  
+In order to provide configurations to the date-picker you need to pass it to the `[dpDayPicker]` directive:  
+```html
+<input [(ngModel)]="selectedDate" [dpDayPicker]="datePickerConfig" />
+```
+
+The `IDatePickerDirectiveConfig` is identical to [`IDatePickerConfig`](#configuration) above except that it lacks the `showGoToCurrent` property.

@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import * as moment from 'jalali-moment';
 import {Moment, unitOfTime} from 'jalali-moment';
-import {CalendarValue, ECalendarValue, SingleCalendarValue} from '../../types/calendar-value';
+import {CalendarValue} from '../../types/calendar-value';
+import {ECalendarValue} from '../../types/calendar-value-enum';
+import {SingleCalendarValue} from '../../types/single-calendar-value';
 import {IDate} from '../../models/date.model';
 
 @Injectable()
@@ -152,5 +154,69 @@ export class UtilsService {
     } else {
       return isSelected ? [date.date] : [];
     }
+  }
+
+  closestParent(element: HTMLElement, selector: string): HTMLElement {
+    if (!element) {
+      return undefined;
+    }
+    const match = <HTMLElement>element.querySelector(selector);
+    return match || this.closestParent(element.parentElement, selector);
+  }
+
+  createValidator({minDate, maxDate}, format: string, granularity: unitOfTime.Base): (inputVal: CalendarValue) => {[key: string]: any} {
+    let isValid: boolean;
+    let value: Moment[];
+    const validators = [];
+
+    if (minDate) {
+      const md = this.convertToMoment(minDate, format);
+      validators.push({
+        key: 'minDate',
+        isValid: () => {
+          const _isValid = value.every(val => val.isSameOrAfter(md, granularity));
+          isValid = isValid ? _isValid : false;
+          return _isValid;
+        }
+      });
+    }
+
+    if (maxDate) {
+      const md = this.convertToMoment(maxDate, format);
+      validators.push({
+        key: 'maxDate',
+        isValid: () => {
+          const _isValid = value.every(val => val.isSameOrBefore(md, granularity));
+          isValid = isValid ? _isValid : false;
+          return _isValid;
+        }
+      });
+    }
+
+    return (inputVal: CalendarValue) => {
+      isValid = true;
+
+      value = this.convertToMomentArray(inputVal, format, true).filter(Boolean);
+
+      if (!value.every(val => val.isValid())) {
+        return {
+          format: {
+            given: inputVal
+          }
+        };
+      }
+
+      const errors = validators.reduce((map, err) => {
+        if (!err.isValid()) {
+          map[err.key] = {
+            given: value
+          };
+        }
+
+        return map;
+      }, {});
+
+      return !isValid ? errors : null;
+    };
   }
 }
