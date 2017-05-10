@@ -1,5 +1,5 @@
 <div>
-  <div class="dp-input-container">
+  <div *ngIf="!componentConfig.hideInputContainer" class="dp-input-container">
     <input type="text"
            class="dp-picker-input"
            [placeholder]="placeholder"
@@ -9,7 +9,8 @@
            [readonly]="componentConfig.disableKeypress"
            [disabled]="disabled"/>
 
-    <button class="dp-current-location-btn"
+    <button type="button"
+            class="dp-current-location-btn"
             *ngIf="componentConfig.showGoToCurrent"
             (click)="moveToCurrent()"
             [hidden]="!_areCalendarsShown">

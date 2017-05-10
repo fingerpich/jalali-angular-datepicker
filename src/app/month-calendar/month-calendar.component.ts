@@ -1,3 +1,4 @@
+import {ECalendarValue} from '../common/types/calendar-value-enum';
 import {
   Component,
   OnInit,
@@ -21,9 +22,9 @@ import {
   FormControl,
   ValidationErrors
 } from '@angular/forms';
-import {CalendarValue, ECalendarValue} from '../common/types/calendar-value';
+import {CalendarValue} from '../common/types/calendar-value';
 import {UtilsService} from '../common/services/utils/utils.service';
-import {ECalendarSystem} from "../common/types/calendar-type";
+import {ECalendarSystem} from "../common/types/calendar-type-enum";
 
 @Component({
   selector: 'dp-month-calendar',
@@ -59,7 +60,7 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
   currentDateView: Moment;
   inputValue: CalendarValue;
   inputValueType: ECalendarValue;
-  validateFn: (FormControl, string) => {[key: string]: any};
+  validateFn: (inputVal: CalendarValue) => {[key: string]: any};
 
   set selected(selected: Moment[]) {
     this._selected = selected;
@@ -125,7 +126,7 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
 
   validate(formControl: FormControl): ValidationErrors | any {
     if (this.minDate || this.maxDate) {
-      return this.validateFn(formControl, this.componentConfig.format);
+      return this.validateFn(formControl.value);
     } else {
       return () => null;
     }
@@ -138,10 +139,8 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
   }
 
   initValidators() {
-    this.validateFn = this.monthCalendarService.createValidator({
-      minDate: this.utilsService.convertToMoment(this.minDate, this.componentConfig.format),
-      maxDate: this.utilsService.convertToMoment(this.maxDate, this.componentConfig.format)
-    }, this.componentConfig.format);
+    this.validateFn = this.validateFn = this.utilsService.createValidator(
+      {minDate: this.minDate, maxDate: this.maxDate}, this.componentConfig.format, 'month');
 
     this.onChangeCallback(this.processOnChangeCallback(this.selected));
   }

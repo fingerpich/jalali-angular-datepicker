@@ -1,12 +1,12 @@
 import {Injectable, EventEmitter} from '@angular/core';
 import {IDatePickerConfig} from './date-picker-config.model';
 import * as moment from 'jalali-moment';
-import {Moment} from 'jalali-moment';
+import {Moment, unitOfTime} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {FormControl} from '@angular/forms';
 import {IDayCalendarConfig} from '../day-calendar/day-calendar-config.model';
 import {IDate} from '../common/models/date.model';
-import {ECalendarSystem} from "../common/types/calendar-type";
+import {ECalendarSystem} from "../common/types/calendar-type-enum";
 
 @Injectable()
 export class DatePickerService {
@@ -71,73 +71,6 @@ export class DatePickerService {
       dayBtnFormatter: pickerConfig.dayBtnFormatter,
       monthBtnFormat: pickerConfig.monthBtnFormat,
       monthBtnFormatter: pickerConfig.monthBtnFormatter
-    };
-  }
-
-  createValidator({minDate, maxDate}, dateFormat: string): (FormControl, string) => {[key: string]: any} {
-    let isValid: boolean;
-    let value: Moment[];
-    const validators = [];
-
-    if (minDate) {
-      validators.push({
-        key: 'minDate',
-        isValid: () => {
-          const _isValid = value.every(val => val.isSameOrAfter(minDate, 'day'));
-          isValid = isValid ? _isValid : false;
-          return _isValid;
-        }
-      });
-    }
-
-    if (maxDate) {
-      validators.push({
-        key: 'maxDate',
-        isValid: () => {
-          const _isValid = value.every(val => val.isSameOrBefore(maxDate, 'day'));
-          isValid = isValid ? _isValid : false;
-          return _isValid;
-        }
-      });
-    }
-
-    return function validateInput(formControl: FormControl, format: string) {
-      isValid = true;
-
-      if (formControl.value) {
-        if (typeof formControl.value === 'string') {
-          const dateStrings = formControl.value.split(',').map(date => date.trim());
-          const validDateStrings = dateStrings
-            .filter(date => this.utilsService.isDateValid(date, format));
-          value = validDateStrings.map(dateString => moment(dateString, dateFormat));
-        } else if (!Array.isArray(formControl.value)) {
-          value = [formControl.value];
-        } else {
-          value = formControl.value.map(val => this.utilsService.convertToMoment(val, dateFormat));
-        }
-      } else {
-        return null;
-      }
-
-      if (!value.every(val => val.isValid())) {
-        return {
-          format: {
-            given: formControl.value
-          }
-        };
-      }
-
-      const errors = validators.reduce((map, err) => {
-        if (!err.isValid()) {
-          map[err.key] = {
-            given: value
-          };
-        }
-
-        return map;
-      }, {});
-
-      return !isValid ? errors : null;
     };
   }
 
