@@ -46,12 +46,14 @@
   :host.dp-material {
     .dp-calendar-nav-container {
       height: @basic-height;
-      border: 1px solid @c-light-gray;
+      border:none;
+      background: @c-light-gray;
     }
 
     .dp-calendar-nav-left, .dp-calendar-nav-right {
       border: none;
-      background: @c-white;
+      color:inherit;
+      background: none;
       outline: none;
       font-size: 16px;
     }
@@ -60,7 +62,8 @@
       height: 20px;
       width: 100px;
       border: none;
-      background: @c-white;
+      color:inherit;
+      background: none;
       outline: none;
 
       &:hover {
