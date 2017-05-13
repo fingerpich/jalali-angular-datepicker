@@ -1,6 +1,6 @@
 import {Moment} from 'jalali-moment';
 import {ICalendar} from '../common/models/calendar.model';
-import {ECalendarSystem} from "../common/types/calendar-type";
+import {ECalendarSystem} from '../common/types/calendar-type-enum';
 
 export interface IMonthCalendarConfig extends ICalendar {
   isMonthDisabledCallback?: (date: Moment) => boolean;
