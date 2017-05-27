@@ -24,7 +24,7 @@ import {
 } from '@angular/forms';
 import {CalendarValue} from '../common/types/calendar-value';
 import {UtilsService} from '../common/services/utils/utils.service';
-import {ECalendarSystem} from "../common/types/calendar-type-enum";
+import {ECalendarSystem} from '../common/types/calendar-type-enum';
 
 @Component({
   selector: 'dp-month-calendar',
@@ -131,8 +131,8 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
       return () => null;
     }
   }
-  isJalali(){
-    return this.componentConfig.calendarSystem != ECalendarSystem.gregorian;
+  isJalali() {
+    return this.componentConfig.calendarSystem !== ECalendarSystem.gregorian;
   }
   processOnChangeCallback(value: Moment[]): CalendarValue {
     return this.utilsService.convertFromMomentArray(this.componentConfig.format, value, this.inputValueType);

@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import * as moment from 'jalali-moment';
-import {Moment,unitOfTime} from 'jalali-moment';
+import {Moment, unitOfTime} from 'jalali-moment';
 import {WeekDays} from '../common/types/week-days.type';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDay} from './day.model';
 import {FormControl} from '@angular/forms';
 import {IDayCalendarConfig} from './day-calendar-config.model';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
-import {ECalendarSystem} from "../common/types/calendar-type-enum";
+import {ECalendarSystem} from '../common/types/calendar-type-enum';
 @Injectable()
 export class DayCalendarService {
   readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
@@ -55,8 +55,8 @@ export class DayCalendarService {
 
   }
 
-  private getMonthFormat(config=this.DEFAULT_CONFIG):unitOfTime.Base{
-    return (config.calendarSystem!=ECalendarSystem.gregorian)?"jMonth":"month";
+  private getMonthFormat(config = this.DEFAULT_CONFIG): unitOfTime.Base {
+    return (config.calendarSystem !== ECalendarSystem.gregorian) ? 'jMonth' : 'month';
   }
   private removeNearMonthWeeks(currentMonth: Moment, monthArray: IDay[][]): IDay[][] {
     if (monthArray[monthArray.length - 1].find((day) => day.date.isSame(currentMonth, this.getMonthFormat()))) {
@@ -67,7 +67,7 @@ export class DayCalendarService {
   }
 
   getConfig(config: IDayCalendarConfig): IDayCalendarConfig {
-    if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)){
+    if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) {
       moment.loadPersian();
       this.DEFAULT_CONFIG = this.JALALI_DEFAULT_CONFIG;
     } else {
@@ -95,7 +95,7 @@ export class DayCalendarService {
       firstDayOfBoard.subtract(1, 'day');
     }
     const current = firstDayOfBoard.clone();
-    const actionMonthFormat=this.getMonthFormat(config);
+    const actionMonthFormat = this.getMonthFormat(config);
     const daysOfCalendar: IDay[] = this.utilsService.createArray(42).reduce((array: IDay[]) => {
       array.push({
         date: current.clone(),
@@ -156,7 +156,9 @@ export class DayCalendarService {
     if (config.monthFormatter) {
       return config.monthFormatter(month);
     }
-    if(config.calendarSystem!=ECalendarSystem.gregorian)month.locale('fa');
+    if (config.calendarSystem !== ECalendarSystem.gregorian) {
+      month.locale('fa');
+    }
     return month.format(config.monthFormat);
   }
 

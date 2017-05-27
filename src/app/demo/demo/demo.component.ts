@@ -6,7 +6,7 @@ import {Component, HostListener, ViewChild} from '@angular/core';
 import { FormControl, NgForm, FormGroup, Validators, Validator, AbstractControl } from '@angular/forms';
 import * as moment from 'jalali-moment';
 import {Moment} from 'jalali-moment';
-import {ECalendarSystem} from "../../common/types/calendar-type-enum";
+import {ECalendarSystem} from '../../common/types/calendar-type-enum';
 
 @Component({
   selector: 'dp-demo',
@@ -100,7 +100,7 @@ export class DemoComponent {
     dayBtnFormat: 'DD',
     monthBtnFormat: 'MMM'
   };
-  config:IDatePickerConfig ={...this.jalaliSystemDefaults};
+  config: IDatePickerConfig = {...this.jalaliSystemDefaults};
   isAtTop: boolean = true;
 
   @HostListener('document:scroll')
@@ -110,7 +110,8 @@ export class DemoComponent {
   }
 
   changeCalendarSystem() {
-    const defaultCalSys=(this.config.calendarSystem==ECalendarSystem.jalali)?this.jalaliSystemDefaults:this.gregorianSystemDefaults;
+    const defaultCalSys = (this.config.calendarSystem === ECalendarSystem.jalali) ?
+      this.jalaliSystemDefaults : this.gregorianSystemDefaults;
     this.date = moment();
     this.config = {...this.config, ...defaultCalSys};
   }

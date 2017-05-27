@@ -111,7 +111,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     this.monthCalendarConfig = this.dayCalendarService.getMonthCalendarConfig(this.componentConfig);
   }
   isJalali() {
-    return this.componentConfig.calendarSystem != ECalendarSystem.gregorian;
+    return this.componentConfig.calendarSystem !== ECalendarSystem.gregorian;
   }
 
   ngOnChanges(changes: SimpleChanges) {

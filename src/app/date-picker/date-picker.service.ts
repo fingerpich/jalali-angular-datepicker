@@ -6,7 +6,7 @@ import {UtilsService} from '../common/services/utils/utils.service';
 import {FormControl} from '@angular/forms';
 import {IDayCalendarConfig} from '../day-calendar/day-calendar-config.model';
 import {IDate} from '../common/models/date.model';
-import {ECalendarSystem} from "../common/types/calendar-type-enum";
+import {ECalendarSystem} from '../common/types/calendar-type-enum';
 
 @Injectable()
 export class DatePickerService {
@@ -31,7 +31,7 @@ export class DatePickerService {
   // todo:: add unit tests
   getConfig(config: IDatePickerConfig): IDatePickerConfig {
 
-    this.defaultConfig.format = (!config || (config.calendarSystem != ECalendarSystem.gregorian))?'jDD-jMM-jYYYY':'DD-MM-YYYY';
+    this.defaultConfig.format = (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) ? 'jDD-jMM-jYYYY' : 'DD-MM-YYYY';
 
     const _config: IDatePickerConfig = {...this.defaultConfig, ...this.utilsService.clearUndefined(config)};
     const {min, max, format} = _config;

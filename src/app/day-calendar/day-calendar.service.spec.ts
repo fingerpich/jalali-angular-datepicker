@@ -4,7 +4,7 @@ import * as moment from 'jalali-moment';
 import {Moment} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDayCalendarConfig} from './day-calendar-config.model';
-import {IDay} from "../../../bin/day-calendar/day.model";
+import {IDay} from '../../../bin/day-calendar/day.model';
 
 describe('Service: Calendar', () => {
   beforeEach(() => {

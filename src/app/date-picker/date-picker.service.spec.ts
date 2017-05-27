@@ -3,7 +3,7 @@ import {DatePickerService} from './date-picker.service';
 import * as moment from 'jalali-moment';
 import {Moment} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
-import {ECalendarSystem} from "../common/types/calendar-type-enum";
+import {ECalendarSystem} from '../common/types/calendar-type-enum';
 
 describe('Service: DatePicker', () => {
   beforeEach(() => {

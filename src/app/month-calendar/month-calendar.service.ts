@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import * as moment from 'jalali-moment';
-import {Moment,unitOfTime} from 'jalali-moment';
+import {Moment, unitOfTime} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IMonth} from './month.model';
 import {IMonthCalendarConfig} from './month-calendar-config';
 import {FormControl} from '@angular/forms';
-import {ECalendarSystem} from "../common/types/calendar-type-enum";
+import {ECalendarSystem} from '../common/types/calendar-type-enum';
 
 @Injectable()
 export class MonthCalendarService {
@@ -24,26 +24,27 @@ export class MonthCalendarService {
     isNavHeaderBtnClickable: false,
     monthBtnFormat: 'jMMMM'
   };
-  DEFAULT_CONFIG:IMonthCalendarConfig = this.JALALI_DEFAULT_CONFIG;
+  DEFAULT_CONFIG: IMonthCalendarConfig = this.JALALI_DEFAULT_CONFIG;
 
   constructor(private utilsService: UtilsService) {
   }
-  getMomentMonthFormat(config = this.DEFAULT_CONFIG):unitOfTime.Base{
-    return (config.calendarSystem!=ECalendarSystem.gregorian)?'jMonth':'month';
+  getMomentMonthFormat(config = this.DEFAULT_CONFIG): unitOfTime.Base {
+    return (config.calendarSystem !== ECalendarSystem.gregorian) ? 'jMonth' : 'month';
   }
-  getMomentYearFormat(config = this.DEFAULT_CONFIG):unitOfTime.Base{
-    return (config.calendarSystem!=ECalendarSystem.gregorian)?'jYear':'year';
+  getMomentYearFormat(config = this.DEFAULT_CONFIG): unitOfTime.Base {
+    return (config.calendarSystem !== ECalendarSystem.gregorian) ? 'jYear' : 'year';
   }
 
   getConfig(config: IMonthCalendarConfig): IMonthCalendarConfig {
-    this.DEFAULT_CONFIG = (config.calendarSystem!=ECalendarSystem.gregorian)?this.JALALI_DEFAULT_CONFIG:this.GREGORIAN_DEFAULT_CONFIG;
+    this.DEFAULT_CONFIG = (config.calendarSystem !== ECalendarSystem.gregorian) ?
+        this.JALALI_DEFAULT_CONFIG : this.GREGORIAN_DEFAULT_CONFIG;
     return {...this.DEFAULT_CONFIG, ...this.utilsService.clearUndefined(config)};
   }
 
-  increaseYear(year: Moment){
+  increaseYear(year: Moment) {
     year.add(1, this.getMomentYearFormat());
   }
-  decreaseYear(year: Moment){
+  decreaseYear(year: Moment) {
     year.subtract(1, this.getMomentYearFormat());
   }
 
