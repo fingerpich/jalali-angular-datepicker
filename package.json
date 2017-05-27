@@ -36,7 +36,7 @@
     "jalali-moment": "^1.0.8"
   },
   "devDependencies": {
-    "@angular/cli": "^1.0.1",
+    "@angular/cli": "^1.0.4",
     "@angular/common": "^4.0.3",
     "@angular/compiler": "^4.0.3",
     "@angular/compiler-cli": "^4.0.3",

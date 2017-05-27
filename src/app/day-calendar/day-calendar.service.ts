@@ -52,7 +52,7 @@ export class DayCalendarService {
   DEFAULT_CONFIG: IDayCalendarConfig = this.JALALI_DEFAULT_CONFIG;
 
   constructor(private utilsService: UtilsService) {
-    moment.loadPersian();
+
   }
 
   private getMonthFormat(config=this.DEFAULT_CONFIG):unitOfTime.Base{
@@ -67,7 +67,12 @@ export class DayCalendarService {
   }
 
   getConfig(config: IDayCalendarConfig): IDayCalendarConfig {
-    this.DEFAULT_CONFIG=(!config || (config.calendarSystem != ECalendarSystem.gregorian))?this.JALALI_DEFAULT_CONFIG:this.GREGORIAN_DEFAULT_CONFIG;
+    if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)){
+      moment.loadPersian();
+      this.DEFAULT_CONFIG = this.JALALI_DEFAULT_CONFIG;
+    } else {
+      this.DEFAULT_CONFIG = this.GREGORIAN_DEFAULT_CONFIG;
+    }
     return {...this.DEFAULT_CONFIG, ...this.utilsService.clearUndefined(config)};
   }
 

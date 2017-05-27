@@ -4,6 +4,7 @@ import {UtilsService} from '../common/services/utils/utils.service';
 import {CalendarNavComponent} from '../calendar-nav/calendar-nav.component';
 import {MonthCalendarService} from './month-calendar.service';
 import * as moment from 'jalali-moment';
+import {ECalendarSystem} from "../common/types/calendar-type-enum";
 
 describe('Component: MonthCalendarComponent', () => {
   let component: MonthCalendarComponent;
@@ -19,7 +20,7 @@ describe('Component: MonthCalendarComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MonthCalendarComponent);
     component = fixture.componentInstance;
-    component.config = component.monthCalendarService.getConfig({});
+    component.config = component.monthCalendarService.getConfig({calendarSystem : ECalendarSystem.gregorian});
     fixture.detectChanges();
   });
 
