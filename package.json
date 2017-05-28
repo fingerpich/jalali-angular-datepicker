@@ -30,7 +30,10 @@
     "date",
     "picker",
     "datepicker",
-    "datepicker farsi"
+    "datepicker farsi",
+    "typescript",
+    "ts",
+    "farsi"
   ],
   "dependencies": {
     "jalali-moment": "^1.0.8"
