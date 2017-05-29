@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/fingerpich/jalali-angular-datepicker.svg?branch=master)](https://travis-ci.org/fingerpich/jalali-angular-datepicker) 
 [![npm version](https://badge.fury.io/js/ng2-jalali-date-picker.svg)](https://badge.fury.io/js/ng2-jalali-date-picker)
 [![Package Quality](http://npm.packagequality.com/shield/ng2-jalali-date-picker.svg)](http://packagequality.com/#?package=ng2-jalali-date-picker)
+[![Package Quality](https://david-dm.org/fingerpich/jalali-angular-datepicker.svg)](https://github.com/fingerpich/jalali-angular-datepicker)
 
 # Jalali Date Picker
 This is a configurable jalali date-picker build for Angular (2 or more) applications and uses MomentJS as its dependency. 
