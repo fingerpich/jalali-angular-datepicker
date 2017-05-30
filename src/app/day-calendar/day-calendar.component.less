@@ -58,8 +58,9 @@
       width: @basic-height;
       line-height: @basic-height - 5px;
       border: none;
-      font-size: 12px;
-      color: @c-light-gray;
+      font-size: 0.75rem;
+      //color: @c-light-gray;
+      opacity: 0.3;
     }
 
     .dp-calendar-wrapper {
@@ -73,17 +74,20 @@
     .dp-calendar-day {
       box-sizing: border-box;
       background: @c-white;
-      border-radius: 50%;
+      border-radius: 0%;
+      transition:border-radius 0.1s ease;
       border: none;
       outline: none;
       padding: 0;
 
       &:hover {
         background: @c-light-gray;
+        border-radius: 50%;
       }
     }
 
     .dp-selected {
+      border-radius: 50%;
       background: @c-primary;
       color: @c-white;
 
@@ -93,6 +97,7 @@
     }
 
     .dp-current-day {
+      border-radius: 50%;
       border: 1px solid @c-primary;
     }
   }
