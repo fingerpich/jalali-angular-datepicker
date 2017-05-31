@@ -2,6 +2,8 @@
 [![npm version](https://badge.fury.io/js/ng2-jalali-date-picker.svg)](https://badge.fury.io/js/ng2-jalali-date-picker)
 [![Package Quality](http://npm.packagequality.com/shield/ng2-jalali-date-picker.svg)](http://packagequality.com/#?package=ng2-jalali-date-picker)
 [![Package Quality](https://david-dm.org/fingerpich/jalali-angular-datepicker.svg)](https://github.com/fingerpich/jalali-angular-datepicker)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/72a073fa893f4f0b823f41106c9e4f56)](https://www.codacy.com/app/zarei-bs/jalali-angular-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fingerpich/jalali-angular-datepicker&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/72a073fa893f4f0b823f41106c9e4f56)](https://www.codacy.com/app/zarei-bs/jalali-angular-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fingerpich/jalali-angular-datepicker&amp;utm_campaign=Badge_Coverage)
 
 # Jalali Date Picker
 This is a configurable jalali date-picker build for Angular (2 or more) applications and uses MomentJS as its dependency. 
