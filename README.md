@@ -30,13 +30,14 @@ Put the dp-date-picker component wherever you need it.
 
 
 ## Example
+```html
     <dp-date-picker
       [(ngModel)]="dateObject"
       type="day"
       placeholder="تاریخ"
       theme="dp-material">
     </dp-date-picker>
-
+```
 
 ### Attributes:  
 
