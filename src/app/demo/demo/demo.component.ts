@@ -42,7 +42,7 @@ export class DemoComponent {
 
   jalaliSystemDefaults: IDatePickerConfig = {
     firstDayOfWeek: 'sa',
-    format: 'jDD-jMM-jYYYY',
+    format: 'jD-jM-jYYYY',
     monthFormat: 'jMMMM, jYYYY',
     disableKeypress: false,
     allowMultiSelect: false,
@@ -67,7 +67,7 @@ export class DemoComponent {
     yearFormat: 'jYYYY',
     showGoToCurrent: true,
     calendarSystem: ECalendarSystem.jalali,
-    dayBtnFormat: 'jDD',
+    dayBtnFormat: 'jD',
     monthBtnFormat: 'jMMMM'
   };
   gregorianSystemDefaults: IDatePickerConfig = {

@@ -44,11 +44,11 @@ export class DayCalendarService {
     showNearMonthDays: true,
     showWeekNumbers: false,
     firstDayOfWeek: 'sa',
-    format: 'jDD-jMM-jYYYY',
+    format: 'jD-jM-jYYYY',
     allowMultiSelect: false,
     monthFormat: 'jMMMM, jYYYY',
     enableMonthSelector: true,
-    dayBtnFormat: 'jDD'
+    dayBtnFormat: 'jD'
   };
   DEFAULT_CONFIG: IDayCalendarConfig = this.JALALI_DEFAULT_CONFIG;
 
