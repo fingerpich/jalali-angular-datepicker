@@ -183,7 +183,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     return this.dayCalendarService.getHeaderLabel(this.componentConfig, this.currentDateView);
   }
 
-  getDayBtnText(day: IDay): string {
+  getDayBtnText(day: IDay): any {
     return this.dayCalendarService.getDayBtnText(this.componentConfig, day.date);
   }
 

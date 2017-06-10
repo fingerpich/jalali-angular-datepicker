@@ -8,6 +8,7 @@ import {FormControl} from '@angular/forms';
 import {IDayCalendarConfig} from './day-calendar-config.model';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
 import {ECalendarSystem} from '../common/types/calendar-type-enum';
+import {DomSanitizer} from "@angular/platform-browser";
 @Injectable()
 export class DayCalendarService {
   readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
@@ -51,7 +52,8 @@ export class DayCalendarService {
   };
   DEFAULT_CONFIG: IDayCalendarConfig = this.JALALI_DEFAULT_CONFIG;
 
-  constructor(private utilsService: UtilsService) {
+  constructor(private utilsService: UtilsService,
+      private sanitizer: DomSanitizer) {
 
   }
 
@@ -68,10 +70,11 @@ export class DayCalendarService {
 
   getConfig(config: IDayCalendarConfig): IDayCalendarConfig {
     if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) {
-      moment.loadPersian();
+      moment.loadPersian(true);
       this.DEFAULT_CONFIG = this.JALALI_DEFAULT_CONFIG;
     } else {
       this.DEFAULT_CONFIG = this.GREGORIAN_DEFAULT_CONFIG;
+      moment.unloadPersian();
     }
     return {...this.DEFAULT_CONFIG, ...this.utilsService.clearUndefined(config)};
   }
@@ -197,11 +200,10 @@ export class DayCalendarService {
     });
   }
 
-  getDayBtnText(config: IDayCalendarConfig, day: Moment): string {
-    if (config.dayBtnFormatter) {
-      return config.dayBtnFormatter(day);
-    }
-
-    return day.format(config.dayBtnFormat);
+  getDayBtnText(config: IDayCalendarConfig, day: Moment): any {
+    return config.dayBtnFormatter ?
+      config.dayBtnFormatter(day) :
+      day.format(config.dayBtnFormat);
+    // return this.sanitizer.bypassSecurityTrustHtml(formattedDay);
   }
 }
