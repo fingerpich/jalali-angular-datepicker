@@ -44,9 +44,9 @@ export class DayCalendarService {
     showNearMonthDays: true,
     showWeekNumbers: false,
     firstDayOfWeek: 'sa',
-    format: 'jD-jM-jYYYY',
+    format: 'jYYYY/jM/jD',
     allowMultiSelect: false,
-    monthFormat: 'jMMMM, jYYYY',
+    monthFormat: 'jMMMM jYY',
     enableMonthSelector: true,
     dayBtnFormat: 'jD'
   };
@@ -70,7 +70,7 @@ export class DayCalendarService {
 
   getConfig(config: IDayCalendarConfig): IDayCalendarConfig {
     if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) {
-      moment.loadPersian(true);
+      moment.loadPersian(false);
       this.DEFAULT_CONFIG = this.JALALI_DEFAULT_CONFIG;
     } else {
       this.DEFAULT_CONFIG = this.GREGORIAN_DEFAULT_CONFIG;

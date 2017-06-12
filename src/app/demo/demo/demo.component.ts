@@ -42,8 +42,8 @@ export class DemoComponent {
 
   jalaliSystemDefaults: IDatePickerConfig = {
     firstDayOfWeek: 'sa',
-    format: 'jD-jM-jYYYY',
-    monthFormat: 'jMMMM, jYYYY',
+    format: 'jYYYY/jM/jD',
+    monthFormat: 'jMMMM jYY',
     disableKeypress: false,
     allowMultiSelect: false,
     closeOnSelect: undefined,
