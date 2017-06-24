@@ -26,17 +26,22 @@ This is a configurable jalali date-picker build for Angular (2 or more) applicat
 ```
 
 ## Usage
-Put the dp-date-picker component wherever you need it.
 
-
-## Example
 ```html
-    <dp-date-picker
-      [(ngModel)]="dateObject"
-      type="day"
-      placeholder="تاریخ"
-      theme="dp-material">
-    </dp-date-picker>
+ <dp-date-picker
+   [(ngModel)]="dateObject"
+   type="day"
+   placeholder="تاریخ"
+   theme="dp-material">
+ </dp-date-picker>
+```
+
+```ts
+ dateObject = "";
+ 
+ //OR if you have initial value you could use following code 
+ import * as moment from 'jalali-moment';
+ dateObject = moment('1395-11-22','jYYYY,jMM,jDD');
 ```
 
 ### Attributes:  
