@@ -31,7 +31,7 @@ export class DatePickerService {
   // todo:: add unit tests
   getConfig(config: IDatePickerConfig): IDatePickerConfig {
 
-    this.defaultConfig.format = (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) ? 'jDD-jMM-jYYYY' : 'DD-MM-YYYY';
+    this.defaultConfig.format = (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) ? 'jYYYY-jM-jD' : 'DD-MM-YYYY';
 
     const _config: IDatePickerConfig = {...this.defaultConfig, ...this.utilsService.clearUndefined(config)};
     const {min, max, format} = _config;
