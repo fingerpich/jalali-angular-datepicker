@@ -31,7 +31,7 @@
     <form #form="ngForm">
 
       <div class="dp-picker-container" *ngIf="pickerMode === 'dayPicker'">
-        <dp-date-picker id="datePicker"
+        <dp-date-picker [dir]="direction" id="datePicker"
                         name="datePicker"
                         #datePicker
                         #datePicker="ngModel"
@@ -196,6 +196,20 @@
         </label>
         <label>No Theme
           <input id="themeOff" type="radio" [(ngModel)]="material" name="style" [value]="false">
+        </label>
+      </div>
+    </div>
+
+    <div class="dp-option">
+      <span class="dp-option-header">
+        Direction ( Right to left | Left to right ):
+      </span>
+      <div class="dp-option-playground">
+        <label> LTR
+          <input id="directionLTR" type="radio" [(ngModel)]="direction" name="dir" [value]="'ltr'">
+        </label>
+        <label> RTL
+          <input id="directionRTL" type="radio" [(ngModel)]="direction" name="dir" [value]="'rtl'">
         </label>
       </div>
     </div>

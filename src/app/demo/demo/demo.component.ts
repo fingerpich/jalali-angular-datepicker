@@ -21,6 +21,7 @@ export class DemoComponent {
   readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
   pickerMode = 'dayPicker';
 
+  direction: string = 'ltr';
   date: Moment;
   dates: Moment[] = [];
   material: boolean = true;

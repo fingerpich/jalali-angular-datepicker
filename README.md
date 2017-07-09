@@ -28,7 +28,8 @@ This is a configurable jalali date-picker build for Angular (2 or more) applicat
 ## Usage
 
 ```html
- <dp-date-picker
+ <dp-date-picker 
+   dir="rtl"
    [(ngModel)]="dateObject"
    type="day"
    placeholder="تاریخ"
