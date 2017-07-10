@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import * as moment from 'jalali-moment';
-import {Moment, unitOfTime} from 'jalali-moment';
+import {Moment, MomentInput, unitOfTime} from 'jalali-moment';
 import {CalendarValue} from '../../types/calendar-value';
 import {ECalendarValue} from '../../types/calendar-value-enum';
 import {SingleCalendarValue} from '../../types/single-calendar-value';
@@ -84,7 +84,7 @@ export class UtilsService {
   convertToMomentArray(value: CalendarValue, format: string, allowMultiSelect: boolean): Moment[] {
     switch (this.getInputType(value, allowMultiSelect)) {
       case (ECalendarValue.String):
-        return value ? [moment(value, format)] : [];
+        return value ? [moment(<MomentInput>value, format)] : [];
       case (ECalendarValue.StringArr):
         return (<string[]>value).map(v => v ? moment(v, format) : null).filter(Boolean);
       case (ECalendarValue.Moment):
@@ -134,7 +134,7 @@ export class UtilsService {
     const sortArr2 = arr1.sort((a, b) => a.diff(b));
 
     for (let i = 0; i < sortArr1.length; i++) {
-      if (!sortArr1[i].isSame(sortArr2, granularity)) {
+      if (!sortArr1[i].isSame(<MomentInput>sortArr2, granularity)) {
         return false;
       }
     }
