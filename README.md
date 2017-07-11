@@ -1,5 +1,5 @@
 # Jalali Date Picker
-This is a configurable jalali date-picker build for Angular (2 or more) applications and uses MomentJS as its dependency. it's only Angular! No jQuery.
+This is a configurable jalali date-picker build for Angular 2 or 4 applications and uses [jalali-moment](https://github.com/fingerpich/moment-jalaali) as its dependency. it's only Angular! No jQuery.
 [DEMO](https://fingerpich.github.io/jalali-angular-datepicker/)
 
 [![Build Status](https://travis-ci.org/fingerpich/jalali-angular-datepicker.svg?branch=master)](https://travis-ci.org/fingerpich/jalali-angular-datepicker) 
