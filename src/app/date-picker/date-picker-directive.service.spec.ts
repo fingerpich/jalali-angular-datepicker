@@ -2,7 +2,7 @@ import {TestBed, inject} from '@angular/core/testing';
 import {DatePickerDirectiveService} from './date-picker-directive.service';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {ECalendarSystem} from '../common/types/calendar-type-enum';
-import {IDatePickerDirectiveConfig} from "./date-picker-directive-config.model";
+import {IDatePickerDirectiveConfig} from './date-picker-directive-config.model';
 
 describe('Service: DatePickerDirective', () => {
   beforeEach(() => {
