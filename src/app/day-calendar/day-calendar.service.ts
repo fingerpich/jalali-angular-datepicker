@@ -85,7 +85,7 @@ export class DayCalendarService {
     return daysArr.reduce((map, day, index) => {
       map[day] = index;
       return map;
-    }, <{[key: number]: string}>{});
+    }, <{[key: string]: number}>{});
   }
 
   generateMonthArray(config: IDayCalendarConfig, month: Moment, selected: Moment[]): IDay[][] {
