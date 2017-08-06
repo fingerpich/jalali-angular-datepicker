@@ -46,6 +46,8 @@ This is a configurable jalali (persian, khorshidi, shamsi) date-picker build for
  dateObject = moment('1395-11-22','jYYYY,jMM,jDD');
 ```
 
+[Plunker Demo](https://plnkr.co/XJSWtt)
+
 ### Attributes:  
 
 | Name                 | Type                | Default                                                                  | Description                                                                                                                                                                                                                                        |
