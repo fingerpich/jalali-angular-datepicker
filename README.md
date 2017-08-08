@@ -26,7 +26,7 @@ This is a configurable jalali (persian, khorshidi, shamsi) date-picker build for
  })
 ```
 
-## Usage
+## How to use
 
 ```html
  <dp-date-picker 
@@ -41,17 +41,32 @@ This is a configurable jalali (persian, khorshidi, shamsi) date-picker build for
 ```ts
  dateObject = "";
  
- //OR if you have initial value you could use following code 
+ //OR if you have initial value you could use following code
  import * as moment from 'jalali-moment';
  dateObject = moment('1395-11-22','jYYYY,jMM,jDD');
 ```
+[Demo](https://plnkr.co/XJSWtt)
 
-[Plunker Demo](https://plnkr.co/XJSWtt)
+#### How to use the output as a jalali (shamsi) date
+ ```ts
+import * as moment from 'jalali-moment';
+dateObject.format('jYYYY/jMM/jD)'
+```
+for more info read [jalali-moment](https://github.com/fingerpich/jalali-moment)
 
-### Attributes:  
+#### How to use it with system.js
+[this Demo](https://plnkr.co/XJSWtt) is using system.js. 
 
+
+### Attributes:
+all attributes in the following table could be used as 
+```html
+// a future selector
+<dp-date-picker placeholder="تاریخ" [minDate]="moment()" [(ngModel)]="selectedDate"></dp-date-picker>
+```
 | Name                 | Type                | Default                                                                  | Description                                                                                                                                                                                                                                        |
 |----------------------|:-------------------:|:------------------------------------------------------------------------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| dir                  | `rtl`|`ltr`         | `ltr`                                                                    | the type of the calender which will be displayed in the picker                                                                                                                                                                                     |
 | type                 | `day`|`month`       | `day`                                                                    | the type of the calender which will be displayed in the picker                                                                                                                                                                                     |
 | disabled             | `Boolean`           | `false`                                                                  | If set to true the input would be disabled                                                                                                                                                                                                         |
 | placeholder          | `String`            | `""`                                                                     | The date-picker input placeholder                                                                                                                                                                                                                  |
@@ -61,12 +76,17 @@ This is a configurable jalali (persian, khorshidi, shamsi) date-picker build for
 | theme                | `string       `     | `''`                                                                     | Theme is a class added to the popup container (and inner components) - this will allow styling of the calendar when it's appended to outer element (for example - body). There is a built in theme named dp-material, you can find it in the demo. | 
 | config               | `IDatePickerConfig` | See Below                                                                | Configuration object - see description below.                                                                                                                                                                                                      | 
 
-
 ### Configuration:  
 In order to provide configurations to the date-picker you need to pass it to the `dp-date-picker` component:  
 ```html
 <dp-date-picker [(ngModel)]="selectedDate" [config]="datePickerConfig"></dp-date-picker>
 ```
+‍‍‍```ts
+datePickerConfig = {
+    drops: 'up',
+    format: 'YY/M/D'
+}
+``
 Here are the available configurations:  
 
 | Name                      | Type                 | Default                                                                   | Description                                                                                                                                                                                                                                                                   |
