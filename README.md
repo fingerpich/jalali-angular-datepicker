@@ -81,12 +81,12 @@ In order to provide configurations to the date-picker you need to pass it to the
 ```html
 <dp-date-picker [(ngModel)]="selectedDate" [config]="datePickerConfig"></dp-date-picker>
 ```
-‍‍‍```ts
+```ts
 datePickerConfig = {
     drops: 'up',
     format: 'YY/M/D'
 }
-``
+```
 Here are the available configurations:  
 
 | Name                      | Type                 | Default                                                                   | Description                                                                                                                                                                                                                                                                   |
