@@ -1,13 +1,19 @@
 import {IDate} from '../common/models/date.model';
 import {DomHelper} from '../common/services/dom-appender/dom-appender.service';
 import {UtilsService} from '../common/services/utils/utils.service';
-import {CalendarType} from '../common/types/calendar-type';
-import {ECalendarType} from '../common/types/calendar-type-enum';
+import {CalendarMode} from '../common/types/calendar-mode';
+import {ECalendarMode} from '../common/types/calendar-mode-enum';
 import {CalendarValue} from '../common/types/calendar-value';
 import {ECalendarValue} from '../common/types/calendar-value-enum';
 import {SingleCalendarValue} from '../common/types/single-calendar-value';
 import {IDayCalendarConfig} from '../day-calendar/day-calendar-config.model';
 import {DayCalendarComponent} from '../day-calendar/day-calendar.component';
+import {DayCalendarService} from '../day-calendar/day-calendar.service';
+import {IDayTimeCalendarConfig} from '../day-time-calendar/day-time-calendar-config.model';
+import {DayTimeCalendarService} from '../day-time-calendar/day-time-calendar.service';
+import {ITimeSelectConfig} from '../time-select/time-select-config.model';
+import {TimeSelectComponent} from '../time-select/time-select.component';
+import {TimeSelectService} from '../time-select/time-select.service';
 import {IDatePickerConfig} from './date-picker-config.model';
 import {IDpDayPickerApi} from './date-picker.api';
 import {DatePickerService} from './date-picker.service';
@@ -43,6 +49,9 @@ import {Moment, unitOfTime} from 'jalali-moment';
   styleUrls: ['date-picker.component.less'],
   providers: [
     DatePickerService,
+    DayTimeCalendarService,
+    DayCalendarService,
+    TimeSelectService,
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => DatePickerComponent),
@@ -63,20 +72,25 @@ export class DatePickerComponent implements OnChanges,
                                             OnDestroy {
   isInited: boolean = false;
   @Input() config: IDatePickerConfig;
-  @Input() type: CalendarType = 'day';
+  @Input() mode: CalendarMode = 'day';
   @Input() placeholder: string = '';
   @Input() disabled: boolean = false;
   @Input() displayDate: SingleCalendarValue;
   @HostBinding('class') @Input() theme: string;
   @Input() minDate: Moment | string;
   @Input() maxDate: Moment | string;
+  @Input() minTime: Moment | string;
+  @Input() maxTime: Moment | string;
 
   @ViewChild('container') calendarContainer: ElementRef;
   @ViewChild('dayCalendar') dayCalendarRef: DayCalendarComponent;
   @ViewChild('monthCalendar') monthCalendarRef: DayCalendarComponent;
+  @ViewChild('timeSelect') timeSelectRef: TimeSelectComponent;
 
   componentConfig: IDatePickerConfig;
   dayCalendarConfig: IDayCalendarConfig;
+  dayTimeCalendarConfig: IDayTimeCalendarConfig;
+  timeSelectConfig: ITimeSelectConfig;
   _areCalendarsShown: boolean = false;
   hideStateHelper: boolean = false;
   _selected: Moment[] = [];
@@ -91,7 +105,7 @@ export class DatePickerComponent implements OnChanges,
   popupElem: HTMLElement;
   handleInnerElementClickUnlisteners: Function[] = [];
   globalListnersUnlisteners: Function[] = [];
-  validateFn: (inputVal: CalendarValue) => {[key: string]: any};
+  validateFn: (inputVal: CalendarValue) => { [key: string]: any };
   api: IDpDayPickerApi = {
     open: this.showCalendars.bind(this),
     close: this.hideCalendar.bind(this)
@@ -182,6 +196,8 @@ export class DatePickerComponent implements OnChanges,
         ? this.utilsService.getDefaultDisplayDate(null, this.selected, this.componentConfig.allowMultiSelect)
         : this.currentDateView;
       this.init();
+    } else {
+      this.selected = [];
     }
   }
 
@@ -196,7 +212,7 @@ export class DatePickerComponent implements OnChanges,
   }
 
   validate(formControl: FormControl): ValidationErrors | any {
-    if (this.minDate || this.maxDate) {
+    if (this.minDate || this.maxDate || this.minTime || this.maxTime) {
       return this.validateFn(formControl.value);
     } else {
       return () => null;
@@ -209,8 +225,12 @@ export class DatePickerComponent implements OnChanges,
 
   initValidators() {
     this.validateFn = this.utilsService.createValidator(
-      {minDate: this.minDate, maxDate: this.maxDate}, this.componentConfig.format, this.type);
-
+      {
+        minDate: this.minDate,
+        maxDate: this.maxDate,
+        minTime: this.minTime,
+        maxTime: this.maxTime
+      }, this.componentConfig.format, this.mode);
     this.onChangeCallback(this.processOnChangeCallback(this.selected));
   }
 
@@ -222,10 +242,10 @@ export class DatePickerComponent implements OnChanges,
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.isInited) {
-      const {minDate, maxDate} = changes;
+      const {minDate, maxDate, minTime, maxTime} = changes;
       this.init();
 
-      if (minDate || maxDate) {
+      if (minDate || maxDate || minTime || maxTime) {
         this.initValidators();
       }
     }
@@ -233,6 +253,10 @@ export class DatePickerComponent implements OnChanges,
 
   ngAfterViewInit() {
     this.setElementPositionInDom();
+  }
+
+  setDisabledState(isDisabled: boolean) {
+    this.disabled = isDisabled;
   }
 
   setElementPositionInDom() {
@@ -257,7 +281,8 @@ export class DatePickerComponent implements OnChanges,
 
   setInputElementContainer() {
     this.inputElementContainer = this.componentConfig.inputElementContainer
-      || this.elemRef.nativeElement.querySelector('.dp-input-container');
+      || this.elemRef.nativeElement.querySelector('.dp-input-container')
+      || document.body;
   }
 
   handleInnerElementClick(element: HTMLElement) {
@@ -269,13 +294,15 @@ export class DatePickerComponent implements OnChanges,
   }
 
   init() {
-    this.componentConfig = this.dayPickerService.getConfig(this.config);
+    this.componentConfig = this.dayPickerService.getConfig(this.config, this.mode);
     this.currentDateView = this.displayDate
       ? this.utilsService.convertToMoment(this.displayDate, this.componentConfig.format).clone()
       : this.utilsService
         .getDefaultDisplayDate(this.currentDateView, this.selected, this.componentConfig.allowMultiSelect);
     this.inputValueType = this.utilsService.getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
     this.dayCalendarConfig = this.dayPickerService.getDayConfigService(this.componentConfig);
+    this.dayTimeCalendarConfig = this.dayPickerService.getDayTimeConfigService(this.componentConfig);
+    this.timeSelectConfig = this.dayPickerService.getTimeConfigService(this.componentConfig);
   }
 
   inputFocused() {
@@ -284,6 +311,9 @@ export class DatePickerComponent implements OnChanges,
       this.hideStateHelper = false;
       if (!this.areCalendarsShown) {
         this.areCalendarsShown = true;
+        if (this.timeSelectRef) {
+          this.timeSelectRef.api.triggerChange();
+        }
       }
       this.isFocusedTrigger = false;
     }, this.componentConfig.onOpenDelay);
@@ -292,12 +322,15 @@ export class DatePickerComponent implements OnChanges,
   showCalendars() {
     this.hideStateHelper = true;
     this.areCalendarsShown = true;
+    if (this.timeSelectRef) {
+      this.timeSelectRef.api.triggerChange();
+    }
   }
 
   hideCalendar() {
     this.areCalendarsShown = false;
     if (this.dayCalendarRef) {
-      this.dayCalendarRef.api.toggleCalendar(ECalendarType.Day);
+      this.dayCalendarRef.api.toggleCalendar(ECalendarMode.Day);
     }
   }
 
@@ -310,14 +343,20 @@ export class DatePickerComponent implements OnChanges,
     }
   }
 
+  shouldShowGoToCurrent(): boolean {
+    return this.componentConfig.showGoToCurrent && this.mode !== 'time';
+  }
+
   moveToCurrent() {
     this.currentDateView = moment();
   }
 
-  dateSelected(date: IDate, granularity: unitOfTime.Base) {
+  dateSelected(date: IDate, granularity: unitOfTime.Base, ignoreClose?: boolean) {
     this.selected = this.utilsService
       .updateSelected(this.componentConfig.allowMultiSelect, this.selected, date, granularity);
-    this.onDateClick();
+    if (!ignoreClose) {
+      this.onDateClick();
+    }
   }
 
   onDateClick() {
@@ -337,7 +376,7 @@ export class DatePickerComponent implements OnChanges,
 
   startGlobalListeners() {
     this.globalListnersUnlisteners.push(
-      this.renderer.listen('document', 'keydown', (e: KeyboardEvent) => {
+      this.renderer.listen(document, 'keydown', (e: KeyboardEvent) => {
         this.onKeyPress(e);
       }));
   }

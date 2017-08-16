@@ -35,7 +35,7 @@ function processStyleUrls(content, options, targetDir) {
       let fileNamePartsRe = /^[\./]*([^]*)\.(css|less)$/g;
       let fileNamePartsMatches = url.match(fileNamePartsRe);
       if (fileNamePartsMatches === null || fileNamePartsMatches.length <= 0) {
-        // Unsupported file type / malformed url
+        // Unsupported file mode / malformed url
         return file;
       }
 
@@ -113,6 +113,6 @@ function processTemplateUrl(content, options, targetDir) {
 }
 
 function getAbsoluteUrl(url, options, targetDir) {
-  return options.relative ? path.join(targetDir, url) : path.join(options.base,
-      url);
+  return options.relative ? path.join(targetDir, url) :
+    path.join(options.base, url);
 }

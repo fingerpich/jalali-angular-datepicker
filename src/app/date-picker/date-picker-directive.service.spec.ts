@@ -1,4 +1,4 @@
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 import {DatePickerDirectiveService} from './date-picker-directive.service';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {ECalendarSystem} from '../common/types/calendar-type-enum';
@@ -43,7 +43,7 @@ describe('Service: DatePickerDirective', () => {
       const fakeElement = {};
       const config3 = service.getConfig(
         {allowMultiSelect: true, calendarSystem : ECalendarSystem.gregorian},
-        { nativeElement: fakeElement }
+        {nativeElement: fakeElement}
       );
       expect(config3).toEqual({
         allowMultiSelect: true,
@@ -53,8 +53,8 @@ describe('Service: DatePickerDirective', () => {
       });
       expect(service.convertToHTMLElement).not.toHaveBeenCalled();
 
-      const fakeAttachElementRef = { nativeElement: {} };
-      const fakeElementRef = { nativeElement: fakeElement };
+      const fakeAttachElementRef = {nativeElement: {}};
+      const fakeElementRef = {nativeElement: fakeElement};
       const config4 = service.getConfig(
         {allowMultiSelect: true, calendarSystem : ECalendarSystem.gregorian},
         fakeElementRef,
