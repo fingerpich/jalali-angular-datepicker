@@ -1,26 +1,26 @@
 import {ECalendarValue} from '../common/types/calendar-value-enum';
 import {
   Component,
-  OnInit,
-  Input,
-  Output,
   EventEmitter,
   forwardRef,
   HostBinding,
-  SimpleChanges,
-  OnChanges
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import {IMonth} from './month.model';
 import {MonthCalendarService} from './month-calendar.service';
 import {Moment} from 'jalali-moment';
 import {IMonthCalendarConfig} from './month-calendar-config';
 import {
-  NG_VALUE_ACCESSOR,
-  NG_VALIDATORS,
   ControlValueAccessor,
-  Validator,
   FormControl,
-  ValidationErrors
+  NG_VALIDATORS,
+  NG_VALUE_ACCESSOR,
+  ValidationErrors,
+  Validator
 } from '@angular/forms';
 import {CalendarValue} from '../common/types/calendar-value';
 import {UtilsService} from '../common/services/utils/utils.service';
@@ -60,7 +60,7 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
   currentDateView: Moment;
   inputValue: CalendarValue;
   inputValueType: ECalendarValue;
-  validateFn: (inputVal: CalendarValue) => {[key: string]: any};
+  validateFn: (inputVal: CalendarValue) => { [key: string]: any };
 
   set selected(selected: Moment[]) {
     this._selected = selected;
@@ -166,8 +166,30 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
     this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
   }
 
+  onLeftSecondaryNav() {
+    let navigateBy = this.componentConfig.multipleYearsNavigateBy;
+    const isOutsideRange = this.componentConfig.min &&
+                         this.currentDateView.year() - this.componentConfig.min.year() < navigateBy;
+    if (isOutsideRange) {
+      navigateBy = this.currentDateView.year() - this.componentConfig.min.year();
+    }
+    this.currentDateView = this.currentDateView.subtract(navigateBy, 'year');
+    this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
+  }
+
   onRightNav() {
     this.monthCalendarService.increaseYear(this.currentDateView);
+    this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
+  }
+
+  onRightSecondaryNav() {
+    let navigateBy = this.componentConfig.multipleYearsNavigateBy;
+    const isOutsideRange = this.componentConfig.max &&
+                         this.componentConfig.max.year() - this.currentDateView.year() < navigateBy;
+    if (isOutsideRange) {
+      navigateBy = this.componentConfig.max.year() - this.currentDateView.year();
+    }
+    this.currentDateView.add(navigateBy, 'year');
     this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
   }
 
@@ -175,8 +197,16 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
     return this.monthCalendarService.shouldShowLeft(this.componentConfig.min, this.currentDateView);
   }
 
+  shouldShowLeftSecondaryNav(): boolean {
+    return this.componentConfig.showMultipleYearsNavigation && this.shouldShowLeftNav();
+  }
+
   shouldShowRightNav(): boolean {
     return this.monthCalendarService.shouldShowRight(this.componentConfig.max, this.currentDateView);
+  }
+
+  shouldShowRightSecondaryNav(): boolean {
+    return this.componentConfig.showMultipleYearsNavigation && this.shouldShowRightNav();
   }
 
   isNavHeaderBtnClickable(): boolean {

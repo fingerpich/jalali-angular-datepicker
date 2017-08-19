@@ -6,7 +6,7 @@ import {ECalendarSystem} from '../common/types/calendar-type-enum';
 export interface IDayCalendarConfig extends ICalendar {
   isDayDisabledCallback?: (date: Moment) => boolean;
   isMonthDisabledCallback?: (date: Moment) => boolean;
-  weekdayNames?: {[key: string]: string};
+  weekDayFormat?: string;
   showNearMonthDays?: boolean;
   showWeekNumbers?: boolean;
   firstDayOfWeek?: WeekDays;
@@ -22,4 +22,6 @@ export interface IDayCalendarConfig extends ICalendar {
   dayBtnFormatter?: (day: Moment) => string;
   monthBtnFormat?: string;
   monthBtnFormatter?: (day: Moment) => string;
+  multipleYearsNavigateBy?: number;
+  showMultipleYearsNavigation?: boolean;
 }

@@ -4,7 +4,6 @@ import {Moment, unitOfTime} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IMonth} from './month.model';
 import {IMonthCalendarConfig} from './month-calendar-config';
-import {FormControl} from '@angular/forms';
 import {ECalendarSystem} from '../common/types/calendar-type-enum';
 
 @Injectable()
@@ -15,7 +14,10 @@ export class MonthCalendarService {
     yearFormat: 'YYYY',
     format: 'MM-YYYY',
     isNavHeaderBtnClickable: false,
-    monthBtnFormat: 'MMM'
+    monthBtnFormat: 'MMM',
+    locale: 'en',
+    multipleYearsNavigateBy: 10,
+    showMultipleYearsNavigation: false
   };
   readonly JALALI_DEFAULT_CONFIG: IMonthCalendarConfig = {
     allowMultiSelect: false,
@@ -38,6 +40,7 @@ export class MonthCalendarService {
   getConfig(config: IMonthCalendarConfig): IMonthCalendarConfig {
     this.DEFAULT_CONFIG = (config.calendarSystem !== ECalendarSystem.gregorian) ?
         this.JALALI_DEFAULT_CONFIG : this.GREGORIAN_DEFAULT_CONFIG;
+    moment.locale(this.DEFAULT_CONFIG.locale);
     return {...this.DEFAULT_CONFIG, ...this.utilsService.clearUndefined(config)};
   }
 
@@ -71,73 +74,6 @@ export class MonthCalendarService {
     }
 
     return !!(config.max && month.date.isAfter(config.max, this.getMomentMonthFormat(config)));
-  }
-
-  createValidator({minDate, maxDate}, dateFormat: string): (FormControl, string) => {[key: string]: any} {
-    let isValid: boolean;
-    let value: Moment[];
-    const validators = [];
-
-    if (minDate) {
-      validators.push({
-        key: 'minDate',
-        isValid: () => {
-          const _isValid = value.every(val => val.isSameOrAfter(minDate, 'month'));
-          isValid = isValid ? _isValid : false;
-          return _isValid;
-        }
-      });
-    }
-
-    if (maxDate) {
-      validators.push({
-        key: 'maxDate',
-        isValid: () => {
-          const _isValid = value.every(val => val.isSameOrBefore(maxDate, 'month'));
-          isValid = isValid ? _isValid : false;
-          return _isValid;
-        }
-      });
-    }
-
-    return function validateInput(formControl: FormControl, format: string) {
-      isValid = true;
-
-      if (formControl.value) {
-        if (typeof formControl.value === 'string') {
-          const dateStrings = formControl.value.split(',').map(date => date.trim());
-          const validDateStrings = dateStrings
-            .filter(date => this.utilsService.isDateValid(date, format));
-          value = validDateStrings.map(dateString => moment(dateString, dateFormat));
-        } else if (!Array.isArray(formControl.value)) {
-          value = [formControl.value];
-        } else {
-          value = formControl.value.map(val => this.utilsService.convertToMoment(val, dateFormat));
-        }
-      } else {
-        return null;
-      }
-
-      if (!value.every(val => val.isValid())) {
-        return {
-          format: {
-            given: formControl.value
-          }
-        };
-      }
-
-      const errors = validators.reduce((map, err) => {
-        if (!err.isValid()) {
-          map[err.key] = {
-            given: value
-          };
-        }
-
-        return map;
-      }, {});
-
-      return !isValid ? errors : null;
-    };
   }
 
   shouldShowLeft(min: Moment, currentMonthView: Moment): boolean {

@@ -12,7 +12,9 @@
     "coverage": "export CODACY_PROJECT_TOKEN=a92cd223e71b45ff99f24f7350ea89c3 ; ng test --watch=false --code-coverage && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build:demo": "rm -rf dist/*.* && ng build --no-delete-output-path --prod --bh /jalali-angular-datepicker/",
+    "e2e:headless": "ng e2e -- headless",
+    "build:demo": "rm -rf dist/*.* && ng build --no-delete-output-path --prod --bh /jalali-angular-datepicker/ && npm run build:index",
+    "build:index": "cd build-helpers && node index-maker.js",
     "build:prod": "node build.js && ngc && cp package.json bin && cp README.md bin",
     "release": "npm run build:prod && npm publish bin",
     "pack": "cd bin && npm pack"
@@ -49,10 +51,12 @@
     "@angular/platform-browser": "^4.3.2",
     "@angular/platform-browser-dynamic": "^4.3.2",
     "@angular/router": "^4.3.2",
+    "@types/google.analytics": "0.0.33",
     "@types/jasmine": "2.5.53",
     "@types/node": "8.0.19",
     "codacy-coverage": "^2.0.2",
     "codelyzer": "3.1.2",
+    "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
     "jasmine-core": "~2.7.0",
     "jasmine-spec-reporter": "~4.2.0",
@@ -71,6 +75,7 @@
     "tslint": "~5.5.0",
     "typescript": "2.4.1",
     "uglify-js": "^3.0.27",
+    "web-animations-js": "^2.2.5",
     "zone.js": "^0.8.16"
   },
   "angularCompilerOptions": {

@@ -1,12 +1,14 @@
-import {Injectable, EventEmitter} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {IDatePickerConfig} from './date-picker-config.model';
 import * as moment from 'jalali-moment';
 import {Moment, unitOfTime} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
-import {FormControl} from '@angular/forms';
 import {IDayCalendarConfig} from '../day-calendar/day-calendar-config.model';
-import {IDate} from '../common/models/date.model';
 import {ECalendarSystem} from '../common/types/calendar-type-enum';
+import {TimeSelectService} from '../time-select/time-select.service';
+import {DayTimeCalendarService} from '../day-time-calendar/day-time-calendar.service';
+import {ITimeSelectConfig} from '../time-select/time-select-config.model';
+import {CalendarMode} from '../common/types/calendar-mode';
 
 @Injectable()
 export class DatePickerService {
@@ -22,18 +24,25 @@ export class DatePickerService {
     opens: 'right',
     showWeekNumbers: false,
     enableMonthSelector: true,
-    showGoToCurrent: true
+    showGoToCurrent: true,
+    locale: 'en'
   };
 
-  constructor(private utilsService: UtilsService) {
+  constructor(private utilsService: UtilsService,
+              private timeSelectService: TimeSelectService,
+              private daytimeCalendarService: DayTimeCalendarService) {
   }
 
   // todo:: add unit tests
-  getConfig(config: IDatePickerConfig): IDatePickerConfig {
+  getConfig(config: IDatePickerConfig, mode: CalendarMode = 'daytime'): IDatePickerConfig {
 
     this.defaultConfig.format = (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) ? 'jYYYY-jM-jD' : 'DD-MM-YYYY';
 
-    const _config: IDatePickerConfig = {...this.defaultConfig, ...this.utilsService.clearUndefined(config)};
+    const _config: IDatePickerConfig = {
+      ...this.defaultConfig,
+      format: this.getDefaultFormatByMode(mode),
+      ...this.utilsService.clearUndefined(config)
+    };
     const {min, max, format} = _config;
     if (min) {
       _config.min = this.utilsService.convertToMoment(min, format);
@@ -47,6 +56,8 @@ export class DatePickerService {
       _config.closeOnSelect = false;
     }
 
+    moment.locale(_config.locale);
+
     return _config;
   }
 
@@ -55,7 +66,7 @@ export class DatePickerService {
       min: pickerConfig.min,
       max: pickerConfig.max,
       isDayDisabledCallback: pickerConfig.isDayDisabledCallback,
-      weekdayNames: pickerConfig.weekdayNames,
+      weekDayFormat: pickerConfig.weekDayFormat,
       showNearMonthDays: pickerConfig.showNearMonthDays,
       showWeekNumbers: pickerConfig.showWeekNumbers,
       firstDayOfWeek: pickerConfig.firstDayOfWeek,
@@ -70,8 +81,19 @@ export class DatePickerService {
       dayBtnFormat: pickerConfig.dayBtnFormat,
       dayBtnFormatter: pickerConfig.dayBtnFormatter,
       monthBtnFormat: pickerConfig.monthBtnFormat,
-      monthBtnFormatter: pickerConfig.monthBtnFormatter
+      monthBtnFormatter: pickerConfig.monthBtnFormatter,
+      multipleYearsNavigateBy: pickerConfig.multipleYearsNavigateBy,
+      showMultipleYearsNavigation: pickerConfig.showMultipleYearsNavigation,
+      locale: pickerConfig.locale
     };
+  }
+
+  getDayTimeConfigService(pickerConfig: IDatePickerConfig): ITimeSelectConfig {
+    return this.daytimeCalendarService.getConfig(pickerConfig);
+  }
+
+  getTimeConfigService(pickerConfig: IDatePickerConfig): ITimeSelectConfig {
+    return this.timeSelectService.getConfig(pickerConfig);
   }
 
   pickerClosed() {
@@ -104,5 +126,18 @@ export class DatePickerService {
     }
 
     return this.utilsService.convertToMomentArray(datesStrArr, config.format, config.allowMultiSelect);
+  }
+
+  private getDefaultFormatByMode(mode: CalendarMode): string {
+    switch (mode) {
+      case 'day':
+        return 'DD-MM-YYYY';
+      case 'daytime':
+        return 'DD-MM-YYYY HH:mm:ss';
+      case 'time':
+        return 'HH:mm:ss';
+      case 'month':
+        return 'MMM, YYYY';
+    }
   }
 }

@@ -1,14 +1,23 @@
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 import {DatePickerService} from './date-picker.service';
 import * as moment from 'jalali-moment';
 import {Moment} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {ECalendarSystem} from '../common/types/calendar-type-enum';
+import {DayTimeCalendarService} from '../day-time-calendar/day-time-calendar.service';
+import {DayCalendarService} from '../day-calendar/day-calendar.service';
+import {TimeSelectService} from '../time-select/time-select.service';
 
 describe('Service: DatePicker', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [DatePickerService, UtilsService]
+      providers: [
+        DatePickerService,
+        DayTimeCalendarService,
+        DayCalendarService,
+        TimeSelectService,
+        UtilsService
+      ]
     });
   });
 
@@ -32,5 +41,11 @@ describe('Service: DatePicker', () => {
 
       expect((<Moment>config2.min).isSame(moment('2016-10-25', 'YYYY-MM-DD'), 'day')).toBe(true);
       expect((<Moment>config2.max).isSame(moment('2017-10-25', 'YYYY-MM-DD'), 'day')).toBe(true);
+
+      expect(service.getConfig({}, 'time').format).toEqual('HH:mm:ss');
+      expect(service.getConfig({}, 'daytime').format).toEqual('DD-MM-YYYY HH:mm:ss');
+      expect(service.getConfig({}, 'month').format).toEqual('MMM, YYYY');
+      expect(service.getConfig({}, 'day').format).toEqual('DD-MM-YYYY');
+      expect(service.getConfig({}).format).toEqual('DD-MM-YYYY HH:mm:ss');
     }));
 });

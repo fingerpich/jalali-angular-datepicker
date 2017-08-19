@@ -1,15 +1,16 @@
 import {ECalendarValue} from '../common/types/calendar-value-enum';
 import {SingleCalendarValue} from '../common/types/single-calendar-value';
+import {ECalendarMode} from '../common/types/calendar-mode-enum';
 import {
   Component,
-  OnInit,
-  Input,
-  Output,
   EventEmitter,
-  OnChanges,
-  SimpleChanges,
   forwardRef,
-  HostBinding
+  HostBinding,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import {DayCalendarService} from './day-calendar.service';
 import * as moment from 'jalali-moment';
@@ -17,16 +18,16 @@ import {Moment} from 'jalali-moment';
 import {IDayCalendarConfig} from './day-calendar-config.model';
 import {IDay} from './day.model';
 import {
-  NG_VALUE_ACCESSOR,
-  NG_VALIDATORS,
   ControlValueAccessor,
-  Validator,
+  FormControl,
+  NG_VALIDATORS,
+  NG_VALUE_ACCESSOR,
   ValidationErrors,
-  FormControl
+  Validator
 } from '@angular/forms';
 import {CalendarValue} from '../common/types/calendar-value';
 import {UtilsService} from '../common/services/utils/utils.service';
-import {ECalendarType, ECalendarSystem} from '../common/types/calendar-type-enum';
+import {ECalendarSystem} from '../common/types/calendar-type-enum';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
 import {IMonth} from '../month-calendar/month.model';
 
@@ -57,19 +58,19 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
   @HostBinding('class') @Input() theme: string;
   @Output() onSelect: EventEmitter<IDay> = new EventEmitter();
   @Output() onMonthSelect: EventEmitter<IMonth> = new EventEmitter();
-  @Output() onNavHeaderBtnClick: EventEmitter<ECalendarType> = new EventEmitter();
+  @Output() onNavHeaderBtnClick: EventEmitter<ECalendarMode> = new EventEmitter();
 
-  CalendarType = ECalendarType;
+  CalendarMode = ECalendarMode;
   isInited: boolean = false;
   componentConfig: IDayCalendarConfig;
   _selected: Moment[];
   weeks: IDay[][];
-  weekdays: string[];
+  weekdays: Moment[];
   currentDateView: Moment;
   inputValue: CalendarValue;
   inputValueType: ECalendarValue;
-  validateFn: (inputVal: CalendarValue) => {[key: string]: any};
-  currentCalendarType: ECalendarType = ECalendarType.Day;
+  validateFn: (inputVal: CalendarValue) => { [key: string]: any };
+  currentCalendarMode: ECalendarMode = ECalendarMode.Day;
   monthCalendarConfig: IMonthCalendarConfig;
 
   api = {
@@ -106,7 +107,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     this.weeks = this.dayCalendarService
       .generateMonthArray(this.componentConfig, this.currentDateView, this.selected);
     this.weekdays = this.dayCalendarService
-      .generateWeekdays(this.componentConfig.firstDayOfWeek, this.componentConfig.weekdayNames);
+      .generateWeekdays(this.componentConfig.firstDayOfWeek);
     this.inputValueType = this.utilsService.getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
     this.monthCalendarConfig = this.dayCalendarService.getMonthCalendarConfig(this.componentConfig);
   }
@@ -135,6 +136,10 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
         .generateMonthArray(this.componentConfig, this.currentDateView, this.selected);
       this.inputValueType = this.utilsService
         .getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
+    } else {
+      this.selected = [];
+      this.weeks = this.dayCalendarService
+        .generateMonthArray(this.componentConfig, this.currentDateView, this.selected);
     }
   }
 
@@ -183,7 +188,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     return this.dayCalendarService.getHeaderLabel(this.componentConfig, this.currentDateView);
   }
 
-  getDayBtnText(day: IDay): any {
+  getDayBtnText(day: IDay): string {
     return this.dayCalendarService.getDayBtnText(this.componentConfig, day.date);
   }
 
@@ -211,16 +216,16 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     return this.componentConfig.enableMonthSelector;
   }
 
-  toggleCalendar(type: ECalendarType) {
-    if (this.currentCalendarType !== type) {
-      this.currentCalendarType = type;
-      this.onNavHeaderBtnClick.emit(type);
+  toggleCalendar(mode: ECalendarMode) {
+    if (this.currentCalendarMode !== mode) {
+      this.currentCalendarMode = mode;
+      this.onNavHeaderBtnClick.emit(mode);
     }
   }
 
   monthSelected(month: IMonth) {
     this.currentDateView = month.date.clone();
-    this.currentCalendarType = ECalendarType.Day;
+    this.currentCalendarMode = ECalendarMode.Day;
     this.weeks = this.dayCalendarService
       .generateMonthArray(this.componentConfig, this.currentDateView, this.selected);
     this.onMonthSelect.emit(month);

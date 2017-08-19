@@ -4,57 +4,39 @@ import {Moment, unitOfTime} from 'jalali-moment';
 import {WeekDays} from '../common/types/week-days.type';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDay} from './day.model';
-import {FormControl} from '@angular/forms';
 import {IDayCalendarConfig} from './day-calendar-config.model';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
 import {ECalendarSystem} from '../common/types/calendar-type-enum';
-import {DomSanitizer} from '@angular/platform-browser';
 @Injectable()
 export class DayCalendarService {
-  readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
+  private readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
   readonly GREGORIAN_DEFAULT_CONFIG: IDayCalendarConfig = {
-    weekdayNames: {
-      su: 'sun',
-      mo: 'mon',
-      tu: 'tue',
-      we: 'wed',
-      th: 'thu',
-      fr: 'fri',
-      sa: 'sat'
-    },
     showNearMonthDays: true,
     showWeekNumbers: false,
     firstDayOfWeek: 'su',
+    weekDayFormat: 'ddd',
     format: 'DD-MM-YYYY',
     allowMultiSelect: false,
     monthFormat: 'MMM, YYYY',
     enableMonthSelector: true,
+    locale: 'en',
     dayBtnFormat: 'DD'
   };
   readonly JALALI_DEFAULT_CONFIG: IDayCalendarConfig = {
-    weekdayNames: {
-      su: 'ی',
-      mo: 'د',
-      tu: 'س',
-      we: 'چ',
-      th: 'پ',
-      fr: 'ج',
-      sa: 'ش'
-    },
     showNearMonthDays: true,
     showWeekNumbers: false,
     firstDayOfWeek: 'sa',
+    weekDayFormat: 'dd',
     format: 'jYYYY/jM/jD',
     allowMultiSelect: false,
     monthFormat: 'jMMMM jYY',
     enableMonthSelector: true,
+    locale: 'fa',
     dayBtnFormat: 'jD'
   };
   DEFAULT_CONFIG: IDayCalendarConfig = this.JALALI_DEFAULT_CONFIG;
 
-  constructor(private utilsService: UtilsService,
-      private sanitizer: DomSanitizer) {
-
+  constructor(private utilsService: UtilsService) {
   }
 
   private getMonthFormat(config = this.DEFAULT_CONFIG): unitOfTime.Base {
@@ -76,6 +58,7 @@ export class DayCalendarService {
       this.DEFAULT_CONFIG = this.GREGORIAN_DEFAULT_CONFIG;
       moment.unloadPersian();
     }
+    moment.locale(this.DEFAULT_CONFIG.locale);
     return {...this.DEFAULT_CONFIG, ...this.utilsService.clearUndefined(config)};
   }
 
@@ -85,7 +68,7 @@ export class DayCalendarService {
     return daysArr.reduce((map, day, index) => {
       map[day] = index;
       return map;
-    }, <{[key: string]: number}>{});
+    }, <{[key:  string]: number}>{});
   }
 
   generateMonthArray(config: IDayCalendarConfig, month: Moment, selected: Moment[]): IDay[][] {
@@ -94,9 +77,11 @@ export class DayCalendarService {
     const firstDayOfWeekIndex = this.DAYS.indexOf(config.firstDayOfWeek);
 
     const firstDayOfBoard = firstDayOfMonth;
+
     while (firstDayOfBoard.day() !== firstDayOfWeekIndex) {
       firstDayOfBoard.subtract(1, 'day');
     }
+
     const current = firstDayOfBoard.clone();
     const actionMonthFormat = this.getMonthFormat(config);
     const daysOfCalendar: IDay[] = this.utilsService.createArray(42).reduce((array: IDay[]) => {
@@ -129,8 +114,17 @@ export class DayCalendarService {
     return monthArray;
   }
 
-  generateWeekdays(firstDayOfWeek: WeekDays, weekdayNames: {[key: string]: string}): string[] {
-    const weekdays: string[] = [];
+  generateWeekdays(firstDayOfWeek: WeekDays): Moment[] {
+    const weekdayNames: {[key: string]: Moment} = {
+      su: moment().day(0),
+      mo: moment().day(1),
+      tu: moment().day(2),
+      we: moment().day(3),
+      th: moment().day(4),
+      fr: moment().day(5),
+      sa: moment().day(6)
+    };
+    const weekdays: Moment[] = [];
     const daysMap = this.generateDaysMap(firstDayOfWeek);
 
     for (const dayKey in daysMap) {
@@ -181,7 +175,7 @@ export class DayCalendarService {
     return daysArr.reduce((map, day, index) => {
       map[index] = day;
       return map;
-    }, <{[key: number]: string}>{});
+    }, <{ [key: number]: string }>{});
   }
 
   // todo:: add unit tests
@@ -197,6 +191,8 @@ export class DayCalendarService {
       yearFormatter: componentConfig.yearFormatter,
       monthBtnFormat: componentConfig.monthBtnFormat,
       monthBtnFormatter: componentConfig.monthBtnFormatter,
+      multipleYearsNavigateBy: componentConfig.multipleYearsNavigateBy,
+      showMultipleYearsNavigation: componentConfig.showMultipleYearsNavigation
     });
   }
 
@@ -204,6 +200,5 @@ export class DayCalendarService {
     return config.dayBtnFormatter ?
       config.dayBtnFormatter(day) :
       day.format(config.dayBtnFormat);
-    // return this.sanitizer.bypassSecurityTrustHtml(formattedDay);
   }
 }

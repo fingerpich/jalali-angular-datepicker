@@ -1,10 +1,19 @@
+import {ECalendarValue} from '../../types/calendar-value-enum';
+import {SingleCalendarValue} from '../../types/single-calendar-value';
 import {Injectable} from '@angular/core';
 import * as moment from 'jalali-moment';
 import {Moment, MomentInput, unitOfTime} from 'jalali-moment';
 import {CalendarValue} from '../../types/calendar-value';
-import {ECalendarValue} from '../../types/calendar-value-enum';
-import {SingleCalendarValue} from '../../types/single-calendar-value';
 import {IDate} from '../../models/date.model';
+import {CalendarMode} from '../../types/calendar-mode';
+
+export type DateValidatorFn = (inputVal: CalendarValue) => { [key: string]: any };
+export interface DateLimits {
+  minDate?: SingleCalendarValue;
+  maxDate?: SingleCalendarValue;
+  minTime?: SingleCalendarValue;
+  maxTime?: SingleCalendarValue;
+}
 
 @Injectable()
 export class UtilsService {
@@ -134,7 +143,7 @@ export class UtilsService {
     const sortArr2 = arr1.sort((a, b) => a.diff(b));
 
     for (let i = 0; i < sortArr1.length; i++) {
-      if (!sortArr1[i].isSame(<MomentInput>sortArr2, granularity)) {
+      if (!sortArr1[i].isSame(sortArr2[i], granularity)) {
         return false;
       }
     }
@@ -164,10 +173,26 @@ export class UtilsService {
     return match || this.closestParent(element.parentElement, selector);
   }
 
-  createValidator({minDate, maxDate}, format: string, granularity: unitOfTime.Base): (inputVal: CalendarValue) => {[key: string]: any} {
+  onlyTime(m: Moment): Moment {
+    return m && moment(m.format('HH:mm:ss'), 'HH:mm:ss');
+  }
+
+  granularityFromType(calendarType: CalendarMode): unitOfTime.Base {
+    switch (calendarType) {
+      case 'time':
+        return 'second';
+      case 'daytime':
+        return 'second';
+      default:
+        return calendarType;
+    }
+  }
+
+  createValidator({minDate, maxDate, minTime, maxTime}: DateLimits, format: string, calendarType: CalendarMode): DateValidatorFn {
     let isValid: boolean;
     let value: Moment[];
     const validators = [];
+    const granularity = this.granularityFromType(calendarType);
 
     if (minDate) {
       const md = this.convertToMoment(minDate, format);
@@ -187,6 +212,30 @@ export class UtilsService {
         key: 'maxDate',
         isValid: () => {
           const _isValid = value.every(val => val.isSameOrBefore(md, granularity));
+          isValid = isValid ? _isValid : false;
+          return _isValid;
+        }
+      });
+    }
+
+    if (minTime) {
+      const md = this.onlyTime(this.convertToMoment(minTime, format));
+      validators.push({
+        key: 'minTime',
+        isValid: () => {
+          const _isValid = value.every(val => this.onlyTime(val).isSameOrAfter(md));
+          isValid = isValid ? _isValid : false;
+          return _isValid;
+        }
+      });
+    }
+
+    if (maxTime) {
+      const md = this.onlyTime(this.convertToMoment(maxTime, format));
+      validators.push({
+        key: 'maxTime',
+        isValid: () => {
+          const _isValid = value.every(val => this.onlyTime(val).isSameOrBefore(md));
           isValid = isValid ? _isValid : false;
           return _isValid;
         }
