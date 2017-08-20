@@ -68,7 +68,7 @@ export class DayCalendarService {
     return daysArr.reduce((map, day, index) => {
       map[day] = index;
       return map;
-    }, <{[key:  string]: number}>{});
+    }, <{ [key: number]: string }>{});
   }
 
   generateMonthArray(config: IDayCalendarConfig, month: Moment, selected: Moment[]): IDay[][] {
@@ -196,9 +196,11 @@ export class DayCalendarService {
     });
   }
 
-  getDayBtnText(config: IDayCalendarConfig, day: Moment): any {
-    return config.dayBtnFormatter ?
-      config.dayBtnFormatter(day) :
-      day.format(config.dayBtnFormat);
+  getDayBtnText(config: IDayCalendarConfig, day: Moment): string {
+    if (config.dayBtnFormatter) {
+      return config.dayBtnFormatter(day);
+    }
+
+    return day.format(config.dayBtnFormat);
   }
 }
