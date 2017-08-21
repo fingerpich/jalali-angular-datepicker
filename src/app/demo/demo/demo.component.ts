@@ -150,34 +150,25 @@ export class DemoComponent {
     ])
   });
 
-  jalaliSystemDefaults: IDatePickerConfig = {
+  jalaliConfigExtension: IDatePickerConfig = {
     firstDayOfWeek: 'sa',
-    format: 'jYYYY/jM/jD',
+    format: 'jYYYY/jM/jD HH:mm',
     monthFormat: 'jMMMM jYY',
-    disableKeypress: false,
-    allowMultiSelect: false,
-    closeOnSelect: undefined,
-    closeOnSelectDelay: 100,
-    onOpenDelay: 0,
     weekDayFormat: 'dd',
-    appendTo: document.body,
     drops: 'down',
     opens: 'right',
-    showNearMonthDays: true,
-    showWeekNumbers: false,
-    enableMonthSelector: true,
     yearFormat: 'jYYYY',
-    showGoToCurrent: true,
     calendarSystem: ECalendarSystem.jalali,
     dayBtnFormat: 'jD',
-    monthBtnFormat: 'jMMMM'
+    monthBtnFormat: 'jMMMM',
+    locale:'fa'
   };
   gregorianSystemDefaults: IDatePickerConfig = {
     firstDayOfWeek: 'su',
     monthFormat: 'MMM, YYYY',
     disableKeypress: false,
     allowMultiSelect: false,
-    closeOnSelect: undefined,
+    closeOnSelect: true,
     closeOnSelectDelay: 100,
     onOpenDelay: 0,
     weekDayFormat: 'ddd',
@@ -206,7 +197,7 @@ export class DemoComponent {
     showMultipleYearsNavigation: false,
     locale: 'en'
   };
-  config: IDatePickerConfig = {...this.jalaliSystemDefaults};
+  config: IDatePickerConfig = {...this.gregorianSystemDefaults, ...this.jalaliConfigExtension};
   isAtTop: boolean = true;
 
   constructor(private gaService: GaService) {
@@ -220,7 +211,7 @@ export class DemoComponent {
 
   changeCalendarSystem() {
     const defaultCalSys = (this.config.calendarSystem === ECalendarSystem.jalali) ?
-      this.jalaliSystemDefaults : this.gregorianSystemDefaults;
+      {...this.gregorianSystemDefaults, ...this.jalaliConfigExtension} : this.gregorianSystemDefaults;
     this.date = moment();
     this.config = {...this.config, ...defaultCalSys};
   }
@@ -372,6 +363,28 @@ export class DemoComponent {
       daytimeInline:'dp-day-time-calendar',
       dayDirectiveReactive:'input [dpDayPicker]="config"',
     }
-    return '<' + map[this.pickerMode] + '/>';
+    let attribs="";
+    if(this.direction==='rtl'){
+      attribs += ' dir="rtl"';
+    }
+    if(this.material){
+      attribs += ' theme="dp-material"';
+    }
+    if(this.placeholder){
+      attribs += ' placeholder="' + this.placeholder + '"';
+    }
+    if(this.disabled){
+      attribs += ' disabled="' + this.disabled + '"';
+    }
+    if(this.required){
+      attribs += ' required="' + this.required + '"';
+    }
+    if(this.validationMinDate){
+      attribs += ' minDate="' + this.validationMinDate.calendar() + '"';
+    }
+    if(this.validationMaxDate){
+      attribs += ' maxDate="' + this.validationMaxDate.calendar() + '"';
+    }
+    return '<' + map[this.pickerMode] + attribs + '/>';
   }
 }

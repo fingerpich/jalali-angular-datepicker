@@ -11,7 +11,7 @@
 
   .dp-calendar-wrapper {
     box-sizing: border-box;
-    border: 1px solid @c-black;
+    //border: 1px solid @c-black;
 
     .dp-calendar-weekday:first-child {
       border-left: none;
@@ -65,14 +65,17 @@
       height: @basic-height - 5px;
       width: @basic-height;
       line-height: @basic-height - 5px;
-      color: darken(@c-light-gray, 40%);
+      color: @c-primary;
       border: none;
       font-size: 0.75rem;
-      opacity: 0.3;
+      opacity: 0.6;
+    }
+    .dp-calendar-weekday:last-child{
+      color:red;
     }
 
     .dp-calendar-wrapper {
-      border: 1px solid @c-light-gray;
+      padding: 20px;
       &.rtl{
         direction:rtl;
       }

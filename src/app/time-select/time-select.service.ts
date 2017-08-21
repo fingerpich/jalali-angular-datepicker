@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Moment} from 'jalali-moment';
+import {Moment, MomentInput} from 'jalali-moment';
 import * as moment from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {ITimeSelectConfig} from './time-select-config.model';
+import {ECalendarSystem} from "../common/types/calendar-type-enum";
 
 export type TimeUnit = 'hour' | 'minute' | 'second';
 export const FIRST_PM_HOUR = 12;
@@ -28,10 +29,12 @@ export class TimeSelectService {
 
   getConfig(config: ITimeSelectConfig): ITimeSelectConfig {
     const timeConfigs = {
-      maxTime: this.utilsService.onlyTime(config && config.maxTime),
-      minTime: this.utilsService.onlyTime(config && config.minTime)
+      maxTime: this.utilsService.onlyTime(<Moment>(config && config.maxTime)),
+      minTime: this.utilsService.onlyTime(<Moment>(config && config.minTime))
     };
-
+    if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)){
+      this.DEFAULT_CONFIG.locale = 'fa';
+    }
     const _config = {
       ...this.DEFAULT_CONFIG,
       ...this.utilsService.clearUndefined(config),
@@ -66,6 +69,7 @@ export class TimeSelectService {
   }
 
   getMeridiem(config: ITimeSelectConfig, time: Moment): string {
+    if (config.locale) time.locale(config.locale)
     return time && time.format(config.meridiemFormat);
   }
 
@@ -107,7 +111,7 @@ export class TimeSelectService {
     if (!config.min && !config.minTime) {
       return true;
     }
-    ;
+
     const newTime = this.decrease(config, time, unit);
 
     return (!config.min || config.min.isSameOrBefore(newTime))
@@ -118,7 +122,7 @@ export class TimeSelectService {
     if (!config.max && !config.maxTime) {
       return true;
     }
-    ;
+
     const newTime = this.increase(config, time, unit);
 
     return (!config.max || config.max.isSameOrAfter(newTime))

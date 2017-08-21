@@ -20,13 +20,12 @@ export class MonthCalendarService {
     showMultipleYearsNavigation: false
   };
   readonly JALALI_DEFAULT_CONFIG: IMonthCalendarConfig = {
-    allowMultiSelect: false,
     yearFormat: 'jYYYY',
     format: 'jMMMM-jYYYY',
-    isNavHeaderBtnClickable: false,
-    monthBtnFormat: 'jMMMM'
+    monthBtnFormat: 'jMMMM',
+    locale: 'fa'
   };
-  DEFAULT_CONFIG: IMonthCalendarConfig = this.JALALI_DEFAULT_CONFIG;
+  DEFAULT_CONFIG: IMonthCalendarConfig = {...this.GREGORIAN_DEFAULT_CONFIG , ...this.JALALI_DEFAULT_CONFIG};
 
   constructor(private utilsService: UtilsService) {
   }

@@ -22,19 +22,15 @@ export class DayCalendarService {
     locale: 'en',
     dayBtnFormat: 'DD'
   };
-  readonly JALALI_DEFAULT_CONFIG: IDayCalendarConfig = {
-    showNearMonthDays: true,
-    showWeekNumbers: false,
+  readonly JALALI_CONFIG_EXTENTION: IDayCalendarConfig = {
     firstDayOfWeek: 'sa',
     weekDayFormat: 'dd',
     format: 'jYYYY/jM/jD',
-    allowMultiSelect: false,
     monthFormat: 'jMMMM jYY',
-    enableMonthSelector: true,
     locale: 'fa',
     dayBtnFormat: 'jD'
   };
-  DEFAULT_CONFIG: IDayCalendarConfig = this.JALALI_DEFAULT_CONFIG;
+  DEFAULT_CONFIG: IDayCalendarConfig = {...this.GREGORIAN_DEFAULT_CONFIG, ...this.JALALI_CONFIG_EXTENTION};
 
   constructor(private utilsService: UtilsService) {
   }
@@ -52,11 +48,9 @@ export class DayCalendarService {
 
   getConfig(config: IDayCalendarConfig): IDayCalendarConfig {
     if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) {
-      moment.loadPersian(false);
-      this.DEFAULT_CONFIG = this.JALALI_DEFAULT_CONFIG;
+      this.DEFAULT_CONFIG = {...this.GREGORIAN_DEFAULT_CONFIG, ...this.JALALI_CONFIG_EXTENTION};
     } else {
       this.DEFAULT_CONFIG = this.GREGORIAN_DEFAULT_CONFIG;
-      moment.unloadPersian();
     }
     moment.locale(this.DEFAULT_CONFIG.locale);
     return {...this.DEFAULT_CONFIG, ...this.utilsService.clearUndefined(config)};
