@@ -1,7 +1,7 @@
 import {EventEmitter, Injectable} from '@angular/core';
 import {IDatePickerConfig} from './date-picker-config.model';
+import {Moment} from 'jalali-moment';
 import * as moment from 'jalali-moment';
-import {Moment, unitOfTime} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDayCalendarConfig} from '../day-calendar/day-calendar-config.model';
 import {ECalendarSystem} from '../common/types/calendar-type-enum';

@@ -64,14 +64,14 @@
                                              'dp-inline-time': pickerMode == 'timeInline',
                                              'dp-inline-day-time': pickerMode == 'daytimeInline'}">
 
-    <form #donateForm class="dp-donate-btn" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+    <form #donateForm class="dp-donate-btn">
       <input type="hidden" name="cmd" value="_s-xclick">
       <input type="hidden" name="hosted_button_id" value="8ZR2S5XYJ6WLJ">
       <input (click)="donateClicked()" type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
       <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
     </form>
 
-    <h2 class="dp-page-header">Angular Date/Time/Month Picker</h2>
+    <h2 class="dp-page-header">Angular Jalali Date/Time/Month Picker</h2>
 
     <!--<div>{{form.form.dirty}}</div>-->
 
@@ -419,6 +419,11 @@
       </a>
     </div>
   </div>
+  <div class="code">
+    <code>
+      {{getGeneratedCode()}}
+    </code>
+  </div>
 
   <div class="dp-page-content" [ngClass]="{'dp-inline': pickerMode.endsWith('Inline'),
                                            'dp-inline-day': pickerMode == 'dayInline',
@@ -563,7 +568,7 @@
     <div class="dp-configs">
       <h3 class="dp-options-section">Config options</h3>
 
-      <div class="dp-option" *ngIf="isValidConfig('locale')">
+      <div class="dp-option" *ngIf="false">
         <span class="dp-option-header">
           Locale (locale):
         </span>
@@ -573,6 +578,24 @@
                   (change)="configChanged('locale', config.locale)">
             <option *ngFor="let lang of LANGS" [value]="lang"> {{lang}}</option>
           </select>
+        </div>
+      </div>
+
+      <div class="dp-option">
+        <span class="dp-option-header">
+          Calendar System
+        </span>
+        <div class="dp-option-playground">
+          <label>Jalali
+            <input id="jalaliCalendarSystem" type="radio" [(ngModel)]="config.calendarSystem" name="calendarSystem"
+                   [value]="0"
+                   (ngModelChange)="changeCalendarSystem()">
+          </label>
+          <label>Gregorian
+            <input id="gregorianCalendarSystem" type="radio" [(ngModel)]="config.calendarSystem" name="calendarSystem"
+                   [value]="1"
+                   (ngModelChange)="changeCalendarSystem()">
+          </label>
         </div>
       </div>
 
@@ -588,34 +611,6 @@
           </select>
         </div>
       </div>
-    <div class="dp-option">
-      <span class="dp-option-header">
-        Calendar System
-      </span>
-      <div class="dp-option-playground">
-        <label>Jalali
-          <input id="jalaliCalendarSystem" type="radio" [(ngModel)]="config.calendarSystem" name="calendarSystem"
-                 [value]="0"
-                 (ngModelChange)="changeCalendarSystem()">
-        </label>
-        <label>Gregorian
-          <input id="gregorianCalendarSystem" type="radio" [(ngModel)]="config.calendarSystem" name="calendarSystem"
-                 [value]="1"
-                 (ngModelChange)="changeCalendarSystem()">
-        </label>
-      </div>
-    </div>
-
-    <div class="dp-option">
-      <span class="dp-option-header">
-        First Day of The week (firstDayOfWeek):
-      </span>
-      <div class="dp-option-playground">
-        <select id="firstDayOfWeekSelect" [(ngModel)]="config.firstDayOfWeek" (change)="configChanged()">
-          <option *ngFor="let day of DAYS" [value]="day"> {{day}}</option>
-        </select>
-      </div>
-    </div>
 
       <div class="dp-option" *ngIf="isValidConfig('format')">
         <span class="dp-option-header">

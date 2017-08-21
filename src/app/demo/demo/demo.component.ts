@@ -356,6 +356,22 @@ export class DemoComponent {
 
   donateClicked() {
     this.gaService.emitEvent('donate', 'clicked');
-    this.donateForm.nativeElement.submit();
+    alert("6104 3377 4540 4952");
+  }
+
+  getGeneratedCode() {
+    let map={
+      dayPicker:'dp-date-picker mode="day"',
+      dayInline:'dp-day-calendar',
+      dayDirective:'input [dpDayPicker]="config"',
+      monthPicker:'dp-date-picker mode="month"',
+      monthInline:'dp-month-calendar',
+      timePicker:'dp-date-picker mode="time"',
+      timeInline:'dp-time-select',
+      daytimePicker:'dp-date-picker mode="daytime"',
+      daytimeInline:'dp-day-time-calendar',
+      dayDirectiveReactive:'input [dpDayPicker]="config"',
+    }
+    return '<' + map[this.pickerMode] + '/>';
   }
 }
