@@ -1,6 +1,6 @@
 import {Moment} from 'moment/moment';
 import {ICalendar} from '../common/models/calendar.model';
-import {ECalendarSystem} from "../common/types/calendar-type-enum";
+import {ECalendarSystem} from '../common/types/calendar-type-enum';
 
 export interface ITimeSelectConfig extends ICalendar {
   hours12Format?: string;

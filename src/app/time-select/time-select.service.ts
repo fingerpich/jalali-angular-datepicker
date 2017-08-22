@@ -3,7 +3,7 @@ import {Moment, MomentInput} from 'jalali-moment';
 import * as moment from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {ITimeSelectConfig} from './time-select-config.model';
-import {ECalendarSystem} from "../common/types/calendar-type-enum";
+import {ECalendarSystem} from '../common/types/calendar-type-enum';
 
 export type TimeUnit = 'hour' | 'minute' | 'second';
 export const FIRST_PM_HOUR = 12;
@@ -32,7 +32,7 @@ export class TimeSelectService {
       maxTime: this.utilsService.onlyTime(<Moment>(config && config.maxTime)),
       minTime: this.utilsService.onlyTime(<Moment>(config && config.minTime))
     };
-    if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)){
+    if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) {
       this.DEFAULT_CONFIG.locale = 'fa';
     }
     const _config = {
@@ -69,7 +69,9 @@ export class TimeSelectService {
   }
 
   getMeridiem(config: ITimeSelectConfig, time: Moment): string {
-    if (config.locale) time.locale(config.locale)
+    if (config.locale) {
+      time.locale(config.locale);
+    }
     return time && time.format(config.meridiemFormat);
   }
 

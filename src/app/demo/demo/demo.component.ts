@@ -161,7 +161,7 @@ export class DemoComponent {
     calendarSystem: ECalendarSystem.jalali,
     dayBtnFormat: 'jD',
     monthBtnFormat: 'jMMMM',
-    locale:'fa'
+    locale: 'fa'
   };
   gregorianSystemDefaults: IDatePickerConfig = {
     firstDayOfWeek: 'su',
@@ -347,42 +347,42 @@ export class DemoComponent {
 
   donateClicked() {
     this.gaService.emitEvent('donate', 'clicked');
-    alert("6104 3377 4540 4952");
+    alert('6104 3377 4540 4952');
   }
 
   getGeneratedCode() {
-    let map={
-      dayPicker:'dp-date-picker mode="day"',
-      dayInline:'dp-day-calendar',
-      dayDirective:'input [dpDayPicker]="config"',
-      monthPicker:'dp-date-picker mode="month"',
-      monthInline:'dp-month-calendar',
-      timePicker:'dp-date-picker mode="time"',
-      timeInline:'dp-time-select',
-      daytimePicker:'dp-date-picker mode="daytime"',
-      daytimeInline:'dp-day-time-calendar',
-      dayDirectiveReactive:'input [dpDayPicker]="config"',
+    const map = {
+      dayPicker: 'dp-date-picker mode="day"',
+      dayInline: 'dp-day-calendar',
+      dayDirective: 'input [dpDayPicker]="config"',
+      monthPicker: 'dp-date-picker mode="month"',
+      monthInline: 'dp-month-calendar',
+      timePicker: 'dp-date-picker mode="time"',
+      timeInline: 'dp-time-select',
+      daytimePicker: 'dp-date-picker mode="daytime"',
+      daytimeInline: 'dp-day-time-calendar',
+      dayDirectiveReactive: 'input [dpDayPicker]="config"'
     }
-    let attribs="";
-    if(this.direction==='rtl'){
+    let attribs = '';
+    if (this.direction === 'rtl') {
       attribs += ' dir="rtl"';
     }
-    if(this.material){
+    if (this.material) {
       attribs += ' theme="dp-material"';
     }
-    if(this.placeholder){
+    if (this.placeholder) {
       attribs += ' placeholder="' + this.placeholder + '"';
     }
-    if(this.disabled){
+    if (this.disabled) {
       attribs += ' disabled="' + this.disabled + '"';
     }
-    if(this.required){
+    if (this.required) {
       attribs += ' required="' + this.required + '"';
     }
-    if(this.validationMinDate){
+    if (this.validationMinDate) {
       attribs += ' minDate="' + this.validationMinDate.calendar() + '"';
     }
-    if(this.validationMaxDate){
+    if (this.validationMaxDate) {
       attribs += ' maxDate="' + this.validationMaxDate.calendar() + '"';
     }
     return '<' + map[this.pickerMode] + attribs + '/>';
