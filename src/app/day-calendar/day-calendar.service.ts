@@ -147,9 +147,7 @@ export class DayCalendarService {
     if (config.monthFormatter) {
       return config.monthFormatter(month);
     }
-    if (config.calendarSystem !== ECalendarSystem.gregorian) {
-      month.locale('fa');
-    }
+    month.locale(config.locale);
     return month.format(config.monthFormat);
   }
 

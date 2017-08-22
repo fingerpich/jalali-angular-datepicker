@@ -87,7 +87,7 @@ export class MonthCalendarService {
     if (config.yearFormatter) {
       return config.yearFormatter(year);
     }
-
+    year.locale(config.locale);
     return year.format(config.yearFormat);
   }
 
