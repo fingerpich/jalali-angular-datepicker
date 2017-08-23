@@ -152,7 +152,7 @@ export class DemoComponent {
 
   jalaliConfigExtension: IDatePickerConfig = {
     firstDayOfWeek: 'sa',
-    format: 'jYYYY/jM/jD HH:mm',
+    format: 'jYYYY/jM/jD',
     monthFormat: 'jMMMM jYY',
     weekDayFormat: 'dd',
     drops: 'down',
@@ -354,6 +354,7 @@ export class DemoComponent {
     const map = {
       dayPicker: 'dp-date-picker mode="day"',
       dayInline: 'dp-day-calendar',
+      daytimeDirective: 'input [dpDayPicker]="config" mode="daytime"',
       dayDirective: 'input [dpDayPicker]="config"',
       monthPicker: 'dp-date-picker mode="month"',
       monthInline: 'dp-month-calendar',
