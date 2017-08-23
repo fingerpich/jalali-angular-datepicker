@@ -152,7 +152,6 @@ export class DemoComponent {
 
   jalaliConfigExtension: IDatePickerConfig = {
     firstDayOfWeek: 'sa',
-    format: 'jYYYY/jM/jD',
     monthFormat: 'jMMMM jYY',
     weekDayFormat: 'dd',
     drops: 'down',
