@@ -13,7 +13,7 @@ import {CalendarMode} from '../common/types/calendar-mode';
 @Injectable()
 export class DatePickerService {
   readonly onPickerClosed: EventEmitter<null> = new EventEmitter();
-  private defaultConfig: IDatePickerConfig = {
+  private gregorianDefaultConfig: IDatePickerConfig = {
     closeOnSelect: true,
     closeOnSelectDelay: 100,
     format: 'DD-MM-YYYY',
@@ -27,7 +27,11 @@ export class DatePickerService {
     showGoToCurrent: true,
     locale: 'en'
   };
-
+  private jalaliExtensionConfig: IDatePickerConfig = {
+    format: 'jYYYY-jMM-jD',
+    locale: 'fa'
+  };
+  private defaultConfig: IDatePickerConfig = {...this.gregorianDefaultConfig, ...this.jalaliExtensionConfig};
   constructor(private utilsService: UtilsService,
               private timeSelectService: TimeSelectService,
               private daytimeCalendarService: DayTimeCalendarService) {
@@ -36,11 +40,15 @@ export class DatePickerService {
   // todo:: add unit tests
   getConfig(config: IDatePickerConfig, mode: CalendarMode = 'daytime'): IDatePickerConfig {
 
-    this.defaultConfig.format = (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) ? 'jYYYY-jM-jD' : 'DD-MM-YYYY';
+    if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) {
+      this.defaultConfig = {...this.gregorianDefaultConfig, ...this.jalaliExtensionConfig};
+    } else {
+      this.defaultConfig = {...this.gregorianDefaultConfig};
+    }
 
     const _config: IDatePickerConfig = {
       ...this.defaultConfig,
-      format: this.getDefaultFormatByMode(mode),
+      format: this.getDefaultFormatByMode(mode, config),
       ...this.utilsService.clearUndefined(config)
     };
     const {min, max, format} = _config;
@@ -128,16 +136,23 @@ export class DatePickerService {
     return this.utilsService.convertToMomentArray(datesStrArr, config.format, config.allowMultiSelect);
   }
 
-  private getDefaultFormatByMode(mode: CalendarMode): string {
+  private getDefaultFormatByMode(mode: CalendarMode, config: IDatePickerConfig): string {
+    let dateFormat = 'DD-MM-YYYY';
+    let monthFormat = 'MMM, YYYY';
+    const timeFormat = 'HH:mm:ss';
+    if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) {
+      dateFormat = 'jYYYY-jMM-jDD';
+      monthFormat = 'jMMMM jYY';
+    }
     switch (mode) {
       case 'day':
-        return 'DD-MM-YYYY';
+        return dateFormat;
       case 'daytime':
-        return 'DD-MM-YYYY HH:mm:ss';
+        return dateFormat + ' ' + timeFormat;
       case 'time':
-        return 'HH:mm:ss';
+        return timeFormat;
       case 'month':
-        return 'MMM, YYYY';
+        return monthFormat;
     }
   }
 }
