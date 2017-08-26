@@ -14,7 +14,11 @@ Read this in other languages: [فارسی](./README.fa.md)
 
 ## Screenshots
 
-<img alt="date picker" src="./screenshots/date_picker.jpg" width="200px"><img alt="date time picker" src="./screenshots/date_time_picker.jpg" width="200px"><img alt="month picker" src="./screenshots/month_picker.jpg" width="200px">
+<div style="display: flex; justify-content: space-between;">
+  [<img alt="date picker" src="./screenshots/date_picker.jpg" width="200px">](https://fingerpich.github.io/jalali-angular-datepicker/)
+  [<img alt="date time picker" src="./screenshots/date_time_picker.jpg" width="200px">](https://fingerpich.github.io/jalali-angular-datepicker/)
+  [<img alt="month picker" src="./screenshots/month_picker.jpg" width="200px">](https://fingerpich.github.io/jalali-angular-datepicker/)
+</div>
 
 ## Installation:
 1. Download from npm:
