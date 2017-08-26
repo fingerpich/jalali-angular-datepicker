@@ -14,9 +14,9 @@ Read this in other languages: [فارسی](./README.fa.md)
 
 ## Screenshots
 
-![Date Picker](https://ibb.co/eYgNWk =300x)
-![Date Time Picker](https://ibb.co/eBU9Bk  =300x)
-![Month Picker](https://ibb.co/nCugP5  =300x)
+![Date Picker](./screenshots/date_picker.jpg =300x)
+![Date Time Picker](./screenshots/date_time_picker.jpg =300x)
+![Month Picker](./screenshots/month_picker.jpg =300x)
 
 ## Installation:
 1. Download from npm:
