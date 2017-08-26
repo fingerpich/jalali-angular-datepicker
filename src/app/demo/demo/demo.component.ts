@@ -353,14 +353,16 @@ export class DemoComponent {
     const map = {
       dayPicker: 'dp-date-picker mode="day"',
       dayInline: 'dp-day-calendar',
-      daytimeDirective: 'input [dpDayPicker]="config" mode="daytime"',
-      dayDirective: 'input [dpDayPicker]="config"',
       monthPicker: 'dp-date-picker mode="month"',
       monthInline: 'dp-month-calendar',
       timePicker: 'dp-date-picker mode="time"',
       timeInline: 'dp-time-select',
       daytimePicker: 'dp-date-picker mode="daytime"',
       daytimeInline: 'dp-day-time-calendar',
+      daytimeDirective: 'input [dpDayPicker]="config" mode="daytime"',
+      monthDirective: 'input [dpDayPicker]="config" mode="month"',
+      timeDirective: 'input [dpDayPicker]="config" mode="time"',
+      dayDirective: 'input [dpDayPicker]="config"',
       dayDirectiveReactive: 'input [dpDayPicker]="config"'
     }
     let attribs = '';

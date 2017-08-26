@@ -12,6 +12,12 @@ Read this in other languages: [فارسی](./README.fa.md)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/72a073fa893f4f0b823f41106c9e4f56)](https://www.codacy.com/app/zarei-bs/jalali-angular-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fingerpich/jalali-angular-datepicker&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/72a073fa893f4f0b823f41106c9e4f56)](https://www.codacy.com/app/zarei-bs/jalali-angular-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fingerpich/jalali-angular-datepicker&amp;utm_campaign=Badge_Coverage)
 
+## Screenshots
+
+![Date Picker](https://ibb.co/eYgNWk =300x)
+![Date Time Picker](https://ibb.co/eBU9Bk  =300x)
+![Month Picker](https://ibb.co/nCugP5  =300x)
+
 ## Installation:
 1. Download from npm:
 `npm install ng2-jalali-date-picker --save`  
