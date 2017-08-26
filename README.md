@@ -14,9 +14,7 @@ Read this in other languages: [فارسی](./README.fa.md)
 
 ## Screenshots
 
-<img alt="date picker" src="./screenshots/date_picker.jpg" width="300px">
-<img alt="date time picker" src="./screenshots/date_time_picker.jpg" width="300px">
-<img alt="month picker" src="./screenshots/month_picker.jpg" width="300px">
+<img alt="date picker" src="./screenshots/date_picker.jpg" width="200px"><img alt="date time picker" src="./screenshots/date_time_picker.jpg" width="200px"><img alt="month picker" src="./screenshots/month_picker.jpg" width="200px">
 
 ## Installation:
 1. Download from npm:
