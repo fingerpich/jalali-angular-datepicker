@@ -15,7 +15,7 @@
     "e2e:headless": "ng e2e -- headless",
     "build:demo": "ng build --no-delete-output-path --prod --bh /jalali-angular-datepicker/ && npm run build:index",
     "build:index": "cd build-helpers && node index-maker.js",
-    "build:prod": "node build.js && ngc && cp package.json bin && cp README.md bin",
+    "build:prod": "node build.js && ngc && cp package.json bin && cp README.md bin && cp -R screenshots bin",
     "release": "npm run build:prod && npm publish bin",
     "pack": "cd bin && npm pack"
   },
