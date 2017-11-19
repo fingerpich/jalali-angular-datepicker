@@ -2,6 +2,7 @@ import {ECalendarValue} from '../common/types/calendar-value-enum';
 import {SingleCalendarValue} from '../common/types/single-calendar-value';
 import {ECalendarMode} from '../common/types/calendar-mode-enum';
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   forwardRef,
@@ -47,7 +48,8 @@ import {IMonth} from '../month-calendar/month.model';
       useExisting: forwardRef(() => DayCalendarComponent),
       multi: true
     }
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
 
