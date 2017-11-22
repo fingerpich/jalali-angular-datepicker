@@ -1,16 +1,15 @@
 import {Injectable} from '@angular/core';
-import {Moment, MomentInput} from 'jalali-moment';
+import {Moment} from 'jalali-moment';
 import * as moment from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
-import {ITimeSelectConfig} from './time-select-config.model';
-import {ECalendarSystem} from '../common/types/calendar-type-enum';
+import {ITimeSelectConfig, ITimeSelectConfigInternal} from './time-select-config.model';
 
 export type TimeUnit = 'hour' | 'minute' | 'second';
 export const FIRST_PM_HOUR = 12;
 
 @Injectable()
 export class TimeSelectService {
-  readonly DEFAULT_CONFIG: ITimeSelectConfig = {
+  readonly DEFAULT_CONFIG: ITimeSelectConfigInternal = <ITimeSelectConfigInternal> {
     hours12Format: 'hh',
     hours24Format: 'HH',
     meridiemFormat: 'A',
@@ -21,21 +20,19 @@ export class TimeSelectService {
     showSeconds: false,
     showTwentyFourHours: false,
     timeSeparator: ':',
-    locale: 'en'
+    locale: 'fa'
   };
 
   constructor(private utilsService: UtilsService) {
   }
 
-  getConfig(config: ITimeSelectConfig): ITimeSelectConfig {
+  getConfig(config: ITimeSelectConfig): ITimeSelectConfigInternal {
     const timeConfigs = {
       maxTime: this.utilsService.onlyTime(<Moment>(config && config.maxTime)),
       minTime: this.utilsService.onlyTime(<Moment>(config && config.minTime))
     };
-    if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) {
-      this.DEFAULT_CONFIG.locale = 'fa';
-    }
-    const _config = {
+
+    const _config = <ITimeSelectConfigInternal>{
       ...this.DEFAULT_CONFIG,
       ...this.utilsService.clearUndefined(config),
       ...timeConfigs
@@ -46,36 +43,36 @@ export class TimeSelectService {
     return _config;
   }
 
-  getTimeFormat(config: ITimeSelectConfig): string {
+  getTimeFormat(config: ITimeSelectConfigInternal): string {
     return (config.showTwentyFourHours ? config.hours24Format : config.hours12Format)
       + config.timeSeparator + config.minutesFormat
       + (config.showSeconds ? (config.timeSeparator + config.secondsFormat) : '')
       + (config.showTwentyFourHours ? '' : ' ' + config.meridiemFormat);
   }
 
-  getHours(config: ITimeSelectConfig, t: Moment | null): string {
+  getHours(config: ITimeSelectConfigInternal, t: Moment | null): string {
     const time = t || moment();
     return time && time.format(config.showTwentyFourHours ? config.hours24Format : config.hours12Format);
   }
 
-  getMinutes(config: ITimeSelectConfig, t: Moment | null): string {
+  getMinutes(config: ITimeSelectConfigInternal, t: Moment | null): string {
     const time = t || moment();
     return time && time.format(config.minutesFormat);
   }
 
-  getSeconds(config: ITimeSelectConfig, t: Moment | null): string {
+  getSeconds(config: ITimeSelectConfigInternal, t: Moment | null): string {
     const time = t || moment();
     return time && time.format(config.secondsFormat);
   }
 
-  getMeridiem(config: ITimeSelectConfig, time: Moment): string {
+  getMeridiem(config: ITimeSelectConfigInternal, time: Moment): string {
     if (config.locale) {
       time.locale(config.locale);
     }
     return time && time.format(config.meridiemFormat);
   }
 
-  decrease(config: ITimeSelectConfig, time: Moment, unit: TimeUnit): Moment {
+  decrease(config: ITimeSelectConfigInternal, time: Moment, unit: TimeUnit): Moment {
     let amount: number = 1;
     switch (unit) {
       case 'minute':
@@ -88,7 +85,7 @@ export class TimeSelectService {
     return time.clone().subtract(amount, unit);
   }
 
-  increase(config: ITimeSelectConfig, time: Moment, unit: TimeUnit): Moment {
+  increase(config: ITimeSelectConfigInternal, time: Moment, unit: TimeUnit): Moment {
     let amount: number = 1;
     switch (unit) {
       case 'minute':
@@ -109,7 +106,7 @@ export class TimeSelectService {
     }
   }
 
-  shouldShowDecrease(config: ITimeSelectConfig, time: Moment, unit: TimeUnit): boolean {
+  shouldShowDecrease(config: ITimeSelectConfigInternal, time: Moment, unit: TimeUnit): boolean {
     if (!config.min && !config.minTime) {
       return true;
     }
@@ -120,7 +117,7 @@ export class TimeSelectService {
       && (!config.minTime || config.minTime.isSameOrBefore(this.utilsService.onlyTime(newTime)));
   }
 
-  shouldShowIncrease(config: ITimeSelectConfig, time: Moment, unit: TimeUnit): boolean {
+  shouldShowIncrease(config: ITimeSelectConfigInternal, time: Moment, unit: TimeUnit): boolean {
     if (!config.max && !config.maxTime) {
       return true;
     }
@@ -131,7 +128,7 @@ export class TimeSelectService {
       && (!config.maxTime || config.maxTime.isSameOrAfter(this.utilsService.onlyTime(newTime)));
   }
 
-  shouldShowToggleMeridiem(config: ITimeSelectConfig, time: Moment): boolean {
+  shouldShowToggleMeridiem(config: ITimeSelectConfigInternal, time: Moment): boolean {
     if (!config.min && !config.max && !config.minTime && !config.maxTime) {
       return true;
     }

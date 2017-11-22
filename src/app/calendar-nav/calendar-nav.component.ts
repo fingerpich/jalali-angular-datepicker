@@ -1,16 +1,12 @@
-import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
+import {Component, EventEmitter, HostBinding, Input, Output, ViewEncapsulation} from '@angular/core';
 
 @Component({
   selector: 'dp-calendar-nav',
   templateUrl: './calendar-nav.component.html',
-  styleUrls: ['./calendar-nav.component.less']
+  styleUrls: ['./calendar-nav.component.less'],
+  encapsulation: ViewEncapsulation.None
 })
 export class CalendarNavComponent {
-  @Output() onLeftNav: EventEmitter<null> = new EventEmitter();
-  @Output() onLeftSecondaryNav: EventEmitter<null> = new EventEmitter();
-  @Output() onRightNav: EventEmitter<null> = new EventEmitter();
-  @Output() onRightSecondaryNav: EventEmitter<null> = new EventEmitter();
-  @Output() onLabelClick: EventEmitter<null> = new EventEmitter();
   @Input() label: string;
   @Input() isLabelClickable: boolean = false;
   @Input() showLeftNav: boolean = true;
@@ -21,7 +17,15 @@ export class CalendarNavComponent {
   @Input() leftSecondaryNavDisabled: boolean = false;
   @Input() rightNavDisabled: boolean = false;
   @Input() rightSecondaryNavDisabled: boolean = false;
+  @Input() showGoToCurrent: boolean = true;
   @HostBinding('class') @Input() theme: string;
+
+  @Output() onLeftNav: EventEmitter<null> = new EventEmitter();
+  @Output() onLeftSecondaryNav: EventEmitter<null> = new EventEmitter();
+  @Output() onRightNav: EventEmitter<null> = new EventEmitter();
+  @Output() onRightSecondaryNav: EventEmitter<null> = new EventEmitter();
+  @Output() onLabelClick: EventEmitter<null> = new EventEmitter();
+  @Output() goToCurrent: EventEmitter<null> = new EventEmitter();
 
   leftNavClicked() {
     this.onLeftNav.emit();

@@ -7,14 +7,18 @@ import {
   ComponentFactoryResolver,
   Directive,
   ElementRef,
+  EventEmitter,
   HostListener,
   Input,
   OnInit,
   Optional,
+  Output,
   ViewContainerRef
 } from '@angular/core';
 import {NgControl} from '@angular/forms';
 import {Moment} from 'jalali-moment';
+import {CalendarValue} from '../common/types/calendar-value';
+import {SingleCalendarValue} from '../common/types/single-calendar-value';
 
 @Directive({
   exportAs: 'dpDayPicker',
@@ -26,11 +30,11 @@ export class DatePickerDirective implements OnInit {
   private _attachTo: ElementRef | string;
   private _theme: string;
   private _mode: CalendarMode = 'day';
-  private _minDate: Moment | string;
-  private _maxDate: Moment | string;
-  private _minTime: Moment | string;
-  private _maxTime: Moment | string;
-  private firstChange: boolean = true;
+  private _minDate: SingleCalendarValue;
+  private _maxDate: SingleCalendarValue;
+  private _minTime: SingleCalendarValue;
+  private _maxTime: SingleCalendarValue;
+  private _displayDate: SingleCalendarValue;
 
   get config(): IDatePickerDirectiveConfig {
     return this._config;
@@ -73,7 +77,7 @@ export class DatePickerDirective implements OnInit {
     }
   }
 
-  @Input() set minDate(minDate: Moment | string) {
+  @Input() set minDate(minDate: SingleCalendarValue) {
     this._minDate = minDate;
     if (this.datePicker) {
       this.datePicker.minDate = minDate;
@@ -81,11 +85,11 @@ export class DatePickerDirective implements OnInit {
     }
   }
 
-  get minDate(): Moment | string {
+  get minDate(): SingleCalendarValue {
     return this._minDate;
   }
 
-  @Input() set maxDate(maxDate: Moment | string) {
+  @Input() set maxDate(maxDate: SingleCalendarValue) {
     this._maxDate = maxDate;
     if (this.datePicker) {
       this.datePicker.maxDate = maxDate;
@@ -93,11 +97,11 @@ export class DatePickerDirective implements OnInit {
     }
   }
 
-  get maxDate(): Moment | string {
+  get maxDate(): SingleCalendarValue {
     return this._maxDate;
   }
 
-  @Input() set minTime(minTime: Moment | string) {
+  @Input() set minTime(minTime: SingleCalendarValue) {
     this._minTime = minTime;
     if (this.datePicker) {
       this.datePicker.minTime = minTime;
@@ -105,11 +109,11 @@ export class DatePickerDirective implements OnInit {
     }
   }
 
-  get minTime(): Moment | string {
+  get minTime(): SingleCalendarValue {
     return this._minTime;
   }
 
-  @Input() set maxTime(maxTime: Moment | string) {
+  @Input() set maxTime(maxTime: SingleCalendarValue) {
     this._maxTime = maxTime;
     if (this.datePicker) {
       this.datePicker.maxTime = maxTime;
@@ -117,17 +121,31 @@ export class DatePickerDirective implements OnInit {
     }
   }
 
-  get maxTime(): Moment | string {
+  get maxTime(): SingleCalendarValue {
     return this._maxTime;
   }
+
+  get displayDate(): SingleCalendarValue {
+    return this._displayDate;
+  }
+
+  @Input() set displayDate(displayDate: SingleCalendarValue) {
+    this._displayDate = displayDate;
+    this.updateDatepickerConfig();
+  }
+
+  @Output() open = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>();
+  @Output() onChange = new EventEmitter<CalendarValue>();
 
   public datePicker: DatePickerComponent;
   public api: IDpDayPickerApi;
 
   constructor(public viewContainerRef: ViewContainerRef,
+              public elemRef: ElementRef,
               public componentFactoryResolver: ComponentFactoryResolver,
-              @Optional() public formControl: NgControl,
-              public service: DatePickerDirectiveService) {
+              public service: DatePickerDirectiveService,
+              @Optional() public formControl: NgControl) {
   }
 
   ngOnInit(): void {
@@ -149,7 +167,8 @@ export class DatePickerDirective implements OnInit {
     }
 
     this.datePicker.onViewDateChange(this.formControl.value);
-    this.formControl.valueChanges.subscribe(value => {
+
+    this.formControl.valueChanges.subscribe((value) => {
       if (value !== this.datePicker.inputElementValue) {
         this.datePicker.onViewDateChange(value);
       }
@@ -175,6 +194,12 @@ export class DatePickerDirective implements OnInit {
       }
 
       if (errors) {
+        if (errors.hasOwnProperty('format')) {
+          const {given} = errors['format'];
+          this.datePicker.inputElementValue = given;
+          this.formControl.control.setValue(given);
+        }
+
         this.formControl.control.setErrors(errors);
       }
     });
@@ -197,8 +222,19 @@ export class DatePickerDirective implements OnInit {
       this.datePicker.minTime = this.minTime;
       this.datePicker.maxTime = this.maxTime;
       this.datePicker.mode = this.mode || 'day';
+      this.datePicker.displayDate = this.displayDate;
       this.datePicker.config = this.config;
+      this.datePicker.open = this.open;
+      this.datePicker.close = this.close;
+      this.datePicker.onChange = this.onChange;
+
       this.datePicker.init();
+
+      if (this.datePicker.componentConfig.disableKeypress) {
+        this.elemRef.nativeElement.setAttribute('readonly', true);
+      } else {
+        this.elemRef.nativeElement.removeAttribute('readonly');
+      }
     }
   }
 }

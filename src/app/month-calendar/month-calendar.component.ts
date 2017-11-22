@@ -8,12 +8,15 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChange,
+  SimpleChanges,
+  ViewEncapsulation
 } from '@angular/core';
 import {IMonth} from './month.model';
 import {MonthCalendarService} from './month-calendar.service';
+import * as moment from 'jalali-moment';
 import {Moment} from 'jalali-moment';
-import {IMonthCalendarConfig} from './month-calendar-config';
+import {IMonthCalendarConfig, IMonthCalendarConfigInternal} from './month-calendar-config';
 import {
   ControlValueAccessor,
   FormControl,
@@ -24,12 +27,14 @@ import {
 } from '@angular/forms';
 import {CalendarValue} from '../common/types/calendar-value';
 import {UtilsService} from '../common/services/utils/utils.service';
-import {ECalendarSystem} from '../common/types/calendar-type-enum';
+import {DateValidator} from '../common/types/validator.type';
+import {SingleCalendarValue} from '../common/types/single-calendar-value';
 
 @Component({
   selector: 'dp-month-calendar',
   templateUrl: 'month-calendar.component.html',
   styleUrls: ['month-calendar.component.less'],
+  encapsulation: ViewEncapsulation.None,
   providers: [
     MonthCalendarService,
     {
@@ -50,17 +55,29 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
   @Input() minDate: Moment;
   @Input() maxDate: Moment;
   @HostBinding('class') @Input() theme: string;
+
   @Output() onSelect: EventEmitter<IMonth> = new EventEmitter();
   @Output() onNavHeaderBtnClick: EventEmitter<null> = new EventEmitter();
 
   isInited: boolean = false;
-  componentConfig: IMonthCalendarConfig;
+  componentConfig: IMonthCalendarConfigInternal;
   _selected: Moment[];
   yearMonths: IMonth[][];
-  currentDateView: Moment;
+  _currentDateView: Moment;
   inputValue: CalendarValue;
   inputValueType: ECalendarValue;
-  validateFn: (inputVal: CalendarValue) => { [key: string]: any };
+  validateFn: DateValidator;
+  _shouldShowCurrent: boolean = true;
+  navLabel: string;
+  showLeftNav: boolean;
+  showRightNav: boolean;
+  showSecondaryLeftNav: boolean;
+  showSecondaryRightNav: boolean;
+
+  api = {
+    toggleCalendar: this.toggleCalendar.bind(this),
+    moveCalendarTo: this.moveCalendarTo.bind(this)
+  };
 
   set selected(selected: Moment[]) {
     this._selected = selected;
@@ -69,6 +86,21 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
 
   get selected(): Moment[] {
     return this._selected;
+  }
+
+  set currentDateView(current: Moment) {
+    this._currentDateView = current.clone();
+    this.yearMonths = this.monthCalendarService
+      .generateYear(this.componentConfig, this._currentDateView, this.selected);
+    this.navLabel = this.monthCalendarService.getHeaderLabel(this.componentConfig, this.currentDateView);
+    this.showLeftNav = this.monthCalendarService.shouldShowLeft(this.componentConfig.min, this._currentDateView);
+    this.showRightNav = this.monthCalendarService.shouldShowRight(this.componentConfig.max, this.currentDateView);
+    this.showSecondaryLeftNav = this.componentConfig.showMultipleYearsNavigation && this.showLeftNav;
+    this.showSecondaryRightNav = this.componentConfig.showMultipleYearsNavigation && this.showRightNav;
+  }
+
+  get currentDateView(): Moment {
+    return this._currentDateView;
   }
 
   constructor(public monthCalendarService: MonthCalendarService,
@@ -83,7 +115,9 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.isInited) {
-      const {minDate, maxDate} = changes;
+      const {minDate, maxDate, config} = changes;
+
+      this.handleConfigChange(config);
       this.init();
 
       if (minDate || maxDate) {
@@ -98,9 +132,14 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
     this.currentDateView = this.displayDate
       ? this.displayDate
       : this.utilsService
-        .getDefaultDisplayDate(this.currentDateView, this.selected, this.componentConfig.allowMultiSelect);
-    this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
+        .getDefaultDisplayDate(
+          this.currentDateView,
+          this.selected,
+          this.componentConfig.allowMultiSelect,
+          this.componentConfig.min
+        );
     this.inputValueType = this.utilsService.getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
+    this._shouldShowCurrent = this.shouldShowCurrent();
   }
 
   writeValue(value: CalendarValue): void {
@@ -109,7 +148,8 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
     if (value) {
       this.selected = this.utilsService
         .convertToMomentArray(value, this.componentConfig.format, this.componentConfig.allowMultiSelect);
-      this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
+      this.yearMonths = this.monthCalendarService
+        .generateYear(this.componentConfig, this.currentDateView, this.selected);
       this.inputValueType = this.utilsService.getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
     }
   }
@@ -131,93 +171,113 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
       return () => null;
     }
   }
-  isJalali() {
-    return this.componentConfig.calendarSystem !== ECalendarSystem.gregorian;
+  isFarsi() {
+    return this.componentConfig.locale === 'fa';
   }
   processOnChangeCallback(value: Moment[]): CalendarValue {
-    return this.utilsService.convertFromMomentArray(this.componentConfig.format, value, this.inputValueType);
+    return this.utilsService.convertFromMomentArray(
+      this.componentConfig.format,
+      value,
+      this.componentConfig.returnedValueType || this.inputValueType
+    );
   }
 
   initValidators() {
     this.validateFn = this.validateFn = this.utilsService.createValidator(
-      {minDate: this.minDate, maxDate: this.maxDate}, this.componentConfig.format, 'month');
+      {minDate: this.minDate, maxDate: this.maxDate},
+      this.componentConfig.format,
+      'month'
+    );
 
     this.onChangeCallback(this.processOnChangeCallback(this.selected));
-  }
-
-  isDisabledMonth(month: IMonth): boolean {
-    return this.monthCalendarService.isMonthDisabled(month, this.componentConfig);
   }
 
   monthClicked(month: IMonth) {
     this.selected = this.utilsService
       .updateSelected(this.componentConfig.allowMultiSelect, this.selected, month, 'month');
     this.yearMonths = this.monthCalendarService
-      .generateYear(this.currentDateView, this.selected);
+      .generateYear(this.componentConfig, this.currentDateView, this.selected);
     this.onSelect.emit(month);
   }
 
-  getNavLabel(): string {
-    return this.monthCalendarService.getHeaderLabel(this.componentConfig, this.currentDateView);
-  }
-
   onLeftNav() {
-    this.monthCalendarService.decreaseYear(this.currentDateView);
-    this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
+    this.currentDateView = this.currentDateView.clone().subtract(1, 'year');
+    this.yearMonths = this.monthCalendarService.generateYear(this.componentConfig, this.currentDateView, this.selected);
   }
 
   onLeftSecondaryNav() {
     let navigateBy = this.componentConfig.multipleYearsNavigateBy;
     const isOutsideRange = this.componentConfig.min &&
-                         this.currentDateView.year() - this.componentConfig.min.year() < navigateBy;
+      this.currentDateView.year() - this.componentConfig.min.year() < navigateBy;
+
     if (isOutsideRange) {
       navigateBy = this.currentDateView.year() - this.componentConfig.min.year();
     }
-    this.currentDateView = this.currentDateView.subtract(navigateBy, 'year');
-    this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
+
+    this.currentDateView = this.currentDateView.clone().subtract(navigateBy, 'year');
   }
 
   onRightNav() {
-    this.monthCalendarService.increaseYear(this.currentDateView);
-    this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
+    this.currentDateView = this.currentDateView.clone().add(1, 'year');
   }
 
   onRightSecondaryNav() {
     let navigateBy = this.componentConfig.multipleYearsNavigateBy;
     const isOutsideRange = this.componentConfig.max &&
-                         this.componentConfig.max.year() - this.currentDateView.year() < navigateBy;
+      this.componentConfig.max.year() - this.currentDateView.year() < navigateBy;
+
     if (isOutsideRange) {
       navigateBy = this.componentConfig.max.year() - this.currentDateView.year();
     }
-    this.currentDateView.add(navigateBy, 'year');
-    this.yearMonths = this.monthCalendarService.generateYear(this.currentDateView, this.selected);
-  }
 
-  shouldShowLeftNav(): boolean {
-    return this.monthCalendarService.shouldShowLeft(this.componentConfig.min, this.currentDateView);
-  }
-
-  shouldShowLeftSecondaryNav(): boolean {
-    return this.componentConfig.showMultipleYearsNavigation && this.shouldShowLeftNav();
-  }
-
-  shouldShowRightNav(): boolean {
-    return this.monthCalendarService.shouldShowRight(this.componentConfig.max, this.currentDateView);
-  }
-
-  shouldShowRightSecondaryNav(): boolean {
-    return this.componentConfig.showMultipleYearsNavigation && this.shouldShowRightNav();
-  }
-
-  isNavHeaderBtnClickable(): boolean {
-    return this.componentConfig.isNavHeaderBtnClickable;
+    this.currentDateView = this.currentDateView.clone().add(navigateBy, 'year');
   }
 
   toggleCalendar() {
     this.onNavHeaderBtnClick.emit();
   }
 
-  getMonthBtnText(month: IMonth): string {
-    return this.monthCalendarService.getMonthBtnText(this.componentConfig, month.date);
+  getMonthBtnCssClass(month: IMonth): {[klass: string]: boolean} {
+    const cssClass: {[klass: string]: boolean} = {
+      'dp-selected': month.selected,
+      'dp-current-month': month.currentMonth
+    };
+    const customCssClass: string = this.monthCalendarService.getMonthBtnCssClass(this.componentConfig, month.date);
+
+    if (customCssClass) {
+      cssClass[customCssClass] = true;
+    }
+
+    return cssClass;
+  }
+
+  shouldShowCurrent(): boolean {
+    return this.utilsService.shouldShowCurrent(
+      this.componentConfig.showGoToCurrent,
+      'month',
+      this.componentConfig.min,
+      this.componentConfig.max
+    );
+  }
+
+  goToCurrent() {
+    this.currentDateView = moment();
+  }
+
+  moveCalendarTo(to: SingleCalendarValue) {
+    if (to) {
+      this.currentDateView = this.utilsService.convertToMoment(to, this.componentConfig.format);
+    }
+  }
+
+  handleConfigChange(config: SimpleChange) {
+    if (config) {
+      const prevConf: IMonthCalendarConfigInternal = this.monthCalendarService.getConfig(config.previousValue);
+      const currentConf: IMonthCalendarConfigInternal = this.monthCalendarService.getConfig(config.currentValue);
+
+      if (this.utilsService.shouldResetCurrentView(prevConf, currentConf)) {
+        this._currentDateView = null;
+      }
+    }
   }
 }

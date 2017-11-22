@@ -84,4 +84,21 @@ describe('Service: ObUtilsService', () => {
     date1.selected = true;
     expect(service.updateSelected(true, [date1.date], date1, 'month').length).toEqual(0);
   }));
+
+  it('should check if date is in range', inject([UtilsService], (service: UtilsService) => {
+    expect(service.isDateInRange(moment(), null, null)).toBeTruthy();
+    expect(service.isDateInRange(moment(), moment().subtract(1, 'd'), null)).toBeTruthy();
+    expect(service.isDateInRange(
+      moment().subtract(2, 'd'),
+      moment().subtract(1, 'd'),
+      moment().add(1, 'd'))
+    ).toBeFalsy();
+  }));
+
+  it('should convertPropsToMoment method', inject([UtilsService], (service: UtilsService) => {
+    const obj = {min: '14-01-1987', max: '14-01-1987'};
+    service.convertPropsToMoment(obj, 'DD-MM-YYYY', ['min', 'max']);
+    expect(moment.isMoment(obj.min)).toBeTruthy();
+    expect(moment.isMoment(obj.max)).toBeTruthy();
+  }));
 });

@@ -2,16 +2,20 @@ import debounce from '../../common/decorators/decorators';
 import {IDatePickerConfig} from '../../date-picker/date-picker-config.model';
 import {DatePickerComponent} from '../../date-picker/date-picker.component';
 import {DatePickerDirective} from '../../date-picker/date-picker.directive';
-import {Component, HostListener, PACKAGE_ROOT_URL, ViewChild} from '@angular/core';
+import {Component, HostListener, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import * as moment from 'jalali-moment';
 import {Moment} from 'jalali-moment';
 import {ECalendarSystem} from '../../common/types/calendar-type-enum';
 import {GaService} from '../services/ga/ga.service';
+import {ECalendarValue} from '../../common/types/calendar-value-enum';
+import {SingleCalendarValue} from '../../common/types/single-calendar-value';
 
 const GLOBAL_OPTION_KEYS = [
   'theme',
-  'locale'
+  'locale',
+  'returnedValueType',
+  'displayDate'
 ];
 const PICKER_OPTION_KEYS = [
   'apiclose',
@@ -21,23 +25,25 @@ const PICKER_OPTION_KEYS = [
   'disableKeypress',
   'drops',
   'format',
+  'openOnFocus',
+  'openOnClick',
   'onOpenDelay',
   'opens',
   'placeholder',
-  'required'
+  'required',
+  'hideInputContainer'
 ];
 const DAY_PICKER_DIRECTIVE_OPTION_KEYS = [
   'allowMultiSelect',
   'closeOnSelect',
   'closeOnSelectDelay',
+  'showGoToCurrent',
   ...PICKER_OPTION_KEYS
 ];
 const DAY_PICKER_OPTION_KEYS = [
-  'showGoToCurrent',
   ...DAY_PICKER_DIRECTIVE_OPTION_KEYS
 ];
 const DAY_TIME_PICKER_OPTION_KEYS = [
-  'showGoToCurrent',
   ...PICKER_OPTION_KEYS
 ];
 const TIME_PICKER_OPTION_KEYS = [
@@ -53,6 +59,7 @@ const MONTH_CALENDAR_OPTION_KEYS = [
   'multipleYearsNavigateBy',
   'showMultipleYearsNavigation',
   'yearFormat',
+  'showGoToCurrent',
   ...GLOBAL_OPTION_KEYS
 ];
 const DAY_CALENDAR_OPTION_KEYS = [
@@ -68,6 +75,7 @@ const DAY_CALENDAR_OPTION_KEYS = [
   'enableMonthSelector',
   'dayBtnFormat',
   'weekdayFormat',
+  'showGoToCurrent',
   ...MONTH_CALENDAR_OPTION_KEYS
 ];
 const TIME_SELECT_SHARED_OPTION_KEYS = [
@@ -110,18 +118,18 @@ export class DemoComponent {
   readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
   readonly LANGS = [
     'en', 'af', 'ar-dz', 'ar-kw', 'ar-ly',
-  'ar-ma', 'ar-sa', 'ar-tn', 'ar', 'az', 'be', 'bg', 'bn', 'bo',
-  'br', 'bs', 'ca', 'cs', 'cv', 'cy', 'da', 'de-at', 'de-ch',
-  'de', 'dv', 'el', 'en-au', 'en-ca', 'en-gb', 'en-ie', 'en-nz',
-  'eo', 'es-do', 'es', 'et', 'eu', 'fa', 'fi', 'fo', 'fr-ca',
-  'fr-ch', 'fr', 'fy', 'gd', 'gl', 'gom-latn', 'he', 'hi', 'hr',
-  'hu', 'hy-am', 'id', 'is', 'it', 'ja', 'jv', 'ka', 'kk', 'km', 'kn',
-  'ko', 'ky', 'lb', 'lo', 'lt', 'lv', 'me', 'mi', 'mk', 'ml', 'mr', 'ms-my',
-  'ms', 'my', 'nb', 'ne', 'nl-be', 'nl', 'nn', 'pa-in', 'pl', 'pt-br',
-  'pt', 'ro', 'ru', 'sd', 'se', 'si', 'sk', 'sl', 'sq', 'sr-cyrl', 'sr',
-  'ss', 'sv', 'sw', 'ta', 'te', 'tet', 'th', 'tl-ph', 'tlh', 'tr', 'tzl',
-  'tzm-latn', 'tzm', 'uk', 'ur', 'uz-latn', 'uz', 'vi', 'x-pseudo', 'yo', 'zh-cn', 'zh-hk', 'zh-tw'
-];
+    'ar-ma', 'ar-sa', 'ar-tn', 'ar', 'az', 'be', 'bg', 'bn', 'bo',
+    'br', 'bs', 'ca', 'cs', 'cv', 'cy', 'da', 'de-at', 'de-ch',
+    'de', 'dv', 'el', 'en-au', 'en-ca', 'en-gb', 'en-ie', 'en-nz',
+    'eo', 'es-do', 'es', 'et', 'eu', 'fa', 'fi', 'fo', 'fr-ca',
+    'fr-ch', 'fr', 'fy', 'gd', 'gl', 'gom-latn', 'he', 'hi', 'hr',
+    'hu', 'hy-am', 'id', 'is', 'it', 'ja', 'jv', 'ka', 'kk', 'km', 'kn',
+    'ko', 'ky', 'lb', 'lo', 'lt', 'lv', 'me', 'mi', 'mk', 'ml', 'mr', 'ms-my',
+    'ms', 'my', 'nb', 'ne', 'nl-be', 'nl', 'nn', 'pa-in', 'pl', 'pt-br',
+    'pt', 'ro', 'ru', 'sd', 'se', 'si', 'sk', 'sl', 'sq', 'sr-cyrl', 'sr',
+    'ss', 'sv', 'sw', 'ta', 'te', 'tet', 'th', 'tl-ph', 'tlh', 'tr', 'tzl',
+    'tzm-latn', 'tzm', 'uk', 'ur', 'uz-latn', 'uz', 'vi', 'x-pseudo', 'yo', 'zh-cn', 'zh-hk', 'zh-tw'
+  ];
   pickerMode = 'daytimePicker';
 
   direction: string = 'ltr';
@@ -135,6 +143,29 @@ export class DemoComponent {
   validationMinTime: Moment;
   validationMaxTime: Moment;
   placeholder: string = 'Choose a date...';
+  displayDate: Moment | string;
+  dateTypes: {name: string, value: ECalendarValue}[] = [
+    {
+      name: 'Guess',
+      value: null
+    },
+    {
+      name: ECalendarValue[ECalendarValue.Moment],
+      value: ECalendarValue.Moment
+    },
+    {
+      name: ECalendarValue[ECalendarValue.MomentArr],
+      value: ECalendarValue.MomentArr
+    },
+    {
+      name: ECalendarValue[ECalendarValue.String],
+      value: ECalendarValue.String
+    },
+    {
+      name: ECalendarValue[ECalendarValue.StringArr],
+      value: ECalendarValue.StringArr
+    }
+  ];
 
   formGroup: FormGroup = new FormGroup({
     datePicker: new FormControl({value: this.date, disabled: this.disabled}, [
@@ -169,11 +200,11 @@ export class DemoComponent {
     allowMultiSelect: false,
     closeOnSelect: true,
     closeOnSelectDelay: 100,
+    openOnFocus: true,
+    openOnClick: true,
     onOpenDelay: 0,
     weekDayFormat: 'ddd',
     appendTo: document.body,
-    drops: 'down',
-    opens: 'right',
     showNearMonthDays: true,
     showWeekNumbers: false,
     enableMonthSelector: true,
@@ -194,7 +225,9 @@ export class DemoComponent {
     timeSeparator: ':',
     multipleYearsNavigateBy: 10,
     showMultipleYearsNavigation: false,
-    locale: 'en'
+    locale: moment.locale(),
+    hideInputContainer: false,
+    returnedValueType: ECalendarValue.String
   };
   config: IDatePickerConfig = {...this.gregorianSystemDefaults, ...this.jalaliConfigExtension};
   isAtTop: boolean = true;
@@ -262,6 +295,14 @@ export class DemoComponent {
     }
   }
 
+  opened() {
+    console.log('opened');
+  }
+
+  closed() {
+    console.log('closed');
+  }
+
   isValidConfig(key: string): boolean {
     switch (this.pickerMode) {
       case 'dayInline':
@@ -286,7 +327,7 @@ export class DemoComponent {
             ...DAY_CALENDAR_OPTION_KEYS
           ].indexOf(key) > -1;
       case 'dayDirective':
-      case 'dayDirectiveReactive':
+      case 'dayDirectiveReactiveMenu':
         return [
             ...DAY_PICKER_DIRECTIVE_OPTION_KEYS,
             ...DAY_CALENDAR_OPTION_KEYS
@@ -327,7 +368,7 @@ export class DemoComponent {
       case 'dayPicker':
       case 'dayInline':
       case 'dayDirective':
-      case 'dayDirectiveReactive':
+      case 'dayDirectiveReactiveMenu':
         return 'DD-MM-YYYY';
       case 'monthPicker':
       case 'monthInline':

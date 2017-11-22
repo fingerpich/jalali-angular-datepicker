@@ -1,28 +1,30 @@
 <div class="dp-month-calendar-container">
   <dp-calendar-nav
-      [label]="getNavLabel()"
-      [showLeftNav]="shouldShowLeftNav()"
-      [showLeftSecondaryNav]="shouldShowLeftSecondaryNav()"
-      [showRightNav]="shouldShowRightNav()"
-      [showRightSecondaryNav]="shouldShowRightSecondaryNav()"
-      [isLabelClickable]="isNavHeaderBtnClickable()"
+      [label]="navLabel"
+      [showLeftNav]="showLeftNav"
+      [showLeftSecondaryNav]="showSecondaryLeftNav"
+      [showRightNav]="showRightNav"
+      [showRightSecondaryNav]="showSecondaryRightNav"
+      [isLabelClickable]="componentConfig.isNavHeaderBtnClickable"
+      [showGoToCurrent]="shouldShowCurrent()"
       [theme]="theme"
       (onLeftNav)="onLeftNav()"
       (onLeftSecondaryNav)="onLeftSecondaryNav()"
       (onRightNav)="onRightNav()"
       (onRightSecondaryNav)="onRightSecondaryNav()"
-      (onLabelClick)="toggleCalendar()">
+      (onLabelClick)="toggleCalendar()"
+      (goToCurrent)="goToCurrent()">
   </dp-calendar-nav>
 
-  <div class="dp-calendar-wrapper" [ngClass]="{'rtl':isJalali()}">
+  <div class="dp-calendar-wrapper" [ngClass]="{'rtl':isFarsi()}">
     <div class="dp-months-row" *ngFor="let monthRow of yearMonths">
       <button type="button"
               class="dp-calendar-month"
               *ngFor="let month of monthRow"
-              [disabled]="isDisabledMonth(month)"
-              [ngClass]="{'dp-selected': month.selected,'dp-current-month': month.currentMonth}"
-              (click)="monthClicked(month)">
-        {{getMonthBtnText(month)}}
+              [disabled]="month.disabled"
+              [ngClass]="getMonthBtnCssClass(month)"
+              (click)="monthClicked(month)"
+              [innerText]="month.text">
       </button>
     </div>
   </div>
