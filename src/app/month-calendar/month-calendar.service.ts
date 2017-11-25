@@ -29,7 +29,7 @@ export class MonthCalendarService {
   getConfig(config: IMonthCalendarConfig): IMonthCalendarConfigInternal {
     const _config = <IMonthCalendarConfigInternal>{
       ...this.DEFAULT_CONFIG,
-      ...((config && config.locale !== 'fa') ? this.GREGORIAN_DEFAULT_CONFIG : {}),
+      ...((config && config.locale && config.locale !== 'fa') ? this.GREGORIAN_DEFAULT_CONFIG : {}),
       ...this.utilsService.clearUndefined(config)
     };
 

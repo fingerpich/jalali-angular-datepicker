@@ -1,5 +1,6 @@
 import {ECalendarValue} from '../common/types/calendar-value-enum';
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   forwardRef,
@@ -47,7 +48,8 @@ import {SingleCalendarValue} from '../common/types/single-calendar-value';
       useExisting: forwardRef(() => MonthCalendarComponent),
       multi: true
     }
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
   @Input() config: IMonthCalendarConfig;

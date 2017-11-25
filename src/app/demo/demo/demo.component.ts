@@ -182,13 +182,10 @@ export class DemoComponent {
 
   jalaliConfigExtension: IDatePickerConfig = {
     firstDayOfWeek: 'sa',
-    monthFormat: 'jMMMM jYY',
+    monthFormat: 'MMMM YY',
     weekDayFormat: 'dd',
-    drops: 'down',
-    opens: 'right',
-    yearFormat: 'jYYYY',
-    dayBtnFormat: 'jD',
-    monthBtnFormat: 'jMMMM',
+    dayBtnFormat: 'D',
+    monthBtnFormat: 'MMMM',
     locale: 'fa'
   };
   gregorianSystemDefaults: IDatePickerConfig = {
@@ -222,7 +219,7 @@ export class DemoComponent {
     timeSeparator: ':',
     multipleYearsNavigateBy: 10,
     showMultipleYearsNavigation: false,
-    locale: moment.locale(),
+    locale: 'en',
     hideInputContainer: false,
     returnedValueType: ECalendarValue.String
   };
@@ -238,12 +235,12 @@ export class DemoComponent {
     this.isAtTop = document.body.scrollTop === 0;
   }
 
-  changeCalendarSystem() {
-    const defaultCalSys = (this.config.locale === 'fa') ?
-      {...this.gregorianSystemDefaults, ...this.jalaliConfigExtension} : this.gregorianSystemDefaults;
-    this.date = moment();
-    this.config = {...this.config, ...defaultCalSys};
-  }
+  // changeCalendarSystem() {
+  //   const defaultCalSys = (this.config.locale === 'fa') ?
+  //     {...this.gregorianSystemDefaults, ...this.jalaliConfigExtension} : this.gregorianSystemDefaults;
+  //   this.date = moment();
+  //   this.config = {...this.config, ...defaultCalSys};
+  // }
   modeChanged(mode) {
     this.pickerMode = mode;
     this.config.hideInputContainer = false;
@@ -268,9 +265,16 @@ export class DemoComponent {
     this.config = {...this.config};
 
     this.gaService.emitEvent('ConfigChange', change, value);
-
+    //
+    // if (change === 'locale') {
+    //   this.refreshDemo();
+    // }
     if (change === 'locale') {
-      this.refreshDemo();
+      const defaultCalSys = (this.config.locale === 'fa') ?
+        {...this.gregorianSystemDefaults, ...this.jalaliConfigExtension} : this.gregorianSystemDefaults;
+      this.datePicker.changeLocale(this.config.locale);
+      this.date = moment();
+      this.config = {...this.config, ...defaultCalSys};
     }
   };
 

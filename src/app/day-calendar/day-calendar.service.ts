@@ -45,7 +45,7 @@ export class DayCalendarService {
   getConfig(config: IDayCalendarConfig): IDayCalendarConfigInternal {
     const _config = <IDayCalendarConfigInternal>{
       ...this.DEFAULT_CONFIG,
-      ...((config && config.locale === 'en') ? {} : this.GREGORIAN_CONFIG_EXTENTION),
+      ...((config && config.locale && config.locale !== 'fa') ? this.GREGORIAN_CONFIG_EXTENTION : {}),
       ...this.utilsService.clearUndefined(config)
     };
 
@@ -70,9 +70,11 @@ export class DayCalendarService {
     let monthArray: IDay[][] = [];
     const firstDayOfWeekIndex = this.DAYS.indexOf(config.firstDayOfWeek);
     const firstDayOfBoard = month.clone().startOf('month');
-
-    while (firstDayOfBoard.day() !== firstDayOfWeekIndex) {
+    for (let i = 0; i < 8 && (firstDayOfBoard.day() !== firstDayOfWeekIndex) ; i++) {
       firstDayOfBoard.subtract(1, 'day');
+      if (i === 7) {
+        throw new Error('first day of Board has set Wrong');
+      }
     }
 
     const current = firstDayOfBoard.clone();
@@ -188,6 +190,7 @@ export class DayCalendarService {
       isNavHeaderBtnClickable: true,
       allowMultiSelect: false,
       yearFormat: componentConfig.yearFormat,
+      locale: componentConfig.locale,
       yearFormatter: componentConfig.yearFormatter,
       monthBtnFormat: componentConfig.monthBtnFormat,
       monthBtnFormatter: componentConfig.monthBtnFormatter,

@@ -232,6 +232,9 @@ export class DatePickerComponent implements OnChanges,
   }
 
   writeValue(value: CalendarValue): void {
+    if (this.inputValue == value) {
+      return;
+    }
     this.inputValue = value;
 
     if (value || value === '') {
@@ -451,6 +454,11 @@ export class DatePickerComponent implements OnChanges,
         this.onBodyClick();
       })
     );
+  }
+
+  changeLocale (locale) {
+    this.dayCalendarConfig = {...this.dayCalendarConfig, ...{locale}};
+    this.dayTimeCalendarConfig = {...this.dayTimeCalendarConfig, ...{locale}};
   }
 
   stopGlobalListeners() {

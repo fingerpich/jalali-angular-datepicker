@@ -39,7 +39,7 @@ export class DatePickerService {
   getConfig(config: IDatePickerConfig, mode: CalendarMode = 'daytime'): IDatePickerConfigInternal {
     const _config = <IDatePickerConfigInternal>{
       ...this.defaultConfig,
-      ...((config && config.locale !== 'fa') ? this.gregorianExtensionConfig : {}),
+      ...((config && config.locale && config.locale !== 'fa') ? this.gregorianExtensionConfig : {}),
       format: this.getDefaultFormatByMode(mode, config),
       ...this.utilsService.clearUndefined(config)
     };
@@ -117,7 +117,7 @@ export class DatePickerService {
     let dateFormat = 'YYYY-MM-DD';
     let monthFormat = 'MMMM YY';
     const timeFormat = 'HH:mm:ss';
-    if (config && (config.locale !== 'fa')) {
+    if (config && config.locale && config.locale !== 'fa') {
       dateFormat = 'DD-MM-YYYY';
       monthFormat = 'MMM, YYYY';
     }

@@ -533,7 +533,7 @@
                           theme="dp-material"
                           [(ngModel)]="validationMinDate"
                           [mode]="pickerMode.startsWith('daytime') ? 'daytime' : 'day'"
-                          [config]="{format: config.format}"
+                          [config]="{format: 'YYYY/MM/DD',locale:'en'}"
                           (ngModelChange)="validatorsChanged()"
                           placeholder="Select a min date">
           </dp-date-picker>
