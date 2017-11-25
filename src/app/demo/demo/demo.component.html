@@ -621,7 +621,7 @@
     <div class="dp-configs">
       <h3 class="dp-options-section">Config options</h3>
 
-      <div class="dp-option" *ngIf="false">
+      <div class="dp-option" *ngIf="isValidConfig('locale')">
         <span class="dp-option-header">
           Locale (locale):
         </span>
@@ -631,24 +631,6 @@
                   (change)="configChanged('locale', config.locale)">
             <option *ngFor="let lang of LANGS" [value]="lang"> {{lang}}</option>
           </select>
-        </div>
-      </div>
-
-      <div class="dp-option">
-        <span class="dp-option-header">
-          Calendar System
-        </span>
-        <div class="dp-option-playground">
-          <label>Jalali
-            <input id="jalaliCalendarSystem" type="radio" [(ngModel)]="config.calendarSystem" name="calendarSystem"
-                   [value]="0"
-                   (ngModelChange)="changeCalendarSystem()">
-          </label>
-          <label>Gregorian
-            <input id="gregorianCalendarSystem" type="radio" [(ngModel)]="config.calendarSystem" name="calendarSystem"
-                   [value]="1"
-                   (ngModelChange)="changeCalendarSystem()">
-          </label>
         </div>
       </div>
 

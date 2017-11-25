@@ -1,5 +1,4 @@
 import {locale, Moment} from 'jalali-moment';
-import {ECalendarSystem} from '../common/types/calendar-type-enum';
 import {ICalendar, ICalendarInternal} from '../common/models/calendar.model';
 import {ECalendarValue} from '../common/types/calendar-value-enum';
 
@@ -7,7 +6,6 @@ export interface IConfig {
   isMonthDisabledCallback?: (date: Moment) => boolean;
   allowMultiSelect?: boolean;
   yearFormat?: string;
-  calendarSystem?: ECalendarSystem;
   yearFormatter?: (month: Moment) => string;
   format?: string;
   isNavHeaderBtnClickable?: boolean;

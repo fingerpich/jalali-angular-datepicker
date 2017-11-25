@@ -6,7 +6,6 @@ import {Component, HostListener, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import * as moment from 'jalali-moment';
 import {Moment} from 'jalali-moment';
-import {ECalendarSystem} from '../../common/types/calendar-type-enum';
 import {GaService} from '../services/ga/ga.service';
 import {ECalendarValue} from '../../common/types/calendar-value-enum';
 import {SingleCalendarValue} from '../../common/types/single-calendar-value';
@@ -188,7 +187,6 @@ export class DemoComponent {
     drops: 'down',
     opens: 'right',
     yearFormat: 'jYYYY',
-    calendarSystem: ECalendarSystem.jalali,
     dayBtnFormat: 'jD',
     monthBtnFormat: 'jMMMM',
     locale: 'fa'
@@ -198,7 +196,7 @@ export class DemoComponent {
     monthFormat: 'MMM, YYYY',
     disableKeypress: false,
     allowMultiSelect: false,
-    closeOnSelect: true,
+    closeOnSelect: undefined,
     closeOnSelectDelay: 100,
     openOnFocus: true,
     openOnClick: true,
@@ -210,7 +208,6 @@ export class DemoComponent {
     enableMonthSelector: true,
     yearFormat: 'YYYY',
     showGoToCurrent: true,
-    calendarSystem: ECalendarSystem.gregorian,
     dayBtnFormat: 'DD',
     monthBtnFormat: 'MMM',
     hours12Format: 'hh',
@@ -242,7 +239,7 @@ export class DemoComponent {
   }
 
   changeCalendarSystem() {
-    const defaultCalSys = (this.config.calendarSystem === ECalendarSystem.jalali) ?
+    const defaultCalSys = (this.config.locale === 'fa') ?
       {...this.gregorianSystemDefaults, ...this.jalaliConfigExtension} : this.gregorianSystemDefaults;
     this.date = moment();
     this.config = {...this.config, ...defaultCalSys};

@@ -1,7 +1,6 @@
 import {ICalendar, ICalendarInternal} from '../common/models/calendar.model';
 import {WeekDays} from '../common/types/week-days.type';
 import {Moment} from 'jalali-moment';
-import {ECalendarSystem} from '../common/types/calendar-type-enum';
 import {ECalendarValue} from '../common/types/calendar-value-enum';
 
 export interface IConfig {
@@ -12,7 +11,6 @@ export interface IConfig {
   showNearMonthDays?: boolean;
   showWeekNumbers?: boolean;
   firstDayOfWeek?: WeekDays;
-  calendarSystem?: ECalendarSystem;
   format?: string;
   allowMultiSelect?: boolean;
   monthFormat?: string;

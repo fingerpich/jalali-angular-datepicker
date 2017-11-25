@@ -6,7 +6,6 @@ import {Moment} from 'moment';
 import {DayCalendarComponent} from './day-calendar.component';
 import {DayCalendarService} from './day-calendar.service';
 import {MonthCalendarComponent} from '../month-calendar/month-calendar.component';
-import {ECalendarSystem} from '../common/types/calendar-type-enum';
 import {IDay} from './day.model';
 
 describe('Component: DayCalendarComponent', () => {
@@ -23,7 +22,7 @@ describe('Component: DayCalendarComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DayCalendarComponent);
     component = fixture.componentInstance;
-    component.config = component.dayCalendarService.getConfig({calendarSystem : ECalendarSystem.gregorian});
+    component.config = component.dayCalendarService.getConfig({});
     fixture.detectChanges();
   });
 
