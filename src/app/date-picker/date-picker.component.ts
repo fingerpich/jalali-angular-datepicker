@@ -126,7 +126,7 @@ export class DatePickerComponent implements OnChanges,
   set selected(selected: Moment[]) {
     this._selected = selected;
     this.inputElementValue = (<string[]>this.utilsService
-      .convertFromMomentArray(this.componentConfig.format, selected, ECalendarValue.StringArr))
+      .convertFromMomentArray(this.componentConfig.format, selected, ECalendarValue.StringArr, this.componentConfig.locale))
       .join(', ');
     const val = this.processOnChangeCallback(selected);
     this.onChangeCallback(val);
@@ -239,9 +239,9 @@ export class DatePickerComponent implements OnChanges,
 
     if (value || value === '') {
       this.selected = this.utilsService
-        .convertToMomentArray(value, this.componentConfig.format, this.componentConfig.allowMultiSelect);
+        .convertToMomentArray(value, this.componentConfig.format, this.componentConfig.allowMultiSelect, this.componentConfig.locale);
       this.currentDateView = this.selected.length
-        ? this.utilsService.getDefaultDisplayDate(null, this.selected, this.componentConfig.allowMultiSelect, this.componentConfig.min)
+        ? this.utilsService.getDefaultDisplayDate(null, this.selected, this.componentConfig.allowMultiSelect, this.componentConfig.min, this.componentConfig.locale)
         : this.currentDateView;
       this.init();
     } else {
@@ -270,7 +270,8 @@ export class DatePickerComponent implements OnChanges,
       return this.utilsService.convertFromMomentArray(
         this.componentConfig.format,
         selected,
-        this.componentConfig.returnedValueType || this.inputValueType
+        this.componentConfig.returnedValueType || this.inputValueType,
+        this.componentConfig.locale
       );
     }
   }
@@ -282,7 +283,7 @@ export class DatePickerComponent implements OnChanges,
         maxDate: this.maxDate,
         minTime: this.minTime,
         maxTime: this.maxTime
-      }, this.componentConfig.format, this.mode);
+      }, this.componentConfig.format, this.mode, this.componentConfig.locale);
     this.onChangeCallback(this.processOnChangeCallback(this.selected));
   }
 
@@ -349,13 +350,14 @@ export class DatePickerComponent implements OnChanges,
   init() {
     this.componentConfig = this.dayPickerService.getConfig(this.config, this.mode);
     this.currentDateView = this.displayDate
-      ? this.utilsService.convertToMoment(this.displayDate, this.componentConfig.format).clone()
+      ? this.utilsService.convertToMoment(this.displayDate, this.componentConfig.format, this.componentConfig.locale).clone()
       : this.utilsService
         .getDefaultDisplayDate(
           this.currentDateView,
           this.selected,
           this.componentConfig.allowMultiSelect,
-          this.componentConfig.min
+          this.componentConfig.min,
+          this.componentConfig.locale
         );
     this.inputValueType = this.utilsService.getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
     this.dayCalendarConfig = this.dayPickerService.getDayConfigService(this.componentConfig);
@@ -409,12 +411,13 @@ export class DatePickerComponent implements OnChanges,
           null,
           this.selected,
           this.componentConfig.allowMultiSelect,
-          this.componentConfig.min
+          this.componentConfig.min,
+          this.componentConfig.locale
         )
         : this.currentDateView;
     } else {
       this._selected = this.utilsService
-        .getValidMomentArray(value, this.componentConfig.format);
+        .getValidMomentArray(value, this.componentConfig.format, this.componentConfig.locale);
       this.onChangeCallback(this.processOnChangeCallback(value));
     }
   }

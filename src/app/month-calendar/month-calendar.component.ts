@@ -138,7 +138,8 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
           this.currentDateView,
           this.selected,
           this.componentConfig.allowMultiSelect,
-          this.componentConfig.min
+          this.componentConfig.min,
+          this.componentConfig.locale
         );
     this.inputValueType = this.utilsService.getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
     this._shouldShowCurrent = this.shouldShowCurrent();
@@ -149,7 +150,10 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
 
     if (value) {
       this.selected = this.utilsService
-        .convertToMomentArray(value, this.componentConfig.format, this.componentConfig.allowMultiSelect);
+        .convertToMomentArray(value,
+          this.componentConfig.format,
+          this.componentConfig.allowMultiSelect,
+          this.componentConfig.locale);
       this.yearMonths = this.monthCalendarService
         .generateYear(this.componentConfig, this.currentDateView, this.selected);
       this.inputValueType = this.utilsService.getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
@@ -180,7 +184,8 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
     return this.utilsService.convertFromMomentArray(
       this.componentConfig.format,
       value,
-      this.componentConfig.returnedValueType || this.inputValueType
+      this.componentConfig.returnedValueType || this.inputValueType,
+      this.componentConfig.locale
     );
   }
 
@@ -188,7 +193,8 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
     this.validateFn = this.validateFn = this.utilsService.createValidator(
       {minDate: this.minDate, maxDate: this.maxDate},
       this.componentConfig.format,
-      'month'
+      'month',
+      this.componentConfig.locale
     );
 
     this.onChangeCallback(this.processOnChangeCallback(this.selected));
@@ -268,7 +274,7 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
 
   moveCalendarTo(to: SingleCalendarValue) {
     if (to) {
-      this.currentDateView = this.utilsService.convertToMoment(to, this.componentConfig.format);
+      this.currentDateView = this.utilsService.convertToMoment(to, this.componentConfig.format, this.componentConfig.locale);
     }
   }
 

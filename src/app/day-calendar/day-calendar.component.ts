@@ -125,16 +125,17 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     this.componentConfig = this.dayCalendarService.getConfig(this.config);
     this.selected = this.selected || [];
     this.currentDateView = this.displayDate
-      ? this.utilsService.convertToMoment(this.displayDate, this.componentConfig.format).clone()
+      ? this.utilsService.convertToMoment(this.displayDate, this.componentConfig.format, this.componentConfig.locale).clone()
       : this.utilsService
         .getDefaultDisplayDate(
           this.currentDateView,
           this.selected,
           this.componentConfig.allowMultiSelect,
-          this.componentConfig.min
+          this.componentConfig.min,
+          this.componentConfig.locale
         );
     this.weekdays = this.dayCalendarService
-      .generateWeekdays(this.componentConfig.firstDayOfWeek);
+      .generateWeekdays(this.componentConfig.firstDayOfWeek, this.componentConfig.locale);
     this.inputValueType = this.utilsService.getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
     this.monthCalendarConfig = this.dayCalendarService.getMonthCalendarConfig(this.componentConfig);
     this._shouldShowCurrent = this.shouldShowCurrent();
@@ -168,7 +169,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
 
     if (value) {
       this.selected = this.utilsService
-        .convertToMomentArray(value, this.componentConfig.format, this.componentConfig.allowMultiSelect);
+        .convertToMomentArray(value, this.componentConfig.format, this.componentConfig.allowMultiSelect, this.componentConfig.locale);
       this.inputValueType = this.utilsService
         .getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
     } else {
@@ -201,7 +202,8 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     return this.utilsService.convertFromMomentArray(
       this.componentConfig.format,
       value,
-      this.componentConfig.returnedValueType || this.inputValueType
+      this.componentConfig.returnedValueType || this.inputValueType,
+      this.componentConfig.locale
     );
   }
 
@@ -209,7 +211,8 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     this.validateFn = this.utilsService.createValidator(
       {minDate: this.minDate, maxDate: this.maxDate},
       this.componentConfig.format,
-      'day'
+      'day',
+      this.componentConfig.locale
     );
 
     this.onChangeCallback(this.processOnChangeCallback(this.selected));
@@ -278,7 +281,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
 
   moveCalendarTo(to: SingleCalendarValue) {
     if (to) {
-      this.currentDateView = this.utilsService.convertToMoment(to, this.componentConfig.format);
+      this.currentDateView = this.utilsService.convertToMoment(to, this.componentConfig.format, this.componentConfig.locale);
     }
   }
 

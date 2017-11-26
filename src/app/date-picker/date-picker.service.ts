@@ -44,13 +44,13 @@ export class DatePickerService {
       ...this.utilsService.clearUndefined(config)
     };
 
-    this.utilsService.convertPropsToMoment(_config, _config.format, ['min', 'max']);
+    this.utilsService.convertPropsToMoment(_config, _config.format, ['min', 'max'], _config.locale);
 
     if (config && config.allowMultiSelect && config.closeOnSelect === undefined) {
       _config.closeOnSelect = false;
     }
 
-    moment.locale(_config.locale);
+    // moment.locale(_config.locale);
 
     return _config;
   }
@@ -102,7 +102,7 @@ export class DatePickerService {
     value = value ? value : '';
     const datesStrArr: string[] = this.utilsService.datesStringToStringArray(value);
 
-    return datesStrArr.every(date => this.utilsService.isDateValid(date, config.format));
+    return datesStrArr.every(date => this.utilsService.isDateValid(date, config.format, config.locale));
   }
 
   // todo:: add unit tests
@@ -110,7 +110,7 @@ export class DatePickerService {
     value = value ? value : '';
     const datesStrArr: string[] = this.utilsService.datesStringToStringArray(value);
 
-    return this.utilsService.convertToMomentArray(datesStrArr, config.format, config.allowMultiSelect);
+    return this.utilsService.convertToMomentArray(datesStrArr, config.format, config.allowMultiSelect, config.locale);
   }
 
   private getDefaultFormatByMode(mode: CalendarMode, config: IDatePickerConfig): string {

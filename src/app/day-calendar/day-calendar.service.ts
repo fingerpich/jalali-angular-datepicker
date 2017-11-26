@@ -49,9 +49,9 @@ export class DayCalendarService {
       ...this.utilsService.clearUndefined(config)
     };
 
-    this.utilsService.convertPropsToMoment(_config, _config.format, ['min', 'max']);
+    this.utilsService.convertPropsToMoment(_config, _config.format, ['min', 'max'], _config.locale);
 
-    moment.locale(_config.locale);
+    // moment.locale(_config.locale);
 
     return _config;
   }
@@ -119,16 +119,14 @@ export class DayCalendarService {
     return monthArray;
   }
 
-  generateWeekdays(firstDayOfWeek: WeekDays): Moment[] {
-    const weekdayNames: {[key: string]: Moment} = {
-      su: moment().day(0),
-      mo: moment().day(1),
-      tu: moment().day(2),
-      we: moment().day(3),
-      th: moment().day(4),
-      fr: moment().day(5),
-      sa: moment().day(6)
-    };
+  generateWeekdays(firstDayOfWeek: WeekDays, locale: string): Moment[] {
+    const weekdayNames: {[key: string]: Moment} = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'].reduce((acc, d, i) => {
+      const m = moment();
+      m.locale(locale);
+      m.day(i);
+      acc[d] = m;
+      return acc;
+    }, {});
     const weekdays: Moment[] = [];
     const daysMap = this.generateDaysMap(firstDayOfWeek);
 

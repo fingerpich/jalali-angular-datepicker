@@ -111,7 +111,7 @@ export class DayTimeCalendarComponent implements OnInit, OnChanges, ControlValue
 
     if (value) {
       this.selected = this.utilsService
-        .convertToMomentArray(value, this.componentConfig.format, false)[0];
+        .convertToMomentArray(value, this.componentConfig.format, false, this.componentConfig.locale)[0];
       this.inputValueType = this.utilsService
         .getInputType(this.inputValue, false);
     } else {
@@ -141,7 +141,8 @@ export class DayTimeCalendarComponent implements OnInit, OnChanges, ControlValue
     return this.utilsService.convertFromMomentArray(
       this.componentConfig.format,
       [value],
-      this.componentConfig.returnedValueType || this.inputValueType
+      this.componentConfig.returnedValueType || this.inputValueType,
+      this.componentConfig.locale
     );
   }
 
@@ -150,7 +151,8 @@ export class DayTimeCalendarComponent implements OnInit, OnChanges, ControlValue
       {
         minDate: this.minDate,
         maxDate: this.maxDate
-      }, undefined, 'daytime');
+      }, undefined, 'daytime',
+      this.componentConfig.locale);
 
     this.onChangeCallback(this.processOnChangeCallback(this.selected));
   }

@@ -38,7 +38,7 @@ export class TimeSelectService {
       ...timeConfigs
     };
 
-    moment.locale(_config.locale);
+    // moment.locale(_config.locale);
 
     return _config;
   }

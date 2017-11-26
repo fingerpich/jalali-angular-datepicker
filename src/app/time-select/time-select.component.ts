@@ -137,7 +137,7 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
 
     if (value) {
       const momentValue = this.utilsService
-        .convertToMomentArray(value, this.timeSelectService.getTimeFormat(this.componentConfig), false)[0];
+        .convertToMomentArray(value, this.timeSelectService.getTimeFormat(this.componentConfig), false, this.componentConfig.locale)[0];
       if (momentValue.isValid()) {
         this.selected = momentValue;
         this.inputValueType = this.utilsService
@@ -168,7 +168,8 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
     return this.utilsService.convertFromMomentArray(
       this.timeSelectService.getTimeFormat(this.componentConfig),
       [value],
-      this.componentConfig.returnedValueType || this.inputValueType
+      this.componentConfig.returnedValueType || this.inputValueType,
+      this.componentConfig.locale
     );
   }
 
@@ -179,7 +180,8 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
         maxDate: this.maxDate,
         minTime: this.minTime,
         maxTime: this.maxTime
-      }, undefined, 'day');
+      }, undefined, 'day',
+      this.componentConfig.locale);
 
     this.onChangeCallback(this.processOnChangeCallback(this.selected));
   }
