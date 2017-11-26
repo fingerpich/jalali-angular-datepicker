@@ -39,7 +39,7 @@
     "farsi"
   ],
   "dependencies": {
-    "jalali-moment": "^3.0.6"
+    "jalali-moment": "^3.0.7"
   },
   "devDependencies": {
     "@angular/cli": "1.5.0",
@@ -54,11 +54,11 @@
     "@types/google.analytics": "0.0.33",
     "@types/jasmine": "2.5.53",
     "@types/node": "8.0.19",
+    "classlist.js": "^1.1.20150312",
     "codacy-coverage": "2.0.2",
     "codelyzer": "3.1.2",
-    "classlist.js": "^1.1.20150312",
     "core-js": "2.4.1",
-    "jasmine-core": "~2.7.0",
+    "jasmine-core": "^2.8.0",
     "jasmine-spec-reporter": "4.2.1",
     "karma": "~1.7.0",
     "karma-chrome-launcher": "2.2.0",
@@ -68,7 +68,7 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "less": "^2.7.2",
     "ncp": "^2.0.0",
-    "protractor": "~5.1.2",
+    "protractor": "^5.2.0",
     "rimraf": "^2.6.1",
     "rxjs": "^5.4.0",
     "ts-node": "3.3.0",
