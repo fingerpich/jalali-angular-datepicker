@@ -36,11 +36,21 @@ export class DayTimeCalendarService {
 
   updateDay(current: Moment, day: Moment): Moment {
     const time = current ? current : moment();
-    return moment(day.format(DAY_FORMAT) + time.format(TIME_FORMAT), COMBINED_FORMAT);
+    const parseLocale = moment.locale();
+    const locale = day.locale();
+    moment.locale(locale);
+    const res = moment(day.format(DAY_FORMAT) + time.format(TIME_FORMAT), COMBINED_FORMAT);
+    moment.locale(parseLocale);
+    return res;
   }
 
   updateTime(current: Moment, time: Moment): Moment {
     const day = current ? current : moment();
-    return moment(day.format(DAY_FORMAT) + time.format(TIME_FORMAT), COMBINED_FORMAT);
+    const parseLocale = moment.locale();
+    const locale = day.locale();
+    moment.locale(locale);
+    const res = moment(day.format(DAY_FORMAT) + time.format(TIME_FORMAT), COMBINED_FORMAT);
+    moment.locale(parseLocale);
+    return res;
   }
 }
