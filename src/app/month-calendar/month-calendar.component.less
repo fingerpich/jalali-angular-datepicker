@@ -1,70 +1,67 @@
 @import '../common/styles/variables';
 
 & {
-  &:host {
+  dp-month-calendar {
     display: inline-block;
-  }
 
-  .dp-month-calendar-container {
-    background: @c-white;
-  }
-
-  .dp-calendar-wrapper {
-    //border: 1px solid @c-black;
-    &.rtl{
-      direction:rtl;
+    .dp-month-calendar-container {
+      background: @c-white;
     }
-  }
 
-  .dp-calendar-month {
-    box-sizing: border-box;
-    width: @basic-height * 11 / 6;
-    height: @basic-height * 11 / 6;
-    cursor: pointer;
+    .dp-calendar-wrapper {
+      //border: 1px solid @c-black;
+      &.rtl{
+        direction:rtl;
+      }}
 
-    &.dp-selected {
-      background: @c-primary;
-      color: @c-white;
+    .dp-calendar-month {
+      box-sizing: border-box;
+      width: @basic-height * 11 / 6;
+      height: @basic-height * 11 / 6;
+      cursor: pointer;
+
+      &.dp-selected {
+        background: @c-primary;
+        color: @c-white;
+      }
     }
-  }
 
-  :host.dp-material {
-    .dp-calendar-weekday {
-      height: @basic-height - 5px;
-      width: @basic-height;
-      line-height: @basic-height - 5px;
-      background: @c-light-gray;
-      border: 1px solid @c-light-gray;
-    }
+    &.dp-material {
+      .dp-calendar-weekday {
+        height: @basic-height - 5px;
+        width: @basic-height;
+        line-height: @basic-height - 5px;
+        background: @c-light-gray;
+        border: 1px solid @c-light-gray;
+      }
 
     .dp-calendar-wrapper {
       padding:15px;
       //border: 1px solid @c-light-gray;
     }
 
-    .dp-calendar-month {
-      box-sizing: border-box;
-      background: @c-white;
-      border-radius: 0;
+      .dp-calendar-month {
+        box-sizing: border-box;
+        background: @c-white;
+        border-radius: 0;
       transition:border-radius 0.1s ease;
-      border: none;
-      outline: none;
+        border: none;
+        outline: none;
       font-size: 0.7rem;
 
       &:hover {
-        border-radius: 50%;
-        background: @c-light-gray;
+        border-radius: 50%;background: @c-light-gray;
       }
     }
 
-    .dp-selected {
-      background: @c-primary;
-      color: @c-white;
-      border-radius: 50%;
-      &:hover {
+      .dp-selected {
         background: @c-primary;
+        color: @c-white;
+      border-radius: 50%;
+        &:hover {
+          background: @c-primary;
+        }
       }
-    }
 
     .dp-current-month {
       border-radius: 50%;
@@ -72,4 +69,5 @@
       padding: 0;
     }
   }
+}
 }

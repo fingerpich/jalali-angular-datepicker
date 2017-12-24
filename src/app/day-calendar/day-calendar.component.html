@@ -1,48 +1,46 @@
-<div class="dp-day-calendar-container" [hidden]="currentCalendarMode !==  CalendarMode.Day">
+<div class="dp-day-calendar-container" *ngIf="currentCalendarMode ===  CalendarMode.Day">
   <dp-calendar-nav
-      [label]="getNavLabel()"
-      [showLeftNav]="shouldShowLeftNav()"
-      [showRightNav]="shouldShowRightNav()"
-      [isLabelClickable]="isNavHeaderBtnClickable()"
+      [label]="navLabel"
+      [showLeftNav]="showLeftNav"
+      [showRightNav]="showRightNav"
+      [isLabelClickable]="componentConfig.enableMonthSelector"
+      [showGoToCurrent]="_shouldShowCurrent"
       [theme]="theme"
       (onLeftNav)="onLeftNav()"
       (onRightNav)="onRightNav()"
-      (onLabelClick)="toggleCalendar(CalendarMode.Month)">
+      (onLabelClick)="toggleCalendar(CalendarMode.Month)"
+      (goToCurrent)="goToCurrent()">
   </dp-calendar-nav>
 
   <div class="dp-calendar-wrapper"
-       [ngClass]="{'dp-hide-near-month': !componentConfig.showNearMonthDays,'rtl':isJalali()}">
+       [ngClass]="{'dp-hide-near-month': !componentConfig.showNearMonthDays,'rtl':isFarsi()}">
     <div class="dp-weekdays">
       <span class="dp-calendar-weekday"
-            *ngFor="let weekday of weekdays">
-            {{weekday.format(componentConfig.weekDayFormat)}}
+            *ngFor="let weekday of weekdays"
+            [innerText]="getWeekdayName(weekday)">
       </span>
     </div>
     <div class="dp-calendar-week" *ngFor="let week of weeks">
-      <span *ngIf="componentConfig.showWeekNumbers" class="dp-week-number">{{week[0].date.isoWeek()}}</span>
+      <span class="dp-week-number"
+            *ngIf="componentConfig.showWeekNumbers"
+            [innerText]="week[0].date.isoWeek()">
+      </span>
       <button type="button"
               class="dp-calendar-day"
               *ngFor="let day of week"
               (click)="dayClicked(day)"
-              [disabled]="isDisabledDay(day)"
-              [ngClass]="{
-              'dp-selected': day.selected,
-              'dp-current-month': day.currentMonth,
-              'dp-prev-month': day.prevMonth,
-              'dp-next-month': day.nextMonth,
-              'dp-current-day': day.currentDay
-            }">
-        {{getDayBtnText(day)}}
+              [disabled]="day.disabled"
+              [ngClass]="getDayBtnCssClass(day)"
+              [innerText]="getDayBtnText(day)">
       </button>
     </div>
   </div>
-
 </div>
 
 <dp-month-calendar
     *ngIf="currentCalendarMode ===  CalendarMode.Month"
     [config]="monthCalendarConfig"
-    [displayDate]="currentDateView"
+    [displayDate]="_currentDateView"
     [theme]="theme"
     (onSelect)="monthSelected($event)"
     (onNavHeaderBtnClick)="toggleCalendar(CalendarMode.Day)">

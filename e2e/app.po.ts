@@ -1,14 +1,14 @@
 import {$, $$, browser, by, element} from 'protractor';
 
 export class DemoPage {
-  private popupSelector = 'body > div .dp-popup';
+  private popupSelector = '.dp-popup.dp-main';
   body = $('body');
   dayPickerInput = $('#datePicker input');
   timePickerInput = $('#timePicker input');
   daytimePickerInput = $('#daytimePicker input');
   daytimeDirectiveInput = $('#daytimeDirective input');
   dayDirectiveInput = $('#dayDirective input');
-  dayReactiveDirectivePickerInput = $('#datePickerDirDayReactive input');
+  dayDirectiveReactiveInput = $('#datePickerDirDayReactive input');
   monthDirectiveInput = $('#datePickerDirMonth input');
   timeSelectDirectiveInput = $('#timePickerDirDay input');
   datePickerPopup = $(this.popupSelector);
@@ -28,9 +28,13 @@ export class DemoPage {
   weekDayNames = $$(`${this.popupSelector} .dp-weekdays`);
   weekDayInline = $$(`.dp-demo-container .dp-weekdays`);
   calendarContainer = $$(`${this.popupSelector} .dp-calendar-container `);
-  currentLocationBtn = $(`#datePicker .dp-current-location-btn`);
+  currentLocationBtn = $(`${this.popupSelector} .dp-current-location-btn`);
   themeOnRadio = $('#themeOn');
   themeOffRadio = $('#themeOff');
+  openOnFocusRadioOn = $('#yesOpenOnFocus');
+  openOnFocusRadioOff = $('#noOpenOnFocus');
+  openOnClickRadioOn = $('#yesOpenOnClick');
+  openOnClickRadioOff = $('#noOpenOnClick');
   onOpenDelayInput = $('#onOpenDelay');
   showNearMonthDaysRadio = $('#showNearMonthDaysRadio');
   hideNearMonthDaysRadio = $('#hideNearMonthDaysRadio');
@@ -51,11 +55,13 @@ export class DemoPage {
   yearFormat = $('#yearFormat');
   localeOptions = $('#locale');
   hideGoToCurrentRadio = $('#hideGoToCurrent');
+  showGoToCurrentRadio = $('#showGoToCurrent');
   pickerEnabledRadio = $('#inputEnabledRadio');
   pickerDisabledRadio = $('#inputDisabledRadio');
   enableRequiredValidationRadio = $('#enableRequiredRadio');
   disableRequiredValidationRadio = $('#disableRequiredRadio');
   requiredValidationMsg = $('#requiredValidation');
+  formatValidationMsg = $('#formatValidation');
   reactiveRequiredValidationMsg = $('#reactiveRequiredValidation');
   reactiveMinDateValidationMsg = $('#reactiveMinDateValidation');
   reactiveMaxDateValidationMsg = $('#reactiveMaxDateValidation');
@@ -102,6 +108,8 @@ export class DemoPage {
   showMultipleYearsNavigation = $('#showMultipleYearsNavigation');
   hideMultipleYearsNavigation = $('#hideMultipleYearsNavigation');
   multipleYearsNavigateBy = $('#multipleYearsNavigateBy');
+  showInputRadio = $('#showInputRadio');
+  hideInputRadio = $('#hideInputRadio');
 
   hourUpBtn = $(`${this.popupSelector} .dp-time-select-control-hours > .dp-time-select-control-up`);
   hourDownBtn = $(`${this.popupSelector} .dp-time-select-control-hours > .dp-time-select-control-down`);
@@ -124,7 +132,7 @@ export class DemoPage {
   dayPickerMenu = $('#dayPickerMenu');
   dayInlineMenu = $('#dayInlineMenu');
   dayDirectiveMenu = $('#dayDirectiveMenu');
-  dayDirectiveReactive = $('#dayDirectiveReactive');
+  dayDirectiveReactiveMenu = $('#dayDirectiveReactiveMenu');
   monthPickerMenu = $('#monthPickerMenu');
   monthInlineMenu = $('#monthInlineMenu');
   monthDirectiveMenu = $('#monthDirectiveMenu');
@@ -140,6 +148,11 @@ export class DemoPage {
 
   clickOnBody() {
     this.body.click();
+    this.body.click();
+  }
+
+  scrollIntoView(el, top = false) {
+    browser.executeScript(`arguments[0].scrollIntoView(${top})`, el.getWebElement());
   }
 
   clickOnDayButton(text: string) {

@@ -1,86 +1,80 @@
 import {Injectable} from '@angular/core';
 import * as moment from 'jalali-moment';
-import {Moment, unitOfTime} from 'jalali-moment';
+import {Moment} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IMonth} from './month.model';
-import {IMonthCalendarConfig} from './month-calendar-config';
-import {ECalendarSystem} from '../common/types/calendar-type-enum';
+import {IMonthCalendarConfig, IMonthCalendarConfigInternal} from './month-calendar-config';
 
 @Injectable()
 export class MonthCalendarService {
-
-  readonly GREGORIAN_DEFAULT_CONFIG: IMonthCalendarConfig = {
+  readonly DEFAULT_CONFIG: IMonthCalendarConfigInternal = {
     allowMultiSelect: false,
     yearFormat: 'YYYY',
-    format: 'MM-YYYY',
+    format: 'MMMM-YYYY',
     isNavHeaderBtnClickable: false,
-    monthBtnFormat: 'MMM',
-    locale: 'en',
+    monthBtnFormat: 'MMMM',
+    locale: 'fa',
     multipleYearsNavigateBy: 10,
     showMultipleYearsNavigation: false
   };
-  readonly JALALI_DEFAULT_CONFIG: IMonthCalendarConfig = {
-    yearFormat: 'jYYYY',
-    format: 'jMMMM-jYYYY',
-    monthBtnFormat: 'jMMMM',
-    locale: 'fa'
+  readonly GREGORIAN_DEFAULT_CONFIG: IMonthCalendarConfig = {
+    format: 'MM-YYYY',
+    monthBtnFormat: 'MMM',
+    locale: 'en'
   };
-  DEFAULT_CONFIG: IMonthCalendarConfig = {...this.GREGORIAN_DEFAULT_CONFIG , ...this.JALALI_DEFAULT_CONFIG};
 
   constructor(private utilsService: UtilsService) {
   }
-  getMomentMonthFormat(config = this.DEFAULT_CONFIG): unitOfTime.Base {
-    return (config.calendarSystem !== ECalendarSystem.gregorian) ? 'jMonth' : 'month';
-  }
-  getMomentYearFormat(config = this.DEFAULT_CONFIG): unitOfTime.Base {
-    return (config.calendarSystem !== ECalendarSystem.gregorian) ? 'jYear' : 'year';
+
+  getConfig(config: IMonthCalendarConfig): IMonthCalendarConfigInternal {
+    const _config = <IMonthCalendarConfigInternal>{
+      ...this.DEFAULT_CONFIG,
+      ...((config && config.locale && config.locale !== 'fa') ? this.GREGORIAN_DEFAULT_CONFIG : {}),
+      ...this.utilsService.clearUndefined(config)
+    };
+
+    this.utilsService.convertPropsToMoment(_config, _config.format, ['min', 'max'], _config.locale);
+
+    // moment.locale(_config.locale);
+
+    return _config;
   }
 
-  getConfig(config: IMonthCalendarConfig): IMonthCalendarConfig {
-    this.DEFAULT_CONFIG = (config.calendarSystem !== ECalendarSystem.gregorian) ?
-        this.JALALI_DEFAULT_CONFIG : this.GREGORIAN_DEFAULT_CONFIG;
-    moment.locale(this.DEFAULT_CONFIG.locale);
-    return {...this.DEFAULT_CONFIG, ...this.utilsService.clearUndefined(config)};
-  }
+  generateYear(config: IMonthCalendarConfig, year: Moment, selected: Moment[] = null): IMonth[][] {
+    const index = year.clone().startOf('year');
 
-  increaseYear(year: Moment) {
-    year.add(1, this.getMomentYearFormat());
-  }
-  decreaseYear(year: Moment) {
-    year.subtract(1, this.getMomentYearFormat());
-  }
-
-  generateYear(year: Moment, selected: Moment[] = null): IMonth[][] {
-    const index = year.clone().startOf(this.getMomentYearFormat());
-    const momentMonthFormat = this.getMomentMonthFormat();
     return this.utilsService.createArray(3).map(() => {
       return this.utilsService.createArray(4).map(() => {
+        const date = index.clone();
         const month = {
-          date: index.clone(),
-          selected: !!selected.find(s => index.isSame(s, momentMonthFormat)),
-          currentMonth: index.isSame(moment(), momentMonthFormat)
+          date,
+          selected: !!selected.find(s => index.isSame(s, 'month')),
+          currentMonth: index.isSame(moment(), 'month'),
+          disabled: this.isMonthDisabled(date, config),
+          text: this.getMonthBtnText(config, date)
         };
 
-        index.add(1, momentMonthFormat);
+        index.add(1, 'month');
+
         return month;
       });
     });
   }
 
-  isMonthDisabled(month: IMonth, config: IMonthCalendarConfig) {
-    if (config.min && month.date.isBefore(config.min, this.getMomentMonthFormat(config))) {
+  isMonthDisabled(date: Moment, config: IMonthCalendarConfig) {
+    if (config.min && date.isBefore(config.min, 'month')) {
       return true;
     }
 
-    return !!(config.max && month.date.isAfter(config.max, this.getMomentMonthFormat(config)));
+    return !!(config.max && date.isAfter(config.max, 'month'));
   }
 
   shouldShowLeft(min: Moment, currentMonthView: Moment): boolean {
-    return min ? min.isBefore(currentMonthView, this.getMomentYearFormat()) : true;
+    return min ? min.isBefore(currentMonthView, 'year') : true;
   }
 
   shouldShowRight(max: Moment, currentMonthView: Moment): boolean {
-    return max ? max.isAfter(currentMonthView, this.getMomentYearFormat()) : true;
+    return max ? max.isAfter(currentMonthView, 'year') : true;
   }
 
   getHeaderLabel(config: IMonthCalendarConfig, year: Moment): string {
@@ -91,11 +85,19 @@ export class MonthCalendarService {
     return year.format(config.yearFormat);
   }
 
-  getMonthBtnText(config: IMonthCalendarConfig, month: Moment) {
+  getMonthBtnText(config: IMonthCalendarConfig, month: Moment): string {
     if (config.monthBtnFormatter) {
       return config.monthBtnFormatter(month);
     }
 
     return month.format(config.monthBtnFormat);
+  }
+
+  getMonthBtnCssClass(config: IMonthCalendarConfig, month: Moment): string {
+    if (config.monthBtnCssClassCallback) {
+      return config.monthBtnCssClassCallback(month);
+    }
+
+    return '';
   }
 }

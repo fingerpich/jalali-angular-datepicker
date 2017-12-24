@@ -1,16 +1,16 @@
-import {ICalendar} from '../common/models/calendar.model';
+import {ICalendar, ICalendarInternal} from '../common/models/calendar.model';
 import {WeekDays} from '../common/types/week-days.type';
 import {Moment} from 'jalali-moment';
-import {ECalendarSystem} from '../common/types/calendar-type-enum';
+import {ECalendarValue} from '../common/types/calendar-value-enum';
 
-export interface IDayCalendarConfig extends ICalendar {
+export interface IConfig {
   isDayDisabledCallback?: (date: Moment) => boolean;
   isMonthDisabledCallback?: (date: Moment) => boolean;
   weekDayFormat?: string;
+  weekDayFormatter?: (dayIndex: number) => string;
   showNearMonthDays?: boolean;
   showWeekNumbers?: boolean;
   firstDayOfWeek?: WeekDays;
-  calendarSystem?: ECalendarSystem;
   format?: string;
   allowMultiSelect?: boolean;
   monthFormat?: string;
@@ -20,8 +20,20 @@ export interface IDayCalendarConfig extends ICalendar {
   yearFormatter?: (year: Moment) => string;
   dayBtnFormat?: string;
   dayBtnFormatter?: (day: Moment) => string;
+  dayBtnCssClassCallback?: (day: Moment) => string;
   monthBtnFormat?: string;
   monthBtnFormatter?: (day: Moment) => string;
+  monthBtnCssClassCallback?: (day: Moment) => string;
   multipleYearsNavigateBy?: number;
   showMultipleYearsNavigation?: boolean;
+  returnedValueType?: ECalendarValue;
+  showGoToCurrent?: boolean;
+}
+
+export interface IDayCalendarConfig extends IConfig,
+                                            ICalendar {
+}
+
+export interface IDayCalendarConfigInternal extends IConfig,
+                                                    ICalendarInternal {
 }

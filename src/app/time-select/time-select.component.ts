@@ -1,6 +1,5 @@
 import {ECalendarValue} from '../common/types/calendar-value-enum';
 import {SingleCalendarValue} from '../common/types/single-calendar-value';
-import {ECalendarMode} from '../common/types/calendar-mode-enum';
 import {
   Component,
   EventEmitter,
@@ -10,12 +9,13 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ViewEncapsulation
 } from '@angular/core';
 import {TimeSelectService, TimeUnit} from './time-select.service';
 import * as moment from 'jalali-moment';
 import {Moment} from 'jalali-moment';
-import {ITimeSelectConfig} from './time-select-config.model';
+import {ITimeSelectConfig, ITimeSelectConfigInternal} from './time-select-config.model';
 import {
   ControlValueAccessor,
   FormControl,
@@ -27,11 +27,13 @@ import {
 import {CalendarValue} from '../common/types/calendar-value';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDate} from '../common/models/date.model';
+import {DateValidator} from '../common/types/validator.type';
 
 @Component({
   selector: 'dp-time-select',
   templateUrl: 'time-select.component.html',
   styleUrls: ['time-select.component.less'],
+  encapsulation: ViewEncapsulation.None,
   providers: [
     TimeSelectService,
     {
@@ -50,29 +52,48 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
 
   @Input() config: ITimeSelectConfig;
   @Input() displayDate: SingleCalendarValue;
-  @Input() minDate: Moment | string;
-  @Input() maxDate: Moment | string;
-  @Input() minTime: Moment | string;
-  @Input() maxTime: Moment | string;
+  @Input() minDate: SingleCalendarValue;
+  @Input() maxDate: SingleCalendarValue;
+  @Input() minTime: SingleCalendarValue;
+  @Input() maxTime: SingleCalendarValue;
   @HostBinding('class') @Input() theme: string;
+
   @Output() onChange: EventEmitter<IDate> = new EventEmitter();
 
-  CalendarType = ECalendarMode;
   isInited: boolean = false;
-  componentConfig: ITimeSelectConfig;
+  componentConfig: ITimeSelectConfigInternal;
   _selected: Moment;
   inputValue: CalendarValue;
   inputValueType: ECalendarValue;
-  validateFn: (inputVal: CalendarValue) => { [key: string]: any };
+  validateFn: DateValidator;
 
   hours: string;
   minutes: string;
   seconds: string;
   meridiem: string;
 
+  showDecHour: boolean;
+  showDecMinute: boolean;
+  showDecSecond: boolean;
+  showIncHour: boolean;
+  showIncMinute: boolean;
+  showIncSecond: boolean;
+  showToggleMeridiem: boolean;
+
   set selected(selected: Moment) {
     this._selected = selected;
     this.calculateTimeParts(this.selected);
+
+    this.showDecHour = this.timeSelectService.shouldShowDecrease(this.componentConfig, this._selected, 'hour');
+    this.showDecMinute = this.timeSelectService.shouldShowDecrease(this.componentConfig, this._selected, 'minute');
+    this.showDecSecond = this.timeSelectService.shouldShowDecrease(this.componentConfig, this._selected, 'second');
+
+    this.showIncHour = this.timeSelectService.shouldShowIncrease(this.componentConfig, this._selected, 'hour');
+    this.showIncMinute = this.timeSelectService.shouldShowIncrease(this.componentConfig, this._selected, 'minute');
+    this.showIncSecond = this.timeSelectService.shouldShowIncrease(this.componentConfig, this._selected, 'second');
+
+    this.showToggleMeridiem = this.timeSelectService.shouldShowToggleMeridiem(this.componentConfig, this._selected);
+
     this.onChangeCallback(this.processOnChangeCallback(selected));
   }
 
@@ -116,7 +137,7 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
 
     if (value) {
       const momentValue = this.utilsService
-        .convertToMomentArray(value, this.timeSelectService.getTimeFormat(this.componentConfig), false)[0];
+        .convertToMomentArray(value, this.timeSelectService.getTimeFormat(this.componentConfig), false, this.componentConfig.locale)[0];
       if (momentValue.isValid()) {
         this.selected = momentValue;
         this.inputValueType = this.utilsService
@@ -147,7 +168,8 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
     return this.utilsService.convertFromMomentArray(
       this.timeSelectService.getTimeFormat(this.componentConfig),
       [value],
-      this.inputValueType
+      this.componentConfig.returnedValueType || this.inputValueType,
+      this.componentConfig.locale
     );
   }
 
@@ -158,7 +180,8 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
         maxDate: this.maxDate,
         minTime: this.minTime,
         maxTime: this.maxTime
-      }, undefined, 'day');
+      }, undefined, 'day',
+      this.componentConfig.locale);
 
     this.onChangeCallback(this.processOnChangeCallback(this.selected));
   }
@@ -187,17 +210,5 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
     this.minutes = this.timeSelectService.getMinutes(this.componentConfig, time);
     this.seconds = this.timeSelectService.getSeconds(this.componentConfig, time);
     this.meridiem = this.timeSelectService.getMeridiem(this.componentConfig, time);
-  }
-
-  shouldShowDecrease(unit: TimeUnit): boolean {
-    return this.timeSelectService.shouldShowDecrease(this.componentConfig, this.selected, unit);
-  }
-
-  shouldShowIncrease(unit: TimeUnit): boolean {
-    return this.timeSelectService.shouldShowIncrease(this.componentConfig, this.selected, unit);
-  }
-
-  shouldShowToggleMeridiem(): boolean {
-    return this.timeSelectService.shouldShowToggleMeridiem(this.componentConfig, this.selected);
   }
 }

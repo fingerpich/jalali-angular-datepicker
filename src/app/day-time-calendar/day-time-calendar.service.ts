@@ -29,7 +29,7 @@ export class DayTimeCalendarService {
       ...this.dayCalendarService.getConfig(config)
     };
 
-    moment.locale(config.locale);
+    // moment.locale(config.locale);
 
     return _config;
   }

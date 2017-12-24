@@ -1,13 +1,14 @@
 import {ECalendarValue} from '../../types/calendar-value-enum';
 import {SingleCalendarValue} from '../../types/single-calendar-value';
-import {Injectable} from '@angular/core';
+import {Injectable, SimpleChange} from '@angular/core';
 import * as moment from 'jalali-moment';
 import {Moment, MomentInput, unitOfTime} from 'jalali-moment';
 import {CalendarValue} from '../../types/calendar-value';
 import {IDate} from '../../models/date.model';
 import {CalendarMode} from '../../types/calendar-mode';
+import {DateValidator} from '../../types/validator.type';
+import {ICalendarInternal} from '../../models/calendar.model';
 
-export type DateValidatorFn = (inputVal: CalendarValue) => { [key: string]: any };
 export interface DateLimits {
   minDate?: SingleCalendarValue;
   maxDate?: SingleCalendarValue;
@@ -32,40 +33,51 @@ export class UtilsService {
     return new Array(size).fill(1);
   }
 
-  convertToMoment(date: SingleCalendarValue, format: string): Moment | null {
-    let retVal: Moment;
+  convertToMoment(date: SingleCalendarValue, format: string, locale: string): Moment {
+    let m;
     if (!date) {
-      return null;
+      m = null;
     } else if (typeof date === 'string') {
-      retVal = moment(date, format);
+      m = moment(date, format);
     } else {
-      retVal = date;
+      m = date.clone();
     }
-
-    return retVal;
+    if (m && locale) {
+      m.locale(locale);
+    }
+    return m;
   }
 
-  isDateValid(date: string, format: string): boolean {
+  isDateValid(date: string, format: string, locale: string): boolean {
     if (date === '') {
       return true;
     }
-
+    // return moment(date, format, true, locale).isValid();
     return moment(date, format, true).isValid();
   }
 
   // todo:: add unit test
-  getDefaultDisplayDate(def: Moment, selected: Moment[], allowMultiSelect: boolean): Moment {
-    if (def) {
-      return def;
+  getDefaultDisplayDate(current: Moment,
+                        selected: Moment[],
+                        allowMultiSelect: boolean,
+                        minDate: Moment,
+                        locale: string): Moment {
+    let m = moment();
+    if (current) {
+      m = current.clone();
+    } else if (minDate && minDate.isAfter(moment())) {
+      m = minDate.clone();
     } else if (allowMultiSelect) {
       if (selected && selected[selected.length]) {
-        return selected[selected.length];
+        m = selected[selected.length].clone();
       }
     } else if (selected && selected[0]) {
-      return selected[0];
+      m = selected[0].clone();
     }
-
-    return moment();
+    if (locale) {
+      m.locale(locale);
+    }
+    return m;
   }
 
   // todo:: add unit test
@@ -90,16 +102,16 @@ export class UtilsService {
   }
 
   // todo:: add unit test
-  convertToMomentArray(value: CalendarValue, format: string, allowMultiSelect: boolean): Moment[] {
+  convertToMomentArray(value: CalendarValue, format: string, allowMultiSelect: boolean, locale: string): Moment[] {
     switch (this.getInputType(value, allowMultiSelect)) {
       case (ECalendarValue.String):
-        return value ? [moment(<MomentInput>value, format)] : [];
+        return value ? [moment(<MomentInput>value, format, true).locale(locale)] : [];
       case (ECalendarValue.StringArr):
-        return (<string[]>value).map(v => v ? moment(v, format) : null).filter(Boolean);
+        return (<string[]>value).map(v => v ? moment(v, format, true).locale(locale) : null).filter(Boolean);
       case (ECalendarValue.Moment):
-        return [<Moment>value];
+        return value ? [(<Moment>value).clone().locale(locale)] : [];
       case (ECalendarValue.MomentArr):
-        return <Moment[]>[].concat(value);
+        return (<Moment[]>value || []).map(v => v.clone().locale(locale));
       default:
         return [];
     }
@@ -107,17 +119,18 @@ export class UtilsService {
 
   // todo:: add unit test
   convertFromMomentArray(format: string,
-                         value: moment.Moment[],
-                         inputValueType: ECalendarValue): CalendarValue {
-    switch (inputValueType) {
+                         value: Moment[],
+                         convertTo: ECalendarValue,
+                         locale: string): CalendarValue {
+    switch (convertTo) {
       case (ECalendarValue.String):
-        return value[0].format(format);
+        return value[0] && value[0].locale(locale).format(format);
       case (ECalendarValue.StringArr):
-        return value.map(v => v.format(format));
+        return value.filter(Boolean).map(v => v.locale(locale).format(format));
       case (ECalendarValue.Moment):
-        return value[0];
+        return value[0] ? value[0].clone().locale(locale) : value[0];
       case (ECalendarValue.MomentArr):
-        return value;
+        return value ? value.map(v => v.clone().locale(locale)) : value;
       default:
         return value;
     }
@@ -131,24 +144,6 @@ export class UtilsService {
 
     Object.keys(obj).forEach((key) => (obj[key] === undefined) && delete obj[key]);
     return obj;
-  }
-
-  // todo:: add unit test
-  compareMomentArrays(arr1: Moment[], arr2: Moment[], granularity: unitOfTime.Base): boolean {
-    if (arr1.length !== arr2.length) {
-      return false;
-    }
-
-    const sortArr1 = arr1.sort((a, b) => a.diff(b));
-    const sortArr2 = arr1.sort((a, b) => a.diff(b));
-
-    for (let i = 0; i < sortArr1.length; i++) {
-      if (!sortArr1[i].isSame(sortArr2[i], granularity)) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   updateSelected(isMultiple: boolean,
@@ -174,7 +169,7 @@ export class UtilsService {
   }
 
   onlyTime(m: Moment): Moment {
-    return m && moment(m.format('HH:mm:ss'), 'HH:mm:ss');
+    return m && moment.isMoment(m) && moment(m.format('HH:mm:ss'), 'HH:mm:ss');
   }
 
   granularityFromType(calendarType: CalendarMode): unitOfTime.Base {
@@ -188,14 +183,17 @@ export class UtilsService {
     }
   }
 
-  createValidator({minDate, maxDate, minTime, maxTime}: DateLimits, format: string, calendarType: CalendarMode): DateValidatorFn {
+  createValidator({minDate, maxDate, minTime, maxTime}: DateLimits,
+                  format: string,
+                  calendarType: CalendarMode,
+                  locale: string): DateValidator {
     let isValid: boolean;
     let value: Moment[];
     const validators = [];
     const granularity = this.granularityFromType(calendarType);
 
     if (minDate) {
-      const md = this.convertToMoment(minDate, format);
+      const md = this.convertToMoment(minDate, format, locale);
       validators.push({
         key: 'minDate',
         isValid: () => {
@@ -207,7 +205,7 @@ export class UtilsService {
     }
 
     if (maxDate) {
-      const md = this.convertToMoment(maxDate, format);
+      const md = this.convertToMoment(maxDate, format, locale);
       validators.push({
         key: 'maxDate',
         isValid: () => {
@@ -219,7 +217,7 @@ export class UtilsService {
     }
 
     if (minTime) {
-      const md = this.onlyTime(this.convertToMoment(minTime, format));
+      const md = this.onlyTime(this.convertToMoment(minTime, format, locale));
       validators.push({
         key: 'minTime',
         isValid: () => {
@@ -231,7 +229,7 @@ export class UtilsService {
     }
 
     if (maxTime) {
-      const md = this.onlyTime(this.convertToMoment(maxTime, format));
+      const md = this.onlyTime(this.convertToMoment(maxTime, format, locale));
       validators.push({
         key: 'maxTime',
         isValid: () => {
@@ -245,7 +243,7 @@ export class UtilsService {
     return (inputVal: CalendarValue) => {
       isValid = true;
 
-      value = this.convertToMomentArray(inputVal, format, true).filter(Boolean);
+      value = this.convertToMomentArray(inputVal, format, true, locale).filter(Boolean);
 
       if (!value.every(val => val.isValid())) {
         return {
@@ -267,5 +265,54 @@ export class UtilsService {
 
       return !isValid ? errors : null;
     };
+  }
+
+  datesStringToStringArray(value: string): string[] {
+    return (value || '').split(',').map(m => m.trim());
+  }
+
+  getValidMomentArray(value: string, format: string, locale: string): Moment[] {
+    return this.datesStringToStringArray(value)
+      .filter(d => this.isDateValid(d, format, locale))
+      .map(d => moment(d, format));
+  }
+
+  shouldShowCurrent(showGoToCurrent: boolean,
+                    mode: CalendarMode,
+                    min: Moment,
+                    max: Moment): boolean {
+    return showGoToCurrent &&
+      mode !== 'time' &&
+      this.isDateInRange(moment(), min, max);
+  }
+
+  isDateInRange(date: Moment, from: Moment, to: Moment): boolean {
+    return date.isBetween(from, to, 'day', '[]');
+  }
+
+  convertPropsToMoment(obj: {[key: string]: any}, format: string, props: string[], locale: string) {
+    props.forEach((prop) => {
+      if (obj.hasOwnProperty(prop)) {
+        obj[prop] = this.convertToMoment(obj[prop], format, locale);
+      }
+    });
+  }
+
+  shouldResetCurrentView<T extends ICalendarInternal>(prevConf: T, currentConf: T): boolean {
+    if (prevConf && currentConf) {
+      if (!prevConf.min && currentConf.min) {
+        return true;
+      } else if (prevConf.min && currentConf.min && !prevConf.min.isSame(currentConf.min, 'd')) {
+        return true;
+      } else if (!prevConf.max && currentConf.max) {
+        return true;
+      } else if (prevConf.max && currentConf.max && !prevConf.max.isSame(currentConf.max, 'd')) {
+        return true;
+      }
+
+      return false;
+    }
+
+    return false;
   }
 }

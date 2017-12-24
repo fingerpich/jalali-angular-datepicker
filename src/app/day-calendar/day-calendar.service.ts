@@ -4,56 +4,56 @@ import {Moment, unitOfTime} from 'jalali-moment';
 import {WeekDays} from '../common/types/week-days.type';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDay} from './day.model';
-import {IDayCalendarConfig} from './day-calendar-config.model';
+import {IDayCalendarConfig, IDayCalendarConfigInternal} from './day-calendar-config.model';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
-import {ECalendarSystem} from '../common/types/calendar-type-enum';
+
 @Injectable()
 export class DayCalendarService {
   private readonly DAYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
-  readonly GREGORIAN_DEFAULT_CONFIG: IDayCalendarConfig = {
+  readonly DEFAULT_CONFIG: IDayCalendarConfig = {
     showNearMonthDays: true,
     showWeekNumbers: false,
+    firstDayOfWeek: 'sa',
+    weekDayFormat: 'dd',
+    format: 'YYYY/M/D',
+    monthFormat: 'MMMM YY',
+    dayBtnFormat: 'D',
+    allowMultiSelect: false,
+    enableMonthSelector: true,
+    locale: 'fa'
+  };
+  readonly GREGORIAN_CONFIG_EXTENTION: IDayCalendarConfig = {
     firstDayOfWeek: 'su',
     weekDayFormat: 'ddd',
     format: 'DD-MM-YYYY',
-    allowMultiSelect: false,
     monthFormat: 'MMM, YYYY',
-    enableMonthSelector: true,
     locale: 'en',
     dayBtnFormat: 'DD'
   };
-  readonly JALALI_CONFIG_EXTENTION: IDayCalendarConfig = {
-    firstDayOfWeek: 'sa',
-    weekDayFormat: 'dd',
-    format: 'jYYYY/jM/jD',
-    monthFormat: 'jMMMM jYY',
-    locale: 'fa',
-    dayBtnFormat: 'jD'
-  };
-  DEFAULT_CONFIG: IDayCalendarConfig = {...this.GREGORIAN_DEFAULT_CONFIG, ...this.JALALI_CONFIG_EXTENTION};
 
   constructor(private utilsService: UtilsService) {
   }
 
-  private getMonthFormat(config = this.DEFAULT_CONFIG): unitOfTime.Base {
-    return (config.calendarSystem !== ECalendarSystem.gregorian) ? 'jMonth' : 'month';
-  }
   private removeNearMonthWeeks(currentMonth: Moment, monthArray: IDay[][]): IDay[][] {
-    if (monthArray[monthArray.length - 1].find((day) => day.date.isSame(currentMonth, this.getMonthFormat()))) {
+    if (monthArray[monthArray.length - 1].find((day) => day.date.isSame(currentMonth, 'month'))) {
       return monthArray;
     } else {
       return monthArray.slice(0, -1);
     }
   }
 
-  getConfig(config: IDayCalendarConfig): IDayCalendarConfig {
-    if (!config || (config.calendarSystem !== ECalendarSystem.gregorian)) {
-      this.DEFAULT_CONFIG = {...this.GREGORIAN_DEFAULT_CONFIG, ...this.JALALI_CONFIG_EXTENTION};
-    } else {
-      this.DEFAULT_CONFIG = this.GREGORIAN_DEFAULT_CONFIG;
-    }
-    moment.locale(this.DEFAULT_CONFIG.locale);
-    return {...this.DEFAULT_CONFIG, ...this.utilsService.clearUndefined(config)};
+  getConfig(config: IDayCalendarConfig): IDayCalendarConfigInternal {
+    const _config = <IDayCalendarConfigInternal>{
+      ...this.DEFAULT_CONFIG,
+      ...((config && config.locale && config.locale !== 'fa') ? this.GREGORIAN_CONFIG_EXTENTION : {}),
+      ...this.utilsService.clearUndefined(config)
+    };
+
+    this.utilsService.convertPropsToMoment(_config, _config.format, ['min', 'max'], _config.locale);
+
+    // moment.locale(_config.locale);
+
+    return _config;
   }
 
   generateDaysMap(firstDayOfWeek: WeekDays) {
@@ -61,35 +61,46 @@ export class DayCalendarService {
     const daysArr = this.DAYS.slice(firstDayIndex, 7).concat(this.DAYS.slice(0, firstDayIndex));
     return daysArr.reduce((map, day, index) => {
       map[day] = index;
+
       return map;
-    }, <{ [key: number]: string }>{});
+    }, <{[key: number]: string}>{});
   }
 
-  generateMonthArray(config: IDayCalendarConfig, month: Moment, selected: Moment[]): IDay[][] {
+  generateMonthArray(config: IDayCalendarConfigInternal, month: Moment, selected: Moment[]): IDay[][] {
     let monthArray: IDay[][] = [];
-    const firstDayOfMonth = month.clone().startOf(this.getMonthFormat(config));
     const firstDayOfWeekIndex = this.DAYS.indexOf(config.firstDayOfWeek);
-
-    const firstDayOfBoard = firstDayOfMonth;
-
-    while (firstDayOfBoard.day() !== firstDayOfWeekIndex) {
+    const firstDayOfBoard = month.clone().startOf('month');
+    for (let i = 0; i < 8 && (firstDayOfBoard.day() !== firstDayOfWeekIndex) ; i++) {
       firstDayOfBoard.subtract(1, 'day');
+      if (i === 7) {
+        throw new Error('first day of Board has set Wrong');
+      }
     }
 
     const current = firstDayOfBoard.clone();
-    const actionMonthFormat = this.getMonthFormat(config);
-    const daysOfCalendar: IDay[] = this.utilsService.createArray(42).reduce((array: IDay[]) => {
-      array.push({
-        date: current.clone(),
-        selected: !!selected.find(selectedDay => current.isSame(selectedDay, 'day')),
-        currentMonth: current.isSame(month, actionMonthFormat),
-        prevMonth: current.isSame(month.clone().subtract(1, actionMonthFormat), actionMonthFormat),
-        nextMonth: current.isSame(month.clone().add(1, actionMonthFormat), actionMonthFormat),
-        currentDay: current.isSame(moment(), 'day')
-      });
-      current.add(1, 'd');
-      return array;
-    }, []);
+    const prevMonth = month.clone().subtract(1, 'month');
+    const nextMonth = month.clone().add(1, 'month');
+    const today = moment();
+
+    const daysOfCalendar: IDay[] = this.utilsService.createArray(42)
+      .reduce((array: IDay[]) => {
+        array.push({
+          date: current.clone(),
+          selected: !!selected.find(selectedDay => current.isSame(selectedDay, 'day')),
+          currentMonth: current.isSame(month, 'month'),
+          prevMonth: current.isSame(prevMonth, 'month'),
+          nextMonth: current.isSame(nextMonth, 'month'),
+          currentDay: current.isSame(today, 'day'),
+          disabled: this.isDateDisabled(current, config)
+        });
+        current.add(1, 'day');
+
+        if (current.format('HH') !== '00') {
+          current.startOf('day').add(1, 'day');
+        }
+
+        return array;
+      }, []);
 
     daysOfCalendar.forEach((day, index) => {
       const weekIndex = Math.floor(index / 7);
@@ -108,16 +119,14 @@ export class DayCalendarService {
     return monthArray;
   }
 
-  generateWeekdays(firstDayOfWeek: WeekDays): Moment[] {
-    const weekdayNames: {[key: string]: Moment} = {
-      su: moment().day(0),
-      mo: moment().day(1),
-      tu: moment().day(2),
-      we: moment().day(3),
-      th: moment().day(4),
-      fr: moment().day(5),
-      sa: moment().day(6)
-    };
+  generateWeekdays(firstDayOfWeek: WeekDays, locale: string): Moment[] {
+    const weekdayNames: {[key: string]: Moment} = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'].reduce((acc, d, i) => {
+      const m = moment();
+      m.locale(locale);
+      m.day(i);
+      acc[d] = m;
+      return acc;
+    }, {});
     const weekdays: Moment[] = [];
     const daysMap = this.generateDaysMap(firstDayOfWeek);
 
@@ -130,20 +139,20 @@ export class DayCalendarService {
     return weekdays;
   }
 
-  isDateDisabled(day: IDay, config: IDayCalendarConfig): boolean {
+  isDateDisabled(date: Moment, config: IDayCalendarConfigInternal): boolean {
     if (config.isDayDisabledCallback) {
-      return config.isDayDisabledCallback(day.date);
+      return config.isDayDisabledCallback(date);
     }
 
-    if (config.min && day.date.isBefore(config.min, 'day')) {
+    if (config.min && date.isBefore(config.min, 'day')) {
       return true;
     }
 
-    return !!(config.max && day.date.isAfter(config.max, 'day'));
+    return !!(config.max && date.isAfter(config.max, 'day'));
   }
 
   // todo:: add unit tests
-  getHeaderLabel(config: IDayCalendarConfig, month: Moment): string {
+  getHeaderLabel(config: IDayCalendarConfigInternal, month: Moment): string {
     if (config.monthFormatter) {
       return config.monthFormatter(month);
     }
@@ -153,12 +162,12 @@ export class DayCalendarService {
 
   // todo:: add unit tests
   shouldShowLeft(min: Moment, currentMonthView: Moment): boolean {
-    return min ? min.isBefore(currentMonthView, this.getMonthFormat()) : true;
+    return min ? min.isBefore(currentMonthView, 'month') : true;
   }
 
   // todo:: add unit tests
   shouldShowRight(max: Moment, currentMonthView: Moment): boolean {
-    return max ? max.isAfter(currentMonthView, this.getMonthFormat()) : true;
+    return max ? max.isAfter(currentMonthView, 'month') : true;
   }
 
   generateDaysIndexMap(firstDayOfWeek: WeekDays) {
@@ -166,33 +175,43 @@ export class DayCalendarService {
     const daysArr = this.DAYS.slice(firstDayIndex, 7).concat(this.DAYS.slice(0, firstDayIndex));
     return daysArr.reduce((map, day, index) => {
       map[index] = day;
+
       return map;
-    }, <{ [key: number]: string }>{});
+    }, <{[key: number]: string}>{});
   }
 
-  // todo:: add unit tests
-  getMonthCalendarConfig(componentConfig: IDayCalendarConfig): IMonthCalendarConfig {
+  getMonthCalendarConfig(componentConfig: IDayCalendarConfigInternal): IMonthCalendarConfig {
     return this.utilsService.clearUndefined({
       min: componentConfig.min,
       max: componentConfig.max,
       format: componentConfig.format,
-      calendarSystem: componentConfig.calendarSystem,
       isNavHeaderBtnClickable: true,
       allowMultiSelect: false,
       yearFormat: componentConfig.yearFormat,
+      locale: componentConfig.locale,
       yearFormatter: componentConfig.yearFormatter,
       monthBtnFormat: componentConfig.monthBtnFormat,
       monthBtnFormatter: componentConfig.monthBtnFormatter,
+      monthBtnCssClassCallback: componentConfig.monthBtnCssClassCallback,
       multipleYearsNavigateBy: componentConfig.multipleYearsNavigateBy,
-      showMultipleYearsNavigation: componentConfig.showMultipleYearsNavigation
+      showMultipleYearsNavigation: componentConfig.showMultipleYearsNavigation,
+      showGoToCurrent: componentConfig.showGoToCurrent
     });
   }
 
-  getDayBtnText(config: IDayCalendarConfig, day: Moment): string {
+  getDayBtnText(config: IDayCalendarConfigInternal, day: Moment): string {
     if (config.dayBtnFormatter) {
       return config.dayBtnFormatter(day);
     }
 
     return day.format(config.dayBtnFormat);
+  }
+
+  getDayBtnCssClass(config: IDayCalendarConfigInternal, day: Moment): string {
+    if (config.dayBtnCssClassCallback) {
+      return config.dayBtnCssClassCallback(day);
+    }
+
+    return '';
   }
 }
