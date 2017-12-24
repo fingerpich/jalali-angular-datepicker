@@ -4838,11 +4838,18 @@
       }
     },
     "jalali-moment": {
-      "version": "3.0.7",
-      "resolved": "https://registry.npmjs.org/jalali-moment/-/jalali-moment-3.0.7.tgz",
-      "integrity": "sha512-4RGg1xLduQjuqkYA8fEtJYVd2351g/l+choVZDQ+Hsp/lmqa7PpX/tTV66iRy+NkGivS7n71ElFYLHGeQp97TA==",
+      "version": "3.0.10",
+      "resolved": "https://registry.npmjs.org/jalali-moment/-/jalali-moment-3.0.10.tgz",
+      "integrity": "sha512-K7JAKmNcSQBqx0rs+N4dNsJ0Hcy103y8KVZCXXcPH9/izFFu/5lfPvFAbJytGgWkT9G8qnQN+7KKha11zxlukg==",
       "requires": {
-        "moment": "2.18.1"
+        "moment": "2.20.1"
+      },
+      "dependencies": {
+        "moment": {
+          "version": "2.20.1",
+          "resolved": "https://registry.npmjs.org/moment/-/moment-2.20.1.tgz",
+          "integrity": "sha512-Yh9y73JRljxW5QxN08Fner68eFLxM5ynNOAw2LbIB1YAGeQzZT8QFSUvkAz609Zf+IHhhaUxqZK8dG3W/+HEvg=="
+        }
       }
     },
     "jasmine": {
@@ -5754,7 +5761,8 @@
     "moment": {
       "version": "2.18.1",
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz",
-      "integrity": "sha1-w2GT3Tzhwu7SrbfIAtu8d6gbHA8="
+      "integrity": "sha1-w2GT3Tzhwu7SrbfIAtu8d6gbHA8=",
+      "dev": true
     },
     "move-concurrently": {
       "version": "1.0.1",
