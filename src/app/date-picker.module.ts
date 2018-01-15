@@ -17,6 +17,9 @@ export {DayTimeCalendarComponent} from './day-time-calendar/day-time-calendar.co
 export {TimeSelectComponent} from './time-select/time-select.component';
 export {MonthCalendarComponent} from './month-calendar/month-calendar.component';
 
+import { ENumberPipe } from './e-number.pipe';
+import { PNumberPipe } from './p-number.pipe';
+
 @NgModule({
   providers: [
     DomHelper,
@@ -29,7 +32,9 @@ export {MonthCalendarComponent} from './month-calendar/month-calendar.component'
     MonthCalendarComponent,
     CalendarNavComponent,
     TimeSelectComponent,
-    DayTimeCalendarComponent
+    DayTimeCalendarComponent,
+    PNumberPipe,
+    ENumberPipe
   ],
   entryComponents: [
     DatePickerComponent

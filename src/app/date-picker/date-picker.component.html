@@ -5,7 +5,7 @@
     <input type="text"
            class="dp-picker-input"
            [placeholder]="placeholder"
-           [ngModel]="inputElementValue"
+           [ngModel]="inputElementValue | pNumber"
            (ngModelChange)="onViewDateChange($event)"
            (focus)="inputFocused()"
            [readonly]="componentConfig.disableKeypress"

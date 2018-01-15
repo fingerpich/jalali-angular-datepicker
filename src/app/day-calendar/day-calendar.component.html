@@ -31,7 +31,7 @@
               (click)="dayClicked(day)"
               [disabled]="day.disabled"
               [ngClass]="getDayBtnCssClass(day)"
-              [innerText]="getDayBtnText(day)">
+              [innerText]="getDayBtnText(day) | pNumber">
       </button>
     </div>
   </div>
