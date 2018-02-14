@@ -82,6 +82,10 @@ export class DayCalendarService {
     const nextMonth = month.clone().add(1, 'month');
     const today = moment();
 
+    if (current.format('HH') !== '00') {
+      current.startOf('day').add(1, 'day');
+    }
+
     const daysOfCalendar: IDay[] = this.utilsService.createArray(42)
       .reduce((array: IDay[]) => {
         array.push({
@@ -94,11 +98,6 @@ export class DayCalendarService {
           disabled: this.isDateDisabled(current, config)
         });
         current.add(1, 'day');
-
-        if (current.format('HH') !== '00') {
-          current.startOf('day').add(1, 'day');
-        }
-
         return array;
       }, []);
 
