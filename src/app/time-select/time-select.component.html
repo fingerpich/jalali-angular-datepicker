@@ -6,7 +6,7 @@
             (click)="increase('hour')">
     </button>
     <span class="dp-time-select-display-hours"
-          [innerText]="hours">
+          [innerText]="hours | pNumber">
     </span>
     <button type="button"
             class="dp-time-select-control-down"
@@ -22,7 +22,7 @@
             [disabled]="!showIncMinute"
             (click)="increase('minute')"></button>
     <span class="dp-time-select-display-minutes"
-          [innerText]="minutes">
+          [innerText]="minutes | pNumber">
     </span>
     <button type="button"
             [disabled]="!showDecMinute" class="dp-time-select-control-down"
@@ -38,7 +38,7 @@
               [disabled]="!showIncSecond"
               (click)="increase('second')"></button>
       <span class="dp-time-select-display-seconds"
-            [innerText]="seconds">
+            [innerText]="seconds | pNumber">
       </span>
       <button type="button"
               class="dp-time-select-control-down"

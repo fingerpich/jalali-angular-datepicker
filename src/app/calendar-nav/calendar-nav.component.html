@@ -9,7 +9,7 @@
             [hidden]="!isLabelClickable"
             [attr.data-hidden]="!isLabelClickable"
             (click)="labelClicked()"
-            [innerText]="label">
+            [innerText]="label | pNumber">
     </button>
   </div>
 
