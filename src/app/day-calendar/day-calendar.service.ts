@@ -99,8 +99,8 @@ export class DayCalendarService {
         current.add(1, 'day');
 
         if (current.format('HH') !== '00') {
-          current.startOf('day')
-          if (array[array.length - 1].date.isSame(current, 'day')) {
+          current.startOf('day');
+          if (array[array.length - 1].date.format('DD') === current.format('DD')) {
             current.add(1, 'day');
           }
         }
