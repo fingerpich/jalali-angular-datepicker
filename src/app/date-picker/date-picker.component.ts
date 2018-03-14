@@ -405,6 +405,12 @@ export class DatePickerComponent implements OnChanges,
 
   onViewDateChange(value: string) {
     if (this.dayPickerService.isValidInputDateValue(value, this.componentConfig)) {
+      if (value && this.config.locale === 'fa') {
+        const l = moment.locale();
+        moment.locale('fa');
+        value = moment(value, this.componentConfig.format).locale('en').format(this.componentConfig.format);
+        moment.locale(l);
+      }
       this.selected = this.dayPickerService.convertInputValueToMomentArray(value, this.componentConfig);
       this.currentDateView = this.selected.length
         ? this.utilsService.getDefaultDisplayDate(
