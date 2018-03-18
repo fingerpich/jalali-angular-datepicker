@@ -8,12 +8,12 @@
       [isLabelClickable]="componentConfig.isNavHeaderBtnClickable"
       [showGoToCurrent]="shouldShowCurrent()"
       [theme]="theme"
-      (onLeftNav)="onLeftNav()"
-      (onLeftSecondaryNav)="onLeftSecondaryNav()"
-      (onRightNav)="onRightNav()"
-      (onRightSecondaryNav)="onRightSecondaryNav()"
-      (onLabelClick)="toggleCalendar()"
-      (goToCurrent)="goToCurrent()">
+      (onLeftNav)="onLeftNavClick()"
+      (onLeftSecondaryNav)="onLeftSecondaryNavClick()"
+      (onRightNav)="onRightNavClick()"
+      (onRightSecondaryNav)="onRightSecondaryNavClick()"
+      (onLabelClick)="toggleCalendarMode()"
+      (onGoToCurrent)="goToCurrent()">
   </dp-calendar-nav>
 
   <div class="dp-calendar-wrapper" [ngClass]="{'rtl':isFarsi()}">
@@ -21,6 +21,7 @@
       <button type="button"
               class="dp-calendar-month"
               *ngFor="let month of monthRow"
+              [attr.data-date]="month.date.format(componentConfig.format)"
               [disabled]="month.disabled"
               [ngClass]="getMonthBtnCssClass(month)"
               (click)="monthClicked(month)"

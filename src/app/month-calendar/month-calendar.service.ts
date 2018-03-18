@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
-import * as moment from 'jalali-moment';
+import * as momentNs from 'jalali-moment';
 import {Moment} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IMonth} from './month.model';
 import {IMonthCalendarConfig, IMonthCalendarConfigInternal} from './month-calendar-config';
+const moment = momentNs;
 
 @Injectable()
 export class MonthCalendarService {
@@ -15,7 +16,8 @@ export class MonthCalendarService {
     monthBtnFormat: 'MMMM',
     locale: 'fa',
     multipleYearsNavigateBy: 10,
-    showMultipleYearsNavigation: false
+    showMultipleYearsNavigation: false,
+    unSelectOnClick: true
   };
   readonly GREGORIAN_DEFAULT_CONFIG: IMonthCalendarConfig = {
     format: 'MM-YYYY',

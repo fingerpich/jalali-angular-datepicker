@@ -19,6 +19,8 @@ import {IDpDayPickerApi} from './date-picker.api';
 import {DatePickerService} from './date-picker.service';
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -43,17 +45,18 @@ import {
   ValidationErrors,
   Validator
 } from '@angular/forms';
-import * as moment from 'jalali-moment';
 import {Moment, unitOfTime} from 'jalali-moment';
 import {DateValidator} from '../common/types/validator.type';
 import {MonthCalendarComponent} from '../month-calendar/month-calendar.component';
 import {DayTimeCalendarComponent} from '../day-time-calendar/day-time-calendar.component';
+import {INavEvent} from '../common/models/navigation-event.model';
 
 @Component({
   selector: 'dp-date-picker',
   templateUrl: 'date-picker.component.html',
   styleUrls: ['date-picker.component.less'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     DatePickerService,
     DayTimeCalendarService,
@@ -92,6 +95,9 @@ export class DatePickerComponent implements OnChanges,
   @Output() open = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
   @Output() onChange = new EventEmitter<CalendarValue>();
+  @Output() onGoToCurrent: EventEmitter<void> = new EventEmitter();
+  @Output() onLeftNav: EventEmitter<INavEvent> = new EventEmitter();
+  @Output() onRightNav: EventEmitter<INavEvent> = new EventEmitter();
 
   @ViewChild('container') calendarContainer: ElementRef;
   @ViewChild('dayCalendar') dayCalendarRef: DayCalendarComponent;
@@ -120,16 +126,17 @@ export class DatePickerComponent implements OnChanges,
   validateFn: DateValidator;
   api: IDpDayPickerApi = {
     open: this.showCalendars.bind(this),
-    close: this.hideCalendar.bind(this)
+    close: this.hideCalendar.bind(this),
+    moveCalendarTo: this.moveCalendarTo.bind(this)
   };
 
   set selected(selected: Moment[]) {
     this._selected = selected;
     this.inputElementValue = (<string[]>this.utilsService
       .convertFromMomentArray(this.componentConfig.format, selected, ECalendarValue.StringArr, this.componentConfig.locale))
-      .join(', ');
+      .join(' | ');
     const val = this.processOnChangeCallback(selected);
-    this.onChangeCallback(val);
+    this.onChangeCallback(val, false);
     this.onChange.emit(val);
   }
 
@@ -188,11 +195,12 @@ export class DatePickerComponent implements OnChanges,
     }
   }
 
-  constructor(private dayPickerService: DatePickerService,
-              private domHelper: DomHelper,
-              private elemRef: ElementRef,
-              private renderer: Renderer,
-              private utilsService: UtilsService) {
+  constructor(private readonly dayPickerService: DatePickerService,
+              private readonly domHelper: DomHelper,
+              private readonly elemRef: ElementRef,
+              private readonly renderer: Renderer,
+              private readonly utilsService: UtilsService,
+              public readonly cd: ChangeDetectorRef) {
   }
 
   @HostListener('click')
@@ -210,11 +218,13 @@ export class DatePickerComponent implements OnChanges,
   }
 
   onBodyClick() {
-    if (!this.hideStateHelper && this.areCalendarsShown) {
-      this.hideCalendar();
-    }
+    if (this.componentConfig.hideOnOutsideClick) {
+      if (!this.hideStateHelper && this.areCalendarsShown) {
+        this.hideCalendar();
+      }
 
-    this.hideStateHelper = false;
+      this.hideStateHelper = false;
+    }
   }
 
   @HostListener('window:resize')
@@ -232,7 +242,7 @@ export class DatePickerComponent implements OnChanges,
   }
 
   writeValue(value: CalendarValue): void {
-    if (this.inputValue == value) {
+    if (this.inputValue === value) {
       return;
     }
     this.inputValue = value;
@@ -247,13 +257,15 @@ export class DatePickerComponent implements OnChanges,
     } else {
       this.selected = [];
     }
+
+    this.cd.markForCheck();
   }
 
   registerOnChange(fn: any): void {
     this.onChangeCallback = fn;
   }
 
-  onChangeCallback(_: any) {
+  onChangeCallback(_: any, changedByInput: boolean) {
   };
 
   registerOnTouched(fn: any): void {
@@ -284,7 +296,7 @@ export class DatePickerComponent implements OnChanges,
         minTime: this.minTime,
         maxTime: this.maxTime
       }, this.componentConfig.format, this.mode, this.componentConfig.locale);
-    this.onChangeCallback(this.processOnChangeCallback(this.selected));
+    this.onChangeCallback(this.processOnChangeCallback(this.selected), false);
   }
 
   ngOnInit() {
@@ -334,7 +346,7 @@ export class DatePickerComponent implements OnChanges,
   }
 
   setInputElementContainer() {
-    this.inputElementContainer = this.componentConfig.inputElementContainer
+    this.inputElementContainer = this.utilsService.getNativeElement(this.componentConfig.inputElementContainer)
       || this.elemRef.nativeElement.querySelector('.dp-input-container')
       || document.body;
   }
@@ -391,20 +403,30 @@ export class DatePickerComponent implements OnChanges,
     }
 
     this.open.emit();
+    this.cd.markForCheck();
   }
 
   hideCalendar() {
     this.areCalendarsShown = false;
 
     if (this.dayCalendarRef) {
-      this.dayCalendarRef.api.toggleCalendar(ECalendarMode.Day);
+      this.dayCalendarRef.api.toggleCalendarMode(ECalendarMode.Day);
     }
 
     this.close.emit();
+    this.cd.markForCheck();
   }
 
-  onViewDateChange(value: string) {
-    if (this.dayPickerService.isValidInputDateValue(value, this.componentConfig)) {
+  onViewDateChange(value: CalendarValue) {
+    const strVal = value ? this.utilsService.convertToString(value, this.componentConfig.format) : '';
+    if (this.dayPickerService.isValidInputDateValue(strVal, this.componentConfig)) {
+      this.selected = this.dayPickerService.convertInputValueToMomentArray(strVal, this.componentConfig);
+      // if (value && this.config.locale === 'fa') {
+      //   const l = moment.locale();
+      //   moment.locale('fa');
+      //   value = moment(value, this.componentConfig.format).locale('en').format(this.componentConfig.format);
+      //   moment.locale(l);
+      // }
       this.selected = this.dayPickerService.convertInputValueToMomentArray(value, this.componentConfig);
       this.currentDateView = this.selected.length
         ? this.utilsService.getDefaultDisplayDate(
@@ -417,8 +439,8 @@ export class DatePickerComponent implements OnChanges,
         : this.currentDateView;
     } else {
       this._selected = this.utilsService
-        .getValidMomentArray(value, this.componentConfig.format, this.componentConfig.locale);
-      this.onChangeCallback(this.processOnChangeCallback(value));
+        .getValidMomentArray(strVal, this.componentConfig.format, this.componentConfig.locale);
+      this.onChangeCallback(this.processOnChangeCallback(strVal), true);
     }
   }
 
@@ -443,6 +465,19 @@ export class DatePickerComponent implements OnChanges,
         this.hideCalendar();
         break;
     }
+  }
+
+  moveCalendarTo(date: SingleCalendarValue) {
+    const momentDate = this.utilsService.convertToMoment(date, this.componentConfig.format);
+    this.currentDateView = momentDate;
+  }
+
+  onLeftNavClick(change: INavEvent) {
+    this.onLeftNav.emit(change);
+  }
+
+  onRightNavClick(change: INavEvent) {
+    this.onRightNav.emit(change);
   }
 
   startGlobalListeners() {

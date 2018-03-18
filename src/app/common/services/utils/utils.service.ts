@@ -1,13 +1,15 @@
 import {ECalendarValue} from '../../types/calendar-value-enum';
 import {SingleCalendarValue} from '../../types/single-calendar-value';
-import {Injectable, SimpleChange} from '@angular/core';
-import * as moment from 'jalali-moment';
+import {Injectable} from '@angular/core';
+import * as momentNs from 'jalali-moment';
 import {Moment, MomentInput, unitOfTime} from 'jalali-moment';
 import {CalendarValue} from '../../types/calendar-value';
 import {IDate} from '../../models/date.model';
 import {CalendarMode} from '../../types/calendar-mode';
 import {DateValidator} from '../../types/validator.type';
 import {ICalendarInternal} from '../../models/calendar.model';
+
+const moment = momentNs;
 
 export interface DateLimits {
   minDate?: SingleCalendarValue;
@@ -105,7 +107,7 @@ export class UtilsService {
   convertToMomentArray(value: CalendarValue, format: string, allowMultiSelect: boolean, locale: string): Moment[] {
     switch (this.getInputType(value, allowMultiSelect)) {
       case (ECalendarValue.String):
-        return value ? [moment(<MomentInput>value, format, true).locale(locale)] : [];
+        return value ? [moment(<string>value, format, true).locale(locale)] : [];
       case (ECalendarValue.StringArr):
         return (<string[]>value).map(v => v ? moment(v, format, true).locale(locale) : null).filter(Boolean);
       case (ECalendarValue.Moment):
@@ -134,6 +136,28 @@ export class UtilsService {
       default:
         return value;
     }
+  }
+
+  convertToString(value: CalendarValue, format: string): string {
+    let tmpVal: string[];
+
+    if (typeof value === 'string') {
+      tmpVal = [value];
+    } else if (Array.isArray(value)) {
+      if (value.length) {
+        tmpVal = (<SingleCalendarValue[]>value).map((v) => {
+          return this.convertToMoment(v, format).format(format);
+        });
+      } else {
+        tmpVal = <string[]>value;
+      }
+    } else if (moment.isMoment(value)) {
+      tmpVal = [value.format(format)];
+    } else {
+      return '';
+    }
+
+    return tmpVal.filter(Boolean).join(' | ');
   }
 
   // todo:: add unit test
@@ -268,7 +292,7 @@ export class UtilsService {
   }
 
   datesStringToStringArray(value: string): string[] {
-    return (value || '').split(',').map(m => m.trim());
+    return (value || '').split('|').map(m => m.trim()).filter(Boolean);
   }
 
   getValidMomentArray(value: string, format: string, locale: string): Moment[] {
@@ -314,5 +338,15 @@ export class UtilsService {
     }
 
     return false;
+  }
+
+  getNativeElement(elem: HTMLElement | string): HTMLElement {
+    if (!elem) {
+      return null;
+    } else if (typeof elem === 'string') {
+      return <HTMLElement>document.querySelector(elem);
+    } else {
+      return elem;
+    }
   }
 }

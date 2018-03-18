@@ -2,7 +2,7 @@ import {$, $$, browser, by, element} from 'protractor';
 
 export class DemoPage {
   private popupSelector = '.dp-popup.dp-main';
-  body = $('body');
+  emptyElem = $('.dp-place-holder');
   dayPickerInput = $('#datePicker input');
   timePickerInput = $('#timePicker input');
   daytimePickerInput = $('#daytimePicker input');
@@ -19,6 +19,8 @@ export class DemoPage {
   monthWeeks = $$(`${this.popupSelector} .dp-calendar-week`);
   calendarDays = $$(`${this.popupSelector} .dp-calendar-day`);
   selectedDays = $$(`${this.popupSelector} .dp-calendar-day.dp-selected`);
+  selectedDay = $(`.dp-calendar-day.dp-selected`);
+  selectedMonth = $(`.dp-calendar-month.dp-selected`);
   dayCalendarLeftNavBtn = $(`${this.popupSelector} .dp-calendar-nav-left`);
   dayCalendarLeftSecondaryNavBtn = $(`${this.popupSelector} .dp-calendar-secondary-nav-left`);
   dayCalendarRightNavBtn = $(`${this.popupSelector} .dp-calendar-nav-right`);
@@ -41,9 +43,12 @@ export class DemoPage {
   showWeekNumbersRadio = $('#showWeekNumbersRadio');
   hideWeekNumbersRadio = $('#hideWeekNumbersRadio');
   weekNumbers = $$(`${this.popupSelector} .dp-week-number`);
-  deyCalendarNavHeader = $(`${this.popupSelector} .dp-nav-header`);
   dayCalendarNavHeaderBtn = $(`${this.popupSelector} .dp-nav-header-btn`);
   deyCalendarMonthNavHeader = $(`${this.popupSelector} dp-month-calendar .dp-nav-header`);
+  dayTimeCalendarNavHeaderBtnInline = $(`dp-day-time-calendar .dp-nav-header-btn`);
+  dayCalendarNavHeaderBtnInline = $(`dp-day-calendar .dp-nav-header-btn`);
+  monthCalendarNavHeaderInline = $(`dp-month-calendar .dp-nav-header`);
+  navHeader = $(`${this.popupSelector} .dp-nav-header`);
   dayCalendarNavMonthHeaderBtn = $(`${this.popupSelector} dp-month-calendar .dp-nav-header-btn`);
   calendarDisabledDays = $$(`${this.popupSelector} .dp-calendar-day[disabled]`);
   calendarFirstDayOfMonth = $$(`${this.popupSelector} .dp-current-month`).get(0);
@@ -56,6 +61,8 @@ export class DemoPage {
   localeOptions = $('#locale');
   hideGoToCurrentRadio = $('#hideGoToCurrent');
   showGoToCurrentRadio = $('#showGoToCurrent');
+  enableUnselectSelected = $('#enableUnSelect');
+  disableUnselectSelected = $('#disableUnSelect');
   pickerEnabledRadio = $('#inputEnabledRadio');
   pickerDisabledRadio = $('#inputDisabledRadio');
   enableRequiredValidationRadio = $('#enableRequiredRadio');
@@ -111,6 +118,9 @@ export class DemoPage {
   showInputRadio = $('#showInputRadio');
   hideInputRadio = $('#hideInputRadio');
 
+  showOnOutsideClick = $('#showOnOutsideClick');
+  hideOnOutsideClick = $('#hideOnOutsideClick');
+
   hourUpBtn = $(`${this.popupSelector} .dp-time-select-control-hours > .dp-time-select-control-up`);
   hourDownBtn = $(`${this.popupSelector} .dp-time-select-control-hours > .dp-time-select-control-down`);
   hourDisplay = $(`${this.popupSelector} .dp-time-select-display-hours`);
@@ -141,14 +151,14 @@ export class DemoPage {
   timeDirectiveMenu = $('#timeDirectiveMenu');
 
   openBtn = $('#openBtn');
+  moveCalendarTo = $('#moveCalendarTo');
 
   navigateTo() {
     return browser.get('/');
   }
 
   clickOnBody() {
-    this.body.click();
-    this.body.click();
+    this.emptyElem.click();
   }
 
   scrollIntoView(el, top = false) {
@@ -157,5 +167,17 @@ export class DemoPage {
 
   clickOnDayButton(text: string) {
     element(by.cssContainingText(`${this.popupSelector} .dp-calendar-day`, text)).click();
+  }
+
+  clickOnDayButtonInline(text: string) {
+    element(by.cssContainingText(`.dp-inline-day .dp-calendar-day`, text)).click();
+  }
+
+  clickOnMonthButton(text: string) {
+    element(by.cssContainingText(`${this.popupSelector} .dp-calendar-month`, text)).click();
+  }
+
+  clickOnMonthButtonInline(text: string) {
+    element(by.cssContainingText(`.dp-inline-month .dp-calendar-month`, text)).click();
   }
 }

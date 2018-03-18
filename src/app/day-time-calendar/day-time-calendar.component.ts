@@ -1,6 +1,8 @@
 import {ECalendarValue} from '../common/types/calendar-value-enum';
 import {SingleCalendarValue} from '../common/types/single-calendar-value';
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   forwardRef,
@@ -8,8 +10,9 @@ import {
   Input,
   OnChanges,
   OnInit,
-  Output, SimpleChange,
-  SimpleChanges, ViewChild,
+  Output,
+  SimpleChanges,
+  ViewChild,
   ViewEncapsulation
 } from '@angular/core';
 import {
@@ -30,11 +33,13 @@ import {IDayTimeCalendarConfig} from './day-time-calendar-config.model';
 import {DayTimeCalendarService} from './day-time-calendar.service';
 import {DateValidator} from '../common/types/validator.type';
 import {DayCalendarComponent} from '../day-calendar/day-calendar.component';
+import {INavEvent} from '../common/models/navigation-event.model';
 
 @Component({
   selector: 'dp-day-time-calendar',
   templateUrl: 'day-time-calendar.component.html',
   styleUrls: ['day-time-calendar.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   providers: [
     DayTimeCalendarService,
@@ -61,6 +66,9 @@ export class DayTimeCalendarComponent implements OnInit, OnChanges, ControlValue
   @HostBinding('class') @Input() theme: string;
 
   @Output() onChange: EventEmitter<IDate> = new EventEmitter();
+  @Output() onGoToCurrent: EventEmitter<void> = new EventEmitter();
+  @Output() onLeftNav: EventEmitter<INavEvent> = new EventEmitter();
+  @Output() onRightNav: EventEmitter<INavEvent> = new EventEmitter();
 
   @ViewChild('dayCalendar') dayCalendarRef: DayCalendarComponent;
 
@@ -80,8 +88,13 @@ export class DayTimeCalendarComponent implements OnInit, OnChanges, ControlValue
     return this._selected;
   }
 
+  api = {
+    moveCalendarTo: this.moveCalendarTo.bind(this)
+  };
+
   constructor(public dayTimeCalendarService: DayTimeCalendarService,
-              public utilsService: UtilsService) {
+              public utilsService: UtilsService,
+              public cd: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -117,6 +130,8 @@ export class DayTimeCalendarComponent implements OnInit, OnChanges, ControlValue
     } else {
       this.selected = null;
     }
+
+    this.cd.markForCheck();
   }
 
   registerOnChange(fn: any): void {
@@ -158,7 +173,7 @@ export class DayTimeCalendarComponent implements OnInit, OnChanges, ControlValue
   }
 
   dateSelected(day: IDate) {
-    this.selected = this.dayTimeCalendarService.updateDay(this.selected, day.date);
+    this.selected = this.dayTimeCalendarService.updateDay(this.selected, day.date, this.config);
     this.emitChange();
   }
 
@@ -175,5 +190,13 @@ export class DayTimeCalendarComponent implements OnInit, OnChanges, ControlValue
     if (to) {
       this.dayCalendarRef.moveCalendarTo(to);
     }
+  }
+
+  onLeftNavClick(change: INavEvent) {
+    this.onLeftNav.emit(change);
+  }
+
+  onRightNavClick(change: INavEvent) {
+    this.onRightNav.emit(change);
   }
 }

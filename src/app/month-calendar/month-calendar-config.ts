@@ -17,6 +17,7 @@ export interface IConfig {
   locale?: string;
   returnedValueType?: ECalendarValue;
   showGoToCurrent?: boolean;
+  unSelectOnClick?: boolean;
 }
 
 export interface IMonthCalendarConfig extends IConfig,

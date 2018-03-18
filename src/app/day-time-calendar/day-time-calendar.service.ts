@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
-import * as moment from 'jalali-moment';
+import * as momentNs from 'jalali-moment';
 import {Moment} from 'jalali-moment';
 
 import {UtilsService} from '../common/services/utils/utils.service';
 import {DayCalendarService} from '../day-calendar/day-calendar.service';
 import {TimeSelectService} from '../time-select/time-select.service';
 import {IDayTimeCalendarConfig} from './day-time-calendar-config.model';
+const moment = momentNs;
 
 const DAY_FORMAT = 'YYYYMMDD';
 const TIME_FORMAT = 'HH:mm:ss';
@@ -34,23 +35,26 @@ export class DayTimeCalendarService {
     return _config;
   }
 
-  updateDay(current: Moment, day: Moment): Moment {
+  updateDay(current: Moment, day: Moment, config: IDayTimeCalendarConfig): Moment {
     const time = current ? current : moment();
-    const parseLocale = moment.locale();
-    const locale = day.locale();
-    moment.locale(locale);
-    const res = moment(day.format(DAY_FORMAT) + time.format(TIME_FORMAT), COMBINED_FORMAT);
-    moment.locale(parseLocale);
-    return res;
+    let updated = moment.from(day.locale, day.format(DAY_FORMAT) + time.format(TIME_FORMAT), COMBINED_FORMAT)
+
+    if (config.min) {
+      const min = <Moment>config.min;
+      updated = min.isAfter(updated) ? min : updated;
+    }
+
+    if (config.max) {
+      const max = <Moment>config.max;
+      updated = max.isBefore(updated) ? max : updated;
+    }
+
+    return updated;
   }
 
   updateTime(current: Moment, time: Moment): Moment {
     const day = current ? current : moment();
-    const parseLocale = moment.locale();
-    const locale = day.locale();
-    moment.locale(locale);
-    const res = moment(day.format(DAY_FORMAT) + time.format(TIME_FORMAT), COMBINED_FORMAT);
-    moment.locale(parseLocale);
-    return res;
+
+    return moment.from(day.locale, day.format(DAY_FORMAT) + time.format(TIME_FORMAT), COMBINED_FORMAT);
   }
 }

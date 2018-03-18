@@ -16,9 +16,10 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import {NgControl} from '@angular/forms';
-import {Moment} from 'jalali-moment';
 import {CalendarValue} from '../common/types/calendar-value';
 import {SingleCalendarValue} from '../common/types/single-calendar-value';
+import {INavEvent} from '../common/models/navigation-event.model';
+import {UtilsService} from '../common/services/utils/utils.service'
 
 @Directive({
   exportAs: 'dpDayPicker',
@@ -43,6 +44,7 @@ export class DatePickerDirective implements OnInit {
   @Input('dpDayPicker') set config(config: IDatePickerDirectiveConfig) {
     this._config = this.service.getConfig(config, this.viewContainerRef.element, this.attachTo);
     this.updateDatepickerConfig();
+    this.markForCheck();
   }
 
   get attachTo(): ElementRef | string {
@@ -53,6 +55,7 @@ export class DatePickerDirective implements OnInit {
     this._attachTo = attachTo;
     this._config = this.service.getConfig(this.config, this.viewContainerRef.element, this.attachTo);
     this.updateDatepickerConfig();
+    this.markForCheck();
   }
 
   get theme(): string {
@@ -64,6 +67,8 @@ export class DatePickerDirective implements OnInit {
     if (this.datePicker) {
       this.datePicker.theme = theme;
     }
+
+    this.markForCheck();
   }
 
   get mode(): CalendarMode {
@@ -75,6 +80,8 @@ export class DatePickerDirective implements OnInit {
     if (this.datePicker) {
       this.datePicker.mode = mode;
     }
+
+    this.markForCheck();
   }
 
   @Input() set minDate(minDate: SingleCalendarValue) {
@@ -83,6 +90,8 @@ export class DatePickerDirective implements OnInit {
       this.datePicker.minDate = minDate;
       this.datePicker.ngOnInit();
     }
+
+    this.markForCheck();
   }
 
   get minDate(): SingleCalendarValue {
@@ -95,6 +104,8 @@ export class DatePickerDirective implements OnInit {
       this.datePicker.maxDate = maxDate;
       this.datePicker.ngOnInit();
     }
+
+    this.markForCheck();
   }
 
   get maxDate(): SingleCalendarValue {
@@ -107,6 +118,8 @@ export class DatePickerDirective implements OnInit {
       this.datePicker.minTime = minTime;
       this.datePicker.ngOnInit();
     }
+
+    this.markForCheck();
   }
 
   get minTime(): SingleCalendarValue {
@@ -119,6 +132,8 @@ export class DatePickerDirective implements OnInit {
       this.datePicker.maxTime = maxTime;
       this.datePicker.ngOnInit();
     }
+
+    this.markForCheck();
   }
 
   get maxTime(): SingleCalendarValue {
@@ -132,11 +147,16 @@ export class DatePickerDirective implements OnInit {
   @Input() set displayDate(displayDate: SingleCalendarValue) {
     this._displayDate = displayDate;
     this.updateDatepickerConfig();
+
+    this.markForCheck();
   }
 
   @Output() open = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
   @Output() onChange = new EventEmitter<CalendarValue>();
+  @Output() onGoToCurrent: EventEmitter<void> = new EventEmitter();
+  @Output() onLeftNav: EventEmitter<INavEvent> = new EventEmitter();
+  @Output() onRightNav: EventEmitter<INavEvent> = new EventEmitter();
 
   public datePicker: DatePickerComponent;
   public api: IDpDayPickerApi;
@@ -145,7 +165,8 @@ export class DatePickerDirective implements OnInit {
               public elemRef: ElementRef,
               public componentFactoryResolver: ComponentFactoryResolver,
               public service: DatePickerDirectiveService,
-              @Optional() public formControl: NgControl) {
+              @Optional() public formControl: NgControl,
+              public utilsService: UtilsService) {
   }
 
   ngOnInit(): void {
@@ -170,17 +191,18 @@ export class DatePickerDirective implements OnInit {
 
     this.formControl.valueChanges.subscribe((value) => {
       if (value !== this.datePicker.inputElementValue) {
-        this.datePicker.onViewDateChange(value);
+        const strVal = this.utilsService.convertToString(value, this.datePicker.componentConfig.format);
+        this.datePicker.onViewDateChange(strVal);
       }
     });
 
     let setup = true;
 
-    this.datePicker.registerOnChange((value) => {
+    this.datePicker.registerOnChange((value, changedByInput) => {
       if (value) {
         const isMultiselectEmpty = setup && Array.isArray(value) && !value.length;
 
-        if (!isMultiselectEmpty) {
+        if (!isMultiselectEmpty && !changedByInput) {
           this.formControl.control.setValue(this.datePicker.inputElementValue);
         }
       }
@@ -188,7 +210,9 @@ export class DatePickerDirective implements OnInit {
       const errors = this.datePicker.validateFn(value);
 
       if (!setup) {
-        this.formControl.control.markAsDirty({onlySelf: true});
+        this.formControl.control.markAsDirty({
+          onlySelf: true
+        });
       } else {
         setup = false;
       }
@@ -197,7 +221,9 @@ export class DatePickerDirective implements OnInit {
         if (errors.hasOwnProperty('format')) {
           const {given} = errors['format'];
           this.datePicker.inputElementValue = given;
-          this.formControl.control.setValue(given);
+          if (!changedByInput) {
+            this.formControl.control.setValue(given);
+          }
         }
 
         this.formControl.control.setErrors(errors);
@@ -227,6 +253,9 @@ export class DatePickerDirective implements OnInit {
       this.datePicker.open = this.open;
       this.datePicker.close = this.close;
       this.datePicker.onChange = this.onChange;
+      this.datePicker.onGoToCurrent = this.onGoToCurrent;
+      this.datePicker.onLeftNav = this.onLeftNav;
+      this.datePicker.onRightNav = this.onRightNav;
 
       this.datePicker.init();
 
@@ -235,6 +264,12 @@ export class DatePickerDirective implements OnInit {
       } else {
         this.elemRef.nativeElement.removeAttribute('readonly');
       }
+    }
+  }
+
+  markForCheck() {
+    if (this.datePicker) {
+      this.datePicker.cd.markForCheck();
     }
   }
 }

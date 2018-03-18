@@ -20,6 +20,11 @@ describe('dpDayPicker dayPicker', () => {
     expect(page.datePickerPopup.isDisplayed()).toBe(true);
     page.clickOnBody();
     expect(page.datePickerPopup.isDisplayed()).toBe(false);
+
+    page.showOnOutsideClick.click();
+    page.dayPickerInput.click();
+    page.clickOnBody();
+    expect(page.datePickerPopup.isDisplayed()).toBe(true);
   });
 
   it('should check that the theme is added and removed', () => {
@@ -34,6 +39,7 @@ describe('dpDayPicker dayPicker', () => {
   it('should check that the onOpenDelay is working', () => {
     page.onOpenDelayInput.clear();
     page.onOpenDelayInput.sendKeys(1000);
+    page.scrollIntoView(page.openBtn);
     page.openBtn.click();
     expect(page.datePickerPopup.isDisplayed()).toBe(true);
     page.clickOnBody();
@@ -84,22 +90,22 @@ describe('dpDayPicker dayPicker', () => {
   });
 
   it('should disable/enable month selection', () => {
-    page.dayPickerInput.sendKeys('08-04-2017');
+    page.dayPickerInput.sendKeys('08-04-2018');
     page.dayPickerInput.click();
     expect(page.dayCalendarNavHeaderBtn.isPresent()).toBe(true);
     expect(page.dayCalendarContainer.isDisplayed()).toBe(true);
-    expect(page.dayCalendarNavHeaderBtn.getText()).toEqual('Apr, 2017');
+    expect(page.dayCalendarNavHeaderBtn.getText()).toEqual('Apr, 2018');
 
     page.dayCalendarNavHeaderBtn.click();
     expect(page.dayCalendarContainer.isPresent()).toBe(false);
     expect(page.monthCalendar.isPresent()).toBe(true);
-    expect(page.dayCalendarNavMonthHeaderBtn.getText()).toEqual('2017');
+    expect(page.dayCalendarNavMonthHeaderBtn.getText()).toEqual('2018');
     expect(page.currentMonthCalendarBtn.getText()).toEqual(moment().format('MMM'));
     page.monthCalendarLeftNavBtn.click();
-    expect(page.dayCalendarNavMonthHeaderBtn.getText()).toEqual('2016');
+    expect(page.dayCalendarNavMonthHeaderBtn.getText()).toEqual('2017');
     expect(page.currentMonthCalendarBtn.isPresent()).toBe(false);
     page.monthCalendarRightNavBtn.click();
-    expect(page.dayCalendarNavMonthHeaderBtn.getText()).toEqual('2017');
+    expect(page.dayCalendarNavMonthHeaderBtn.getText()).toEqual('2018');
     expect(page.currentMonthCalendarBtn.getText()).toEqual(moment().format('MMM'));
 
     page.clickOnBody();
@@ -266,14 +272,14 @@ describe('dpDayPicker dayPicker', () => {
     expect(page.selectedDays.count()).toBe(3);
     expect(page.datePickerPopup.isDisplayed()).toBe(true);
     expect(page.dayPickerInput.getAttribute('value')).toEqual(
-      `${moment().date(18).format('DD-MM-YYYY')}, ${moment().date(15).format('DD-MM-YYYY')}, ${moment().date(16)
+      `${moment().date(18).format('DD-MM-YYYY')} | ${moment().date(15).format('DD-MM-YYYY')} | ${moment().date(16)
         .format('DD-MM-YYYY')}`
     );
 
     page.clickOnDayButton('18');
     expect(page.selectedDays.count()).toBe(2);
     expect(page.dayPickerInput.getAttribute('value')).toEqual(
-      `${moment().date(15).format('DD-MM-YYYY')}, ${moment().date(16).format('DD-MM-YYYY')}`
+      `${moment().date(15).format('DD-MM-YYYY')} | ${moment().date(16).format('DD-MM-YYYY')}`
     );
   });
 

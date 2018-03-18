@@ -1,6 +1,7 @@
 import {ECalendarValue} from '../common/types/calendar-value-enum';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   forwardRef,
@@ -15,7 +16,7 @@ import {
 } from '@angular/core';
 import {IMonth} from './month.model';
 import {MonthCalendarService} from './month-calendar.service';
-import * as moment from 'jalali-moment';
+import * as momentNs from 'jalali-moment';
 import {Moment} from 'jalali-moment';
 import {IMonthCalendarConfig, IMonthCalendarConfigInternal} from './month-calendar-config';
 import {
@@ -30,12 +31,15 @@ import {CalendarValue} from '../common/types/calendar-value';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {DateValidator} from '../common/types/validator.type';
 import {SingleCalendarValue} from '../common/types/single-calendar-value';
+import {INavEvent} from '../common/models/navigation-event.model';
+const moment = momentNs;
 
 @Component({
   selector: 'dp-month-calendar',
   templateUrl: 'month-calendar.component.html',
   styleUrls: ['month-calendar.component.less'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     MonthCalendarService,
     {
@@ -60,6 +64,11 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
 
   @Output() onSelect: EventEmitter<IMonth> = new EventEmitter();
   @Output() onNavHeaderBtnClick: EventEmitter<null> = new EventEmitter();
+  @Output() onGoToCurrent: EventEmitter<void> = new EventEmitter();
+  @Output() onLeftNav: EventEmitter<INavEvent> = new EventEmitter();
+  @Output() onRightNav: EventEmitter<INavEvent> = new EventEmitter();
+  @Output() onLeftSecondaryNav: EventEmitter<INavEvent> = new EventEmitter();
+  @Output() onRightSecondaryNav: EventEmitter<INavEvent> = new EventEmitter();
 
   isInited: boolean = false;
   componentConfig: IMonthCalendarConfigInternal;
@@ -77,7 +86,7 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
   showSecondaryRightNav: boolean;
 
   api = {
-    toggleCalendar: this.toggleCalendar.bind(this),
+    toggleCalendar: this.toggleCalendarMode.bind(this),
     moveCalendarTo: this.moveCalendarTo.bind(this)
   };
 
@@ -105,8 +114,9 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
     return this._currentDateView;
   }
 
-  constructor(public monthCalendarService: MonthCalendarService,
-              public utilsService: UtilsService) {
+  constructor(public readonly monthCalendarService: MonthCalendarService,
+              public readonly utilsService: UtilsService,
+              public readonly cd: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -158,6 +168,8 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
         .generateYear(this.componentConfig, this.currentDateView, this.selected);
       this.inputValueType = this.utilsService.getInputType(this.inputValue, this.componentConfig.allowMultiSelect);
     }
+
+    this.cd.markForCheck();
   }
 
   registerOnChange(fn: any): void {
@@ -201,6 +213,10 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
   }
 
   monthClicked(month: IMonth) {
+    if (month.selected && !this.componentConfig.unSelectOnClick) {
+      return;
+    }
+
     this.selected = this.utilsService
       .updateSelected(this.componentConfig.allowMultiSelect, this.selected, month, 'month');
     this.yearMonths = this.monthCalendarService
@@ -208,12 +224,15 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
     this.onSelect.emit(month);
   }
 
-  onLeftNav() {
+  onLeftNavClick() {
+    const from = this.currentDateView.clone();
     this.currentDateView = this.currentDateView.clone().subtract(1, 'year');
+    const to = this.currentDateView.clone();
     this.yearMonths = this.monthCalendarService.generateYear(this.componentConfig, this.currentDateView, this.selected);
+    this.onLeftNav.emit({from, to});
   }
 
-  onLeftSecondaryNav() {
+  onLeftSecondaryNavClick() {
     let navigateBy = this.componentConfig.multipleYearsNavigateBy;
     const isOutsideRange = this.componentConfig.min &&
       this.currentDateView.year() - this.componentConfig.min.year() < navigateBy;
@@ -222,14 +241,20 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
       navigateBy = this.currentDateView.year() - this.componentConfig.min.year();
     }
 
+    const from = this.currentDateView.clone();
     this.currentDateView = this.currentDateView.clone().subtract(navigateBy, 'year');
+    const to = this.currentDateView.clone();
+    this.onLeftSecondaryNav.emit({from, to});
   }
 
-  onRightNav() {
+  onRightNavClick() {
+    const from = this.currentDateView.clone();
     this.currentDateView = this.currentDateView.clone().add(1, 'year');
+    const to = this.currentDateView.clone();
+    this.onRightNav.emit({from, to});
   }
 
-  onRightSecondaryNav() {
+  onRightSecondaryNavClick() {
     let navigateBy = this.componentConfig.multipleYearsNavigateBy;
     const isOutsideRange = this.componentConfig.max &&
       this.componentConfig.max.year() - this.currentDateView.year() < navigateBy;
@@ -238,10 +263,13 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
       navigateBy = this.componentConfig.max.year() - this.currentDateView.year();
     }
 
+    const from = this.currentDateView.clone();
     this.currentDateView = this.currentDateView.clone().add(navigateBy, 'year');
+    const to = this.currentDateView.clone();
+    this.onRightSecondaryNav.emit({from, to});
   }
 
-  toggleCalendar() {
+  toggleCalendarMode() {
     this.onNavHeaderBtnClick.emit();
   }
 
@@ -270,11 +298,13 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
 
   goToCurrent() {
     this.currentDateView = moment();
+    this.onGoToCurrent.emit();
   }
 
   moveCalendarTo(to: SingleCalendarValue) {
     if (to) {
       this.currentDateView = this.utilsService.convertToMoment(to, this.componentConfig.format, this.componentConfig.locale);
+      this.cd.markForCheck();
     }
   }
 
