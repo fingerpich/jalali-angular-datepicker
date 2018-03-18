@@ -1,6 +1,6 @@
 import {EventEmitter, Injectable} from '@angular/core';
 import {IDatePickerConfig, IDatePickerConfigInternal} from './date-picker-config.model';
-import * as moment from 'jalali-moment';
+import * as momentNs from 'jalali-moment';
 import {Moment} from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDayCalendarConfig} from '../day-calendar/day-calendar-config.model';
@@ -8,6 +8,8 @@ import {TimeSelectService} from '../time-select/time-select.service';
 import {DayTimeCalendarService} from '../day-time-calendar/day-time-calendar.service';
 import {ITimeSelectConfig} from '../time-select/time-select-config.model';
 import {CalendarMode} from '../common/types/calendar-mode';
+import {CalendarValue} from '../common/types/calendar-value';
+const moment = momentNs;
 
 @Injectable()
 export class DatePickerService {
@@ -24,7 +26,8 @@ export class DatePickerService {
     showWeekNumbers: false,
     enableMonthSelector: true,
     showGoToCurrent: true,
-    locale: 'fa'
+    locale: 'fa',
+    hideOnOutsideClick: true
   };
   private gregorianExtensionConfig: IDatePickerConfig = {
     format: 'DD-MM-YYYY',
@@ -81,7 +84,8 @@ export class DatePickerService {
       showMultipleYearsNavigation: pickerConfig.showMultipleYearsNavigation,
       locale: pickerConfig.locale,
       returnedValueType: pickerConfig.returnedValueType,
-      showGoToCurrent: pickerConfig.showGoToCurrent
+      showGoToCurrent: pickerConfig.showGoToCurrent,
+      unSelectOnClick: pickerConfig.unSelectOnClick
     };
   }
 

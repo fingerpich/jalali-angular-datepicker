@@ -1,8 +1,9 @@
 import {inject, TestBed} from '@angular/core/testing';
-import * as moment from 'jalali-moment';
+import * as momentNs from 'jalali-moment';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {MonthCalendarService} from './month-calendar.service';
 import {IMonth} from './month.model';
+const moment = momentNs;
 
 describe('Service: MonthCalendarService', () => {
   beforeEach(() => {

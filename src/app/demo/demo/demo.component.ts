@@ -4,11 +4,12 @@ import {DatePickerComponent} from '../../date-picker/date-picker.component';
 import {DatePickerDirective} from '../../date-picker/date-picker.directive';
 import {Component, HostListener, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import * as moment from 'jalali-moment';
+import * as momentNs from 'jalali-moment';
 import {Moment} from 'jalali-moment';
 import {GaService} from '../services/ga/ga.service';
 import {ECalendarValue} from '../../common/types/calendar-value-enum';
-import {SingleCalendarValue} from '../../common/types/single-calendar-value';
+import {INavEvent} from '../../common/models/navigation-event.model';
+const moment = momentNs;
 
 const GLOBAL_OPTION_KEYS = [
   'theme',
@@ -30,19 +31,22 @@ const PICKER_OPTION_KEYS = [
   'opens',
   'placeholder',
   'required',
-  'hideInputContainer'
+  'hideInputContainer',
+  'hideOnOutsideClick'
 ];
 const DAY_PICKER_DIRECTIVE_OPTION_KEYS = [
   'allowMultiSelect',
   'closeOnSelect',
   'closeOnSelectDelay',
   'showGoToCurrent',
+  'moveCalendarTo',
   ...PICKER_OPTION_KEYS
 ];
 const DAY_PICKER_OPTION_KEYS = [
   ...DAY_PICKER_DIRECTIVE_OPTION_KEYS
 ];
 const DAY_TIME_PICKER_OPTION_KEYS = [
+  'moveCalendarTo',
   ...PICKER_OPTION_KEYS
 ];
 const TIME_PICKER_OPTION_KEYS = [
@@ -59,6 +63,8 @@ const MONTH_CALENDAR_OPTION_KEYS = [
   'showMultipleYearsNavigation',
   'yearFormat',
   'showGoToCurrent',
+  'unSelectOnClick',
+  'moveCalendarTo',
   ...GLOBAL_OPTION_KEYS
 ];
 const DAY_CALENDAR_OPTION_KEYS = [
@@ -75,6 +81,8 @@ const DAY_CALENDAR_OPTION_KEYS = [
   'dayBtnFormat',
   'weekdayFormat',
   'showGoToCurrent',
+  'unSelectOnClick',
+  'moveCalendarTo',
   ...MONTH_CALENDAR_OPTION_KEYS
 ];
 const TIME_SELECT_SHARED_OPTION_KEYS = [
@@ -110,7 +118,7 @@ const DAY_TIME_CALENDAR_OPTION_KEYS = [
 })
 export class DemoComponent {
   showDemo: boolean = true;
-  @ViewChild('datePicker') datePicker: DatePickerComponent;
+  @ViewChild('dateComponent') dateComponent: DatePickerComponent;
   @ViewChild('donateForm') donateForm: any;
   @ViewChild('dateDirectivePicker') datePickerDirective: DatePickerDirective;
   demoFormat = 'DD-MM-YYYY';
@@ -221,7 +229,9 @@ export class DemoComponent {
     showMultipleYearsNavigation: false,
     locale: 'en',
     hideInputContainer: false,
-    returnedValueType: ECalendarValue.String
+    returnedValueType: ECalendarValue.String,
+    unSelectOnClick: true,
+    hideOnOutsideClick: true
   };
   config: IDatePickerConfig = {...this.gregorianSystemDefaults, ...this.jalaliConfigExtension};
   isAtTop: boolean = true;
@@ -279,19 +289,17 @@ export class DemoComponent {
   };
 
   openCalendar() {
-    if (this.datePicker) {
-      this.datePicker.api.open();
-    }
-    if (this.datePickerDirective) {
+    if (this.dateComponent) {
+      this.dateComponent.api.open();
+    } else if (this.datePickerDirective) {
       this.datePickerDirective.api.open();
     }
   }
 
   closeCalendar() {
-    if (this.datePicker) {
-      this.datePicker.api.close();
-    }
-    if (this.datePickerDirective) {
+    if (this.dateComponent) {
+      this.dateComponent.api.close();
+    } else if (this.datePickerDirective) {
       this.datePickerDirective.api.close();
     }
   }
@@ -384,6 +392,18 @@ export class DemoComponent {
 
   log(item) {
     console.log(item);
+  }
+
+  onLeftNav(change: INavEvent) {
+    console.log('left nav', change);
+  }
+
+  onRightNav(change: INavEvent) {
+    console.log('right nav', change);
+  }
+
+  moveCalendarTo() {
+    this.dateComponent.api.moveCalendarTo(moment('14-01-1987', this.demoFormat));
   }
 
   donateClicked() {

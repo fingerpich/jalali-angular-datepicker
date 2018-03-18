@@ -8,20 +8,23 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
+    "types": [
+      "node",
+      "jasmine"
+    ],
     "lib": [
       "es2015",
       "dom"
     ]
   },
-  "include": [
-    "prebuild/app/index.ts"
-  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
   ],
   "angularCompilerOptions": {
     "genDir": "aot",
+    "debug": true,
+    "skipTemplateCodegen": true,
     "strictMetadataEmit": true
   }
 }

@@ -1,6 +1,8 @@
 import {ECalendarValue} from '../common/types/calendar-value-enum';
 import {SingleCalendarValue} from '../common/types/single-calendar-value';
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   forwardRef,
@@ -13,7 +15,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {TimeSelectService, TimeUnit} from './time-select.service';
-import * as moment from 'jalali-moment';
+import * as momentNs from 'jalali-moment';
 import {Moment} from 'jalali-moment';
 import {ITimeSelectConfig, ITimeSelectConfigInternal} from './time-select-config.model';
 import {
@@ -28,12 +30,14 @@ import {CalendarValue} from '../common/types/calendar-value';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDate} from '../common/models/date.model';
 import {DateValidator} from '../common/types/validator.type';
+const moment = momentNs;
 
 @Component({
   selector: 'dp-time-select',
   templateUrl: 'time-select.component.html',
   styleUrls: ['time-select.component.less'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     TimeSelectService,
     {
@@ -106,7 +110,8 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
   };
 
   constructor(public timeSelectService: TimeSelectService,
-              public utilsService: UtilsService) {
+              public utilsService: UtilsService,
+              public cd: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -144,6 +149,8 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
           .getInputType(this.inputValue, false);
       }
     }
+
+    this.cd.markForCheck();
   }
 
   registerOnChange(fn: any): void {
@@ -203,6 +210,7 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
 
   emitChange() {
     this.onChange.emit({date: this.selected, selected: false});
+    this.cd.markForCheck();
   }
 
   calculateTimeParts(time: Moment) {

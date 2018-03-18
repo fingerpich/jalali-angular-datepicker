@@ -3,6 +3,7 @@ import {SingleCalendarValue} from '../common/types/single-calendar-value';
 import {ECalendarMode} from '../common/types/calendar-mode-enum';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   forwardRef,
@@ -16,8 +17,8 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {DayCalendarService} from './day-calendar.service';
-import * as moment from 'jalali-moment';
-import {Moment, MomentInput} from 'jalali-moment';
+import * as momentNs from 'jalali-moment';
+import {Moment, unitOfTime} from 'jalali-moment';
 import {IDayCalendarConfig, IDayCalendarConfigInternal} from './day-calendar-config.model';
 import {IDay} from './day.model';
 import {
@@ -33,12 +34,15 @@ import {UtilsService} from '../common/services/utils/utils.service';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
 import {IMonth} from '../month-calendar/month.model';
 import {DateValidator} from '../common/types/validator.type';
+import {INavEvent} from '../common/models/navigation-event.model';
+const moment = momentNs;
 
 @Component({
   selector: 'dp-day-calendar',
   templateUrl: 'day-calendar.component.html',
   styleUrls: ['day-calendar.component.less'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     DayCalendarService,
     {
@@ -51,8 +55,7 @@ import {DateValidator} from '../common/types/validator.type';
       useExisting: forwardRef(() => DayCalendarComponent),
       multi: true
     }
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
 
@@ -65,6 +68,9 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
   @Output() onSelect: EventEmitter<IDay> = new EventEmitter();
   @Output() onMonthSelect: EventEmitter<IMonth> = new EventEmitter();
   @Output() onNavHeaderBtnClick: EventEmitter<ECalendarMode> = new EventEmitter();
+  @Output() onGoToCurrent: EventEmitter<void> = new EventEmitter();
+  @Output() onLeftNav: EventEmitter<INavEvent> = new EventEmitter();
+  @Output() onRightNav: EventEmitter<INavEvent> = new EventEmitter();
 
   CalendarMode = ECalendarMode;
   isInited: boolean = false;
@@ -85,8 +91,8 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
 
   api = {
     moveCalendarsBy: this.moveCalendarsBy.bind(this),
-    toggleCalendar: this.toggleCalendar.bind(this),
-    moveCalendarTo: this.moveCalendarTo.bind(this)
+    moveCalendarTo: this.moveCalendarTo.bind(this),
+    toggleCalendarMode: this.toggleCalendarMode.bind(this)
   };
 
   set selected(selected: Moment[]) {
@@ -111,8 +117,9 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     return this._currentDateView;
   }
 
-  constructor(public dayCalendarService: DayCalendarService,
-              public utilsService: UtilsService) {
+  constructor(public readonly dayCalendarService: DayCalendarService,
+              public readonly utilsService: UtilsService,
+              public readonly cd: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -178,6 +185,8 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
 
     this.weeks = this.dayCalendarService
       .generateMonthArray(this.componentConfig, this.currentDateView, this.selected);
+
+    this.cd.markForCheck();
   }
 
   registerOnChange(fn: any): void {
@@ -219,6 +228,10 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
   }
 
   dayClicked(day: IDay) {
+    if (day.selected && !this.componentConfig.unSelectOnClick) {
+      return;
+    }
+
     this.selected = this.utilsService
       .updateSelected(this.componentConfig.allowMultiSelect, this.selected, day);
     this.weeks = this.dayCalendarService
@@ -246,12 +259,34 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     return cssClasses;
   }
 
-  onLeftNav() {
+  onLeftNavClick() {
+    const from = this.currentDateView.clone();
     this.moveCalendarsBy(this.currentDateView, -1, 'month');
+    const to = this.currentDateView.clone();
+    this.onLeftNav.emit({from, to});
   }
 
-  onRightNav() {
+  onRightNavClick() {
+    const from = this.currentDateView.clone();
     this.moveCalendarsBy(this.currentDateView, 1, 'month');
+    const to = this.currentDateView.clone();
+    this.onRightNav.emit({from, to});
+  }
+
+  onMonthCalendarLeftClick(change: INavEvent) {
+    this.onLeftNav.emit(change);
+  }
+
+  onMonthCalendarRightClick(change: INavEvent) {
+    this.onRightNav.emit(change);
+  }
+
+  onMonthCalendarSecondaryLeftClick(change: INavEvent) {
+    this.onRightNav.emit(change);
+  }
+
+  onMonthCalendarSecondaryRightClick(change: INavEvent) {
+    this.onLeftNav.emit(change);
   }
 
   getWeekdayName(weekday: Moment): string {
@@ -262,11 +297,13 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     return weekday.format(this.componentConfig.weekDayFormat);
   }
 
-  toggleCalendar(mode: ECalendarMode) {
+  toggleCalendarMode(mode: ECalendarMode) {
     if (this.currentCalendarMode !== mode) {
       this.currentCalendarMode = mode;
       this.onNavHeaderBtnClick.emit(mode);
     }
+
+    this.cd.markForCheck();
   }
 
   monthSelected(month: IMonth) {
@@ -275,14 +312,17 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     this.onMonthSelect.emit(month);
   }
 
-  moveCalendarsBy(current: Moment, amount: number, granularity: moment.unitOfTime.Base = 'month') {
+  moveCalendarsBy(current: Moment, amount: number, granularity: unitOfTime.Base = 'month') {
     this.currentDateView = current.clone().add(amount, granularity);
+    this.cd.markForCheck();
   }
 
   moveCalendarTo(to: SingleCalendarValue) {
     if (to) {
       this.currentDateView = this.utilsService.convertToMoment(to, this.componentConfig.format, this.componentConfig.locale);
     }
+
+    this.cd.markForCheck();
   }
 
   shouldShowCurrent(): boolean {
@@ -296,6 +336,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
 
   goToCurrent() {
     this.currentDateView = moment();
+    this.onGoToCurrent.emit();
   }
 
   handleConfigChange(config: SimpleChange) {

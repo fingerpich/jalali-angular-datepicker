@@ -1,10 +1,19 @@
-import {Component, EventEmitter, HostBinding, Input, Output, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  HostBinding,
+  Input,
+  Output,
+  ViewEncapsulation
+} from '@angular/core';
 
 @Component({
   selector: 'dp-calendar-nav',
   templateUrl: './calendar-nav.component.html',
   styleUrls: ['./calendar-nav.component.less'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarNavComponent {
   @Input() label: string;
@@ -25,7 +34,7 @@ export class CalendarNavComponent {
   @Output() onRightNav: EventEmitter<null> = new EventEmitter();
   @Output() onRightSecondaryNav: EventEmitter<null> = new EventEmitter();
   @Output() onLabelClick: EventEmitter<null> = new EventEmitter();
-  @Output() goToCurrent: EventEmitter<null> = new EventEmitter();
+  @Output() onGoToCurrent: EventEmitter<null> = new EventEmitter();
 
   leftNavClicked() {
     this.onLeftNav.emit();

@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
-import * as moment from 'jalali-moment';
+import * as momentNs from 'jalali-moment';
 import {Moment, unitOfTime} from 'jalali-moment';
 import {WeekDays} from '../common/types/week-days.type';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDay} from './day.model';
 import {IDayCalendarConfig, IDayCalendarConfigInternal} from './day-calendar-config.model';
 import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
+const moment = momentNs;
 
 @Injectable()
 export class DayCalendarService {
@@ -28,7 +29,8 @@ export class DayCalendarService {
     format: 'DD-MM-YYYY',
     monthFormat: 'MMM, YYYY',
     locale: 'en',
-    dayBtnFormat: 'DD'
+    dayBtnFormat: 'DD',
+    unSelectOnClick: true
   };
 
   constructor(private utilsService: UtilsService) {
@@ -82,8 +84,6 @@ export class DayCalendarService {
     const nextMonth = month.clone().add(1, 'month');
     const today = moment();
 
-
-
     const daysOfCalendar: IDay[] = this.utilsService.createArray(42)
       .reduce((array: IDay[]) => {
         array.push({
@@ -95,7 +95,6 @@ export class DayCalendarService {
           currentDay: current.isSame(today, 'day'),
           disabled: this.isDateDisabled(current, config)
         });
-
         current.add(1, 'day');
 
         if (current.format('HH') !== '00') {
@@ -104,6 +103,7 @@ export class DayCalendarService {
             current.add(1, 'day');
           }
         }
+
         return array;
       }, []);
 

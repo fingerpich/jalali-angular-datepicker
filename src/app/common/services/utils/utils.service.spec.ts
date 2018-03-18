@@ -1,7 +1,9 @@
 import {inject, TestBed} from '@angular/core/testing';
 import {UtilsService} from './utils.service';
-import * as moment from 'jalali-moment';
+import * as momentNs from 'jalali-moment';
 import {IDate} from '../../models/date.model';
+
+const moment = momentNs;
 
 describe('Service: ObUtilsService', () => {
   beforeEach(() => {
@@ -100,5 +102,31 @@ describe('Service: ObUtilsService', () => {
     service.convertPropsToMoment(obj, 'DD-MM-YYYY', ['min', 'max']);
     expect(moment.isMoment(obj.min)).toBeTruthy();
     expect(moment.isMoment(obj.max)).toBeTruthy();
+  }));
+
+  it('should test datesStringToStringArray', inject([UtilsService], (service: UtilsService) => {
+    expect(service.datesStringToStringArray('')).toEqual([]);
+    expect(service.datesStringToStringArray('14-01-1984')).toEqual(['14-01-1984']);
+    expect(service.datesStringToStringArray('14-01-1984|15-01-1984'))
+      .toEqual(['14-01-1984', '15-01-1984']);
+
+    expect(service.datesStringToStringArray(''))
+      .toEqual([]);
+    expect(service.datesStringToStringArray('14,01-1984|15,01-1984'))
+      .toEqual(['14,01-1984', '15,01-1984']);
+    expect(service.datesStringToStringArray('14,01-1984| asdasd'))
+      .toEqual(['14,01-1984', 'asdasd']);
+  }));
+
+  it('check convertToString', inject([UtilsService], (service: UtilsService) => {
+    const format = 'MM/DD/YYYY';
+    expect(service.convertToString(null, format)).toEqual('');
+    expect(service.convertToString('', format)).toEqual('');
+    expect(service.convertToString(moment(), format)).toEqual(moment().format(format));
+    expect(service.convertToString([moment()], format)).toEqual(moment().format(format));
+    expect(service.convertToString([moment(), moment().add(1, 'd')], format))
+      .toEqual(moment().format(format) + ' | ' + moment().add(1, 'd').format(format));
+    expect(service.convertToString([moment().format(format), moment().add(1, 'd').format(format)], format))
+      .toEqual(moment().format(format) + ' | ' + moment().add(1, 'd').format(format));
   }));
 });
