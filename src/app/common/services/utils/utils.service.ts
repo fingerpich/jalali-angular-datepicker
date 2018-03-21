@@ -138,7 +138,7 @@ export class UtilsService {
     }
   }
 
-  convertToString(value: CalendarValue, format: string): string {
+  convertToString(value: CalendarValue, format: string, locale: string): string {
     let tmpVal: string[];
 
     if (typeof value === 'string') {
@@ -146,7 +146,7 @@ export class UtilsService {
     } else if (Array.isArray(value)) {
       if (value.length) {
         tmpVal = (<SingleCalendarValue[]>value).map((v) => {
-          return this.convertToMoment(v, format).format(format);
+          return this.convertToMoment(v, format, locale).format(format);
         });
       } else {
         tmpVal = <string[]>value;

@@ -1,4 +1,4 @@
-import {Moment} from 'moment/moment';
+import {Moment} from 'jalali-moment';
 import {ICalendar, ICalendarInternal} from '../common/models/calendar.model';
 import {ECalendarValue} from '../common/types/calendar-value-enum';
 

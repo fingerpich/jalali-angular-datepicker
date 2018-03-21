@@ -52,8 +52,7 @@ const moment = momentNs;
       useExisting: forwardRef(() => MonthCalendarComponent),
       multi: true
     }
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
   @Input() config: IMonthCalendarConfig;

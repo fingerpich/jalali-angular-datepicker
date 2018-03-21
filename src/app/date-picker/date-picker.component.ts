@@ -1,3 +1,5 @@
+import * as momentNs from 'jalali-moment';
+const moment = momentNs;
 import {IDate} from '../common/models/date.model';
 import {DomHelper} from '../common/services/dom-appender/dom-appender.service';
 import {UtilsService} from '../common/services/utils/utils.service';
@@ -418,16 +420,12 @@ export class DatePickerComponent implements OnChanges,
   }
 
   onViewDateChange(value: CalendarValue) {
-    const strVal = value ? this.utilsService.convertToString(value, this.componentConfig.format) : '';
+    let strVal = value ? this.utilsService.convertToString(value, this.componentConfig.format, this.componentConfig.locale) : '';
     if (this.dayPickerService.isValidInputDateValue(strVal, this.componentConfig)) {
+      if (strVal) {
+        strVal = moment.from(strVal, 'fa', this.componentConfig.format).format(this.componentConfig.format);
+      }
       this.selected = this.dayPickerService.convertInputValueToMomentArray(strVal, this.componentConfig);
-      // if (value && this.config.locale === 'fa') {
-      //   const l = moment.locale();
-      //   moment.locale('fa');
-      //   value = moment(value, this.componentConfig.format).locale('en').format(this.componentConfig.format);
-      //   moment.locale(l);
-      // }
-      this.selected = this.dayPickerService.convertInputValueToMomentArray(value, this.componentConfig);
       this.currentDateView = this.selected.length
         ? this.utilsService.getDefaultDisplayDate(
           null,
@@ -468,7 +466,7 @@ export class DatePickerComponent implements OnChanges,
   }
 
   moveCalendarTo(date: SingleCalendarValue) {
-    const momentDate = this.utilsService.convertToMoment(date, this.componentConfig.format);
+    const momentDate = this.utilsService.convertToMoment(date, this.componentConfig.format, this.componentConfig.locale);
     this.currentDateView = momentDate;
   }
 

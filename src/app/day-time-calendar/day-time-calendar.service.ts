@@ -37,7 +37,7 @@ export class DayTimeCalendarService {
 
   updateDay(current: Moment, day: Moment, config: IDayTimeCalendarConfig): Moment {
     const time = current ? current : moment();
-    let updated = moment.from(day.locale, day.format(DAY_FORMAT) + time.format(TIME_FORMAT), COMBINED_FORMAT)
+    let updated = moment.from(day.format(DAY_FORMAT) + time.format(TIME_FORMAT), day.locale(), COMBINED_FORMAT)
 
     if (config.min) {
       const min = <Moment>config.min;
@@ -55,6 +55,6 @@ export class DayTimeCalendarService {
   updateTime(current: Moment, time: Moment): Moment {
     const day = current ? current : moment();
 
-    return moment.from(day.locale, day.format(DAY_FORMAT) + time.format(TIME_FORMAT), COMBINED_FORMAT);
+    return moment.from(day.format(DAY_FORMAT) + time.format(TIME_FORMAT), day.locale(), COMBINED_FORMAT);
   }
 }

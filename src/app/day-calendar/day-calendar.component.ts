@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 import {DayCalendarService} from './day-calendar.service';
 import * as momentNs from 'jalali-moment';
-import {Moment, unitOfTime} from 'jalali-moment';
+import {Moment, MomentInput, unitOfTime} from 'jalali-moment';
 import {IDayCalendarConfig, IDayCalendarConfigInternal} from './day-calendar-config.model';
 import {IDay} from './day.model';
 import {
@@ -165,7 +165,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
   }
 
   writeValue(value: CalendarValue): void {
-    if (value == this.inputValue
+    if (value === this.inputValue
       || (this.inputValue
        && (moment.isMoment(this.inputValue)) && (this.inputValue as Moment).isSame(<MomentInput>value))
     ) {

@@ -92,6 +92,9 @@ all attributes in the following table could be used as
 | onChange             | `CalendarValue`                     | All Pickers               | This event will be emitted on every valid value change, if you want to receive every value (valid and invalid) please use the native `ngModelChange` output.     |
 | open                 | `undefined`                         | All Pickers               | This event will be emitted when picker is opened.                                                                                                                |
 | close                | `CalendarValue`                     | All Pickers               | This event will be emitted when picker is closed.                                                                                                                |
+| onGoToCurrent        | void                                | All Pickers               | This event will be emitted when click was made on go to current button.                                                                                          |
+| onLeftNav            | void                                | All Pickers               | This event will be emitted when click was made on left navigation button.                                                                                        |
+| onRightNav           | void                                | All Pickers               | This event will be emitted when click was made on right navigation button.                                                                                       |
 
 ### Configuration:  
 In order to provide configurations to the date-picker you need to pass it to the `dp-date-picker` component:  
@@ -152,8 +155,11 @@ Here are the available configurations:
 | timeSeparator               | `String`              | `":"`                                                                     | `daytime\|time`           | The separator that will be placed between hours and minutes and between minutes and seconds on the time select.                                                                                                                                                               |
 | showMultipleYearsNavigation | `boolean`             | `false`                                                                   | `day\|month\|daytime`     | If set to `true` will show buttons to navigate by multiple years (10 by default)                                                                                                                                                                                              |
 | multipleYearsNavigateBy     | `number`              | `10`                                                                      | `day\|month\|daytime`     | Number of years to navigate when showMultipleYearsNavigation is `true`                                                                                                                                                                                                        |
-| returnedValueType           | `ECalendarValue`      | will try to guess by provided input type, fallbacks to `Moment`           | All                       | The returned value type (`Moment`, `Moment[]`, `string`, `string[]`                                                                                                                                                                                                           |
-| calendarSystem            | `ECalendarSystem`    | `ECalendarSystem.jalali`                                                            | If ngModel provided as `String` the format is required, this format also will be used as the input format style.                                                                                                                                                    |
+| returnedValueType           | `ECalendarValue`      | `Moment`                                                                  | All                       | The returned value type (`Moment`, `Moment[]`, `string`, `string[]`                                                                                                                                                                                                           |
+| unSelectOnClick             | `boolean`             | `true`                                                                    | `day\|month`              | Will allow disallow/unselect to selected date by clicking on the selected date                                                                                                                                                                                                |
+| inputElementContainer       | `string\|HTMLElement` | `undefined`                                                               | All                       | Will place picker popup relative to the provided elemenr (if string provided will used as a selector)                                                                                                                                                                         |
+| showGoToCurrent             | `boolean`             | `true`                                                                    | All                       | Show/Hides the go to current button on the calendars navigation                                                                                                                                                                                                               |
+| hideOnOutsideClick          | `boolean`             | `true`                                                                    | All                       | Show/Hides the picker popup after click outside of the component                                                                                                                                                                                                              |
 
 ### API:
 In order to use the date-picker api user the `@ViewChild` annotation in the date-picker containing component class, take at the example below:  
@@ -185,13 +191,37 @@ class MyContainer {
     }
 }  
 ```
+
+If you want to use API with [`Directive`](#directive) - you can do it by using `#dateDirectivePicker`, like below:
+```ts
+import {Component, ViewChild} from '@angular/core';
+import {DatePickerDirective} from 'ng2-date-picker';
+
+@Component({
+selector: 'my-container',
+template: `
+<div>
+    <input #dateDirectivePicker="dpDayPicker">
+    <button (click)="close()"></button>
+</div>
+`
+});
+class MyContainer {
+    @ViewChild('dateDirectivePicker') datePickerDirective: DatePickerDirective;
+	
+    close() {
+         this.datePickerDirective.api.close();
+    }
+}  
+```
+
 Here is the list of APIs:  
 
-| Name                 | Signature       | Description            |
-|----------------------|:---------------:|------------------------|
-| open                 | `() => void`    | Opens the date picker  |
-| close                | `() => void`    | Closes the date picker |
-
+| Name                 | Signature                          | Description                      |
+|----------------------|:----------------------------------:|----------------------------------|
+| open                 | `() => void`                       | Opens the date picker            |
+| close                | `() => void`                       | Closes the date picker           |
+| moveCalendarTo       | `(to: Moment \| String) => void`   | Moves calendar to specific date  |
 
 ## Inline - Day Calendar
 
@@ -215,9 +245,12 @@ i.e.
 
 | Name                 | Event Arguments                     |  Description                                                                                                                                                      |
 |----------------------|:-----------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| onSelect             | `IDay`                              |  This event will be emitted when a day is selected.                                                                                                               |
-| onMonthSelect        | `IMonth`                            |  This event will be emitted when a month is selected.                                                                                                             |
-| onNavHeaderBtnClick  | `ECalendarMode`                     |  This event will be emitted when the mode of the calendar switches form day to month and vise versa.                                                              |
+| onSelect             | `IDay`                              | This event will be emitted when a day is selected.                                                                                                                |
+| onMonthSelect        | `IMonth`                            | This event will be emitted when a month is selected.                                                                                                              |
+| onNavHeaderBtnClick  | `ECalendarMode`                     | This event will be emitted when the mode of the calendar switches form day to month and vise versa.                                                               |
+| onGoToCurrent        | void                                | This event will be emitted when click was made on go to current button.                                                                                           |
+| onLeftNav            | void                                | This event will be emitted when click was made on left navigation button.                                                                                         |
+| onRightNav           | void                                | This event will be emitted when click was made on right navigation button.                                                                                        |
 
 ### Configuration:  
 In order to provide configurations to the day-calendar you need to pass it to the `dp-day-calendar` component:  
@@ -254,7 +287,6 @@ Here are the available configurations:
 ## Inline - Month Calendar
 
 You can use the `<dp-month-calendar>` component to display the calendar widget without an associated input box.
-
 i.e.
 ```html
 <dp-month-calendar [(ngModel)]="selectedDate" [config]="config"></dp-month-calendar>
@@ -273,8 +305,11 @@ i.e.
 
 | Name                 | Event Arguments                     |  Description                                                                                                                                                      |
 |----------------------|:-----------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| onSelect             | `IMonth`                            |  This event will be emitted when a month is selected.                                                                                                             |
-| onNavHeaderBtnClick  | `null`                              |  This event will be emitted when the mode button, in the navigation section, was clicked.                                                                         |
+| onSelect             | `IMonth`                            | This event will be emitted when a month is selected.                                                                                                              |
+| onNavHeaderBtnClick  | `null`                              | This event will be emitted when the mode button, in the navigation section, was clicked.                                                                          |
+| onGoToCurrent        | void                                | This event will be emitted when click was made on go to current button.                                                                                           |
+| onLeftNav            | void                                | This event will be emitted when click was made on left navigation button.                                                                                         |
+| onRightNav           | void                                | This event will be emitted when click was made on right navigation button.                                                                                        |
 
 
 ### Configuration:  
@@ -298,7 +333,15 @@ Here are the available configurations:
 | monthBtnCssClassCallback    | `(Moment) => String` | `undefined`                                                               | Callback which can add custom CSS classes to the month button in the calendar. Multiple classes can be returned with a space between them.                                                                                                                                    |
 | showMultipleYearsNavigation | `boolean`            | `false`                                                                   | If set to `true` will show buttons to navigate by multiple years (10 by default)                                                                                                                                                                                              |
 | multipleYearsNavigateBy     | `number`             | `10`                                                                      | Number of years to navigate when showMultipleYearsNavigation is `true`                                                                                                                                                                                                        |
-| calendarSystem            | `ECalendarSystem`    | `ECalendarSystem.jalali`                                                     | If ngModel provided as `String` the format is required, this format also will be used as the input format style.                                                                                                                                                             |
+
+Here is the list of APIs:  
+
+| Name                 | Signature                                                                           | Description                      |
+|----------------------|:-----------------------------------------------------------------------------------:|----------------------------------|
+| moveCalendarsBy      | `(current: Moment, amount: number, granularity: moment.unitOfTime.Base) => void`    | Moves calendar by given amount   |
+| moveCalendarTo       | `(to: Moment \| String) => void`                                                    | Moves calendar to specific date  |
+| toggleCalendarMode   | `(mode: day \| month) => void`                                                      | Changes clander mode day/month   |
+
 
 ## Inline - Time Select
 
@@ -346,7 +389,7 @@ Here are the available configurations:
 | showSeconds               | `boolean`            | `false`                                                                   | If set to `true` will show seconds in the time select, otherwise, won't.                                                                                                                                                                                                      |
 | showTwentyFourHours       | `boolean`            | `false`                                                                   | If set to `true` will show hours in 24 hour format. `false` will show hours in 12 hours format and append AM/PM to the end of the time select.                                                                                                                                |
 | timeSeparator             | `String`             | `":"`                                                                     | The separator that will be placed between hours and minutes and between minutes and seconds on the time select.                                                                                                                                                               |
-| calendarSystem            | `ECalendarSystem`    | `ECalendarSystem.jalali`                                                            | If ngModel provided as `String` the format is required, this format also will be used as the input format style.                                                                                                                                                    |
+
 
 ## Inline - DayTime Calendar
 
@@ -366,9 +409,14 @@ i.e.
 | theme                | `String`            | `''`                                                                     | Theme is a class added to the popup container (and inner components) - this will allow styling of the calendar when it's appended to outer element (for example - body). There is a built in theme named dp-material, you can find it in the demo. |
 | config               | `IDatePickerConfig`  | See Below                                                                | Configuration object - see description below.                                                                                                                                                                                                      |
 
+### Attributes (Output):  
+
 | Name                 | Event Arguments                     |  Description                                                                                                                                                      |
 |----------------------|:-----------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | onChange             | `IDate`                             |  This event will be emitted when time is selected.                                                                                                                |
+| onGoToCurrent        | void                                | This event will be emitted when click was made on go to current button.                                                                                           |
+| onLeftNav            | void                                | This event will be emitted when click was made on left navigation button.                                                                                         |
+| onRightNav           | void                                | This event will be emitted when click was made on right navigation button.                                                                                        |
 
 ### Configuration:  
 In order to provide configurations to the day-time-calendar you need to pass it to the `dp-day-time-calendar` component:  
@@ -414,7 +462,7 @@ Here are the available configurations:
 | hideInputContainer          | `Boolean`            | `false`                                                                   | Will hide the input element of any picker if set to `true`.                                                                                                                                                                                                                   |
 | weekDayFormat               | `String`             | `ddd`                                                                     | The format of the weekday name.                                                                                                                                                                                                                                               |
 | weekDayFormatter            | `(Number) => String` | `undefined`                                                               | You can customize the value of any weekday with this configuration. The parameter of the callback will start with 0 as Sunday and so on.                                                                                                                                                                                                                    |
-| calendarSystem              | `ECalendarSystem`    | `ECalendarSystem.jalali`                                                            | If ngModel provided as `String` the format is required, this format also will be used as the input format style.                                                                                                                                                    |
+
 
 ## Directive
 
@@ -454,6 +502,12 @@ In order to provide configurations to the date-picker you need to pass it to the
 ```
 
 The `IDatePickerDirectiveConfig` is identical to [`IDatePickerConfig`](#configuration) above except that it lacks the `showGoToCurrent` property.
+
+Here is the list of APIs:  
+
+| Name                 | Signature                          | Description                      |
+|----------------------|:----------------------------------:|----------------------------------|
+| moveCalendarTo       | `(to: Moment \| String) => void`   | Moves calendar to specific date  |
 
 ## Compatibility
 

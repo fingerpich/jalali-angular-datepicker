@@ -280,11 +280,12 @@ export class DemoComponent {
     //   this.refreshDemo();
     // }
     if (change === 'locale') {
-      const defaultCalSys = (this.config.locale === 'fa') ?
-        {...this.gregorianSystemDefaults, ...this.jalaliConfigExtension} : this.gregorianSystemDefaults;
-      this.datePicker.changeLocale(this.config.locale);
-      this.date = moment();
-      this.config = {...this.config, ...defaultCalSys};
+      // const defaultCalSys = (this.config.locale === 'fa') ?
+      //   {...this.gregorianSystemDefaults, ...this.jalaliConfigExtension} : this.gregorianSystemDefaults;
+      // this.datePicker.changeLocale(this.config.locale);
+      // this.date = moment();
+      // this.config = {...this.config, ...defaultCalSys};
+      this.refreshDemo();
     }
   };
 
