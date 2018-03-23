@@ -335,7 +335,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
   }
 
   goToCurrent() {
-    this.currentDateView = moment();
+    this.currentDateView = moment().locale(this.componentConfig.locale);
     this.onGoToCurrent.emit();
   }
 

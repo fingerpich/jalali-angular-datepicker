@@ -296,7 +296,7 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
   }
 
   goToCurrent() {
-    this.currentDateView = moment();
+    this.currentDateView = moment().locale(this.componentConfig.locale);
     this.onGoToCurrent.emit();
   }
 
