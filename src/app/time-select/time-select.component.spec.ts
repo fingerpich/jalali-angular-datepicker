@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {CalendarNavComponent} from '../calendar-nav/calendar-nav.component';
-import * as momentNs from 'moment';
+import * as momentNs from 'jalali-moment';
 import {TimeSelectComponent} from './time-select.component';
 import {TimeSelectService} from './time-select.service';
 import {MonthCalendarComponent} from '../month-calendar/month-calendar.component';
@@ -22,6 +22,7 @@ describe('Component: TimeSelectComponent', () => {
     fixture = TestBed.createComponent(TimeSelectComponent);
     component = fixture.componentInstance;
     component.config = component.timeSelectService.getConfig({});
+    component.config.locale = 'en';
     fixture.detectChanges();
   });
 

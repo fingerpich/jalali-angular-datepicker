@@ -1,5 +1,5 @@
 import {DemoPage} from './app.po';
-import * as moment from 'moment';
+import * as moment from 'jalali-moment';
 import {ElementFinder} from 'protractor';
 
 describe('dpDayPicker dayPicker', () => {

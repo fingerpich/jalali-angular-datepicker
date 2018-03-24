@@ -1,5 +1,5 @@
 import {DemoPage} from './app.po';
-import * as moment from 'moment';
+import * as moment from 'jalali-moment';
 import {browser} from 'protractor';
 import * as fs from 'fs';
 import {TestUtils} from './test-utils';

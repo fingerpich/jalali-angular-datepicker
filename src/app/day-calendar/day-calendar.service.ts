@@ -124,10 +124,12 @@ export class DayCalendarService {
     return monthArray;
   }
 
-  generateWeekdays(firstDayOfWeek: WeekDays, locale: string): Moment[] {
+  generateWeekdays(firstDayOfWeek: WeekDays, locale?: string): Moment[] {
     const weekdayNames: {[key: string]: Moment} = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'].reduce((acc, d, i) => {
       const m = moment();
-      m.locale(locale);
+      if (locale) {
+        m.locale(locale);
+      }
       m.day(i);
       acc[d] = m;
       return acc;

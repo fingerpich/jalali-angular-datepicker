@@ -35,7 +35,7 @@ export class UtilsService {
     return new Array(size).fill(1);
   }
 
-  convertToMoment(date: SingleCalendarValue, format: string, locale: string): Moment {
+  convertToMoment(date: SingleCalendarValue, format: string, locale?: string): Moment {
     let m;
     if (!date) {
       m = null;
@@ -50,7 +50,7 @@ export class UtilsService {
     return m;
   }
 
-  isDateValid(date: string, format: string, locale: string): boolean {
+  isDateValid(date: string, format: string, locale?: string): boolean {
     if (date === '') {
       return true;
     }
@@ -138,7 +138,7 @@ export class UtilsService {
     }
   }
 
-  convertToString(value: CalendarValue, format: string, locale: string): string {
+  convertToString(value: CalendarValue, format: string, locale?: string): string {
     let tmpVal: string[];
 
     if (typeof value === 'string') {
@@ -314,7 +314,7 @@ export class UtilsService {
     return date.isBetween(from, to, 'day', '[]');
   }
 
-  convertPropsToMoment(obj: {[key: string]: any}, format: string, props: string[], locale: string) {
+  convertPropsToMoment(obj: {[key: string]: any}, format: string, props: string[], locale?: string) {
     props.forEach((prop) => {
       if (obj.hasOwnProperty(prop)) {
         obj[prop] = this.convertToMoment(obj[prop], format, locale);

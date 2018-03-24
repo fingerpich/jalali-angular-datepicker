@@ -1,6 +1,6 @@
 import {DemoPage} from './app.po';
 import {browser} from 'protractor';
-import * as moment from 'moment';
+import * as moment from 'jalali-moment';
 import {Key} from 'selenium-webdriver';
 
 describe('dpDayPicker directive', () => {
