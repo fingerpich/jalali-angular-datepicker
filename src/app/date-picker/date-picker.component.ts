@@ -253,7 +253,8 @@ export class DatePickerComponent implements OnChanges,
       this.selected = this.utilsService
         .convertToMomentArray(value, this.componentConfig.format, this.componentConfig.allowMultiSelect, this.componentConfig.locale);
       this.currentDateView = this.selected.length
-        ? this.utilsService.getDefaultDisplayDate(null, this.selected, this.componentConfig.allowMultiSelect, this.componentConfig.min, this.componentConfig.locale)
+        ? this.utilsService.getDefaultDisplayDate(null, this.selected, this.componentConfig.allowMultiSelect,
+          this.componentConfig.min, this.componentConfig.locale)
         : this.currentDateView;
       this.init();
     } else {

@@ -191,7 +191,8 @@ export class DatePickerDirective implements OnInit {
 
     this.formControl.valueChanges.subscribe((value) => {
       if (value !== this.datePicker.inputElementValue) {
-        const strVal = this.utilsService.convertToString(value, this.datePicker.componentConfig.format, this.datePicker.componentConfig.locale);
+        const strVal = this.utilsService.convertToString(value, this.datePicker.componentConfig.format,
+          this.datePicker.componentConfig.locale);
         this.datePicker.onViewDateChange(strVal);
       }
     });
