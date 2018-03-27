@@ -13,7 +13,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "e2e:headless": "ng e2e -- headless",
-    "build:demo": "rm demo/*.js && rm demo/*.css && ng build --prod --bh /jalali-angular-datepicker/ && npm run build:index && cp dist/* demo",
+    "build:demo": "rm -rf demo/*.js && rm -rf demo/*.css && ng build --prod --aot=false --bh /jalali-angular-datepicker/ && npm run build:index && cp dist/* demo",
     "build:index": "cd build-helpers && node index-maker.js",
     "build:prod": "ng-packagr -p package.json && cp -R screenshots bin",
     "release": "npm run build:prod && npm publish bin",

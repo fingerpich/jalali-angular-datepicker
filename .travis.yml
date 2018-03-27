@@ -33,5 +33,4 @@ before_script:
 #- npm run e2e:headless
 
 script:
-- npm run build:demo
 - npm run build:prod
