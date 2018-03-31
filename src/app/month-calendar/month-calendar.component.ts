@@ -32,6 +32,7 @@ import {UtilsService} from '../common/services/utils/utils.service';
 import {DateValidator} from '../common/types/validator.type';
 import {SingleCalendarValue} from '../common/types/single-calendar-value';
 import {INavEvent} from '../common/models/navigation-event.model';
+import { DigitConvertor } from 'persian-digit-tools';
 const moment = momentNs;
 
 @Component({
@@ -102,7 +103,7 @@ export class MonthCalendarComponent implements OnInit, OnChanges, ControlValueAc
     this._currentDateView = current.clone();
     this.yearMonths = this.monthCalendarService
       .generateYear(this.componentConfig, this._currentDateView, this.selected);
-    this.navLabel = this.monthCalendarService.getHeaderLabel(this.componentConfig, this.currentDateView);
+    this.navLabel = DigitConvertor.toPersian(this.monthCalendarService.getHeaderLabel(this.componentConfig, this.currentDateView));
     this.showLeftNav = this.monthCalendarService.shouldShowLeft(this.componentConfig.min, this._currentDateView);
     this.showRightNav = this.monthCalendarService.shouldShowRight(this.componentConfig.max, this.currentDateView);
     this.showSecondaryLeftNav = this.componentConfig.showMultipleYearsNavigation && this.showLeftNav;
