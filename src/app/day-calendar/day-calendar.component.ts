@@ -35,6 +35,7 @@ import {IMonthCalendarConfig} from '../month-calendar/month-calendar-config';
 import {IMonth} from '../month-calendar/month.model';
 import {DateValidator} from '../common/types/validator.type';
 import {INavEvent} from '../common/models/navigation-event.model';
+import {DigitConvertor} from 'persian-digit-tools';
 const moment = momentNs;
 
 @Component({
@@ -108,7 +109,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
     this._currentDateView = current.clone();
     this.weeks = this.dayCalendarService
       .generateMonthArray(this.componentConfig, this._currentDateView, this.selected);
-    this.navLabel = this.dayCalendarService.getHeaderLabel(this.componentConfig, this._currentDateView);
+    this.navLabel = DigitConvertor.toPersian(this.dayCalendarService.getHeaderLabel(this.componentConfig, this._currentDateView));
     this.showLeftNav = this.dayCalendarService.shouldShowLeft(this.componentConfig.min, this.currentDateView);
     this.showRightNav = this.dayCalendarService.shouldShowRight(this.componentConfig.max, this.currentDateView);
   }
@@ -240,7 +241,7 @@ export class DayCalendarComponent implements OnInit, OnChanges, ControlValueAcce
   }
 
   getDayBtnText(day: IDay): string {
-    return this.dayCalendarService.getDayBtnText(this.componentConfig, day.date);
+    return DigitConvertor.toPersian(this.dayCalendarService.getDayBtnText(this.componentConfig, day.date));
   }
 
   getDayBtnCssClass(day: IDay): {[klass: string]: boolean} {

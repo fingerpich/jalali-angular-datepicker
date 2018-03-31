@@ -30,6 +30,7 @@ import {CalendarValue} from '../common/types/calendar-value';
 import {UtilsService} from '../common/services/utils/utils.service';
 import {IDate} from '../common/models/date.model';
 import {DateValidator} from '../common/types/validator.type';
+import { DigitConvertor } from 'persian-digit-tools';
 const moment = momentNs;
 
 @Component({
@@ -214,9 +215,9 @@ export class TimeSelectComponent implements OnInit, OnChanges, ControlValueAcces
   }
 
   calculateTimeParts(time: Moment) {
-    this.hours = this.timeSelectService.getHours(this.componentConfig, time);
-    this.minutes = this.timeSelectService.getMinutes(this.componentConfig, time);
-    this.seconds = this.timeSelectService.getSeconds(this.componentConfig, time);
+    this.hours = DigitConvertor.toPersian(this.timeSelectService.getHours(this.componentConfig, time));
+    this.minutes = DigitConvertor.toPersian(this.timeSelectService.getMinutes(this.componentConfig, time));
+    this.seconds = DigitConvertor.toPersian(this.timeSelectService.getSeconds(this.componentConfig, time));
     this.meridiem = this.timeSelectService.getMeridiem(this.componentConfig, time);
   }
 }
