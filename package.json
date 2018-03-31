@@ -1,6 +1,6 @@
 {
-  "name": "ng2-jalali-date-picker-full-farsi",
-  "author": "Seyed Ali Roshan (main author Mojtaba Zarei)",
+  "name": "ng2-jalali-date-picker",
+  "author": "Mojtaba Zarei",
   "version": "2.2.4",
   "license": "MIT",
   "main": "index.js",
@@ -36,8 +36,7 @@
     "datepicker farsi",
     "typescript",
     "ts",
-    "farsi",
-    "full"
+    "farsi"
   ],
   "dependencies": {
     "jalali-moment": "^3.1.1",
