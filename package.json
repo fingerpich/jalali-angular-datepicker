@@ -87,7 +87,8 @@
     "lib": {
       "entryFile": "src/app/index.ts",
       "externals": {
-        "jalali-moment": "jalali-moment"
+        "jalali-moment": "jalali-moment",
+        "persian-digit-tools": "persian-digit-tools"
       }
     },
     "dest": "bin"
