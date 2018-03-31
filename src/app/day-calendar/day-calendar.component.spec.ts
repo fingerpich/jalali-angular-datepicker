@@ -7,7 +7,6 @@ import {DayCalendarComponent} from './day-calendar.component';
 import {DayCalendarService} from './day-calendar.service';
 import {MonthCalendarComponent} from '../month-calendar/month-calendar.component';
 import {IDay} from './day.model';
-import { DigitConvertor } from 'persian-digit-tools';
 const moment = momentNs;
 
 describe('Component: DayCalendarComponent', () => {
@@ -35,7 +34,7 @@ describe('Component: DayCalendarComponent', () => {
   it('should check getMonthBtnText default value', () => {
     expect(component.getDayBtnText({
       date: moment('05-04-2017', 'DD-MM-YYYY')
-    } as IDay)).toEqual(DigitConvertor.toPersian('5'));
+    } as IDay)).toEqual('۵');
   });
 
   describe('should have the right CSS classes for', () => {

@@ -5,7 +5,6 @@ import * as momentNs from 'jalali-moment';
 import {TimeSelectComponent} from './time-select.component';
 import {TimeSelectService} from './time-select.service';
 import {MonthCalendarComponent} from '../month-calendar/month-calendar.component';
-import { DigitConvertor } from 'persian-digit-tools';
 const moment = momentNs;
 
 describe('Component: TimeSelectComponent', () => {
@@ -33,9 +32,9 @@ describe('Component: TimeSelectComponent', () => {
 
   it('should calculate time parts', () => {
     component.selected = moment('5:33:44', 'H:mm:ss');
-    expect(component.hours).toEqual(DigitConvertor.toPersian('05'));
-    expect(component.minutes).toEqual(DigitConvertor.toPersian('33'));
-    expect(component.seconds).toEqual(DigitConvertor.toPersian('44'));
+    expect(component.hours).toEqual('۰۵');
+    expect(component.minutes).toEqual('۳۳');
+    expect(component.seconds).toEqual('۴۴');
     expect(component.meridiem).toEqual('AM');
   });
 });
