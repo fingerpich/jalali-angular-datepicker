@@ -424,6 +424,7 @@ export class DatePickerComponent implements OnChanges,
   }
 
   onViewDateChange(value: CalendarValue) {
+    value = DigitConvertor.toEnglish(value);
     let strVal = value ? this.utilsService.convertToString(value, this.componentConfig.format, this.componentConfig.locale) : '';
     if (this.dayPickerService.isValidInputDateValue(strVal, this.componentConfig)) {
       if (strVal) {
