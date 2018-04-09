@@ -52,6 +52,7 @@ import {DateValidator} from '../common/types/validator.type';
 import {MonthCalendarComponent} from '../month-calendar/month-calendar.component';
 import {DayTimeCalendarComponent} from '../day-time-calendar/day-time-calendar.component';
 import {INavEvent} from '../common/models/navigation-event.model';
+import { DigitConvertor } from 'persian-digit-tools';
 
 @Component({
   selector: 'dp-date-picker',
@@ -134,9 +135,11 @@ export class DatePickerComponent implements OnChanges,
 
   set selected(selected: Moment[]) {
     this._selected = selected;
-    this.inputElementValue = (<string[]>this.utilsService
+    this.inputElementValue = DigitConvertor.toPersian(
+      (<string[]>this.utilsService
       .convertFromMomentArray(this.componentConfig.format, selected, ECalendarValue.StringArr, this.componentConfig.locale))
-      .join(' | ');
+      .join(' | ')
+    );
     const val = this.processOnChangeCallback(selected);
     this.onChangeCallback(val, false);
     this.onChange.emit(val);
@@ -421,6 +424,9 @@ export class DatePickerComponent implements OnChanges,
   }
 
   onViewDateChange(value: CalendarValue) {
+    if (value !== null && value.toString().length !== 0) {
+      value = DigitConvertor.toEnglish(value);
+    }
     let strVal = value ? this.utilsService.convertToString(value, this.componentConfig.format, this.componentConfig.locale) : '';
     if (this.dayPickerService.isValidInputDateValue(strVal, this.componentConfig)) {
       if (strVal) {

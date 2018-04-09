@@ -34,7 +34,7 @@ describe('Component: DayCalendarComponent', () => {
   it('should check getMonthBtnText default value', () => {
     expect(component.getDayBtnText({
       date: moment('05-04-2017', 'DD-MM-YYYY')
-    } as IDay)).toEqual('5');
+    } as IDay)).toEqual('۵');
   });
 
   describe('should have the right CSS classes for', () => {
