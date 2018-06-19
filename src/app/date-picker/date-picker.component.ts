@@ -423,7 +423,8 @@ export class DatePickerComponent implements OnChanges,
   onViewDateChange(value: CalendarValue) {
     let strVal = value ? this.utilsService.convertToString(value, this.componentConfig.format, this.componentConfig.locale) : '';
     if (this.dayPickerService.isValidInputDateValue(strVal, this.componentConfig)) {
-      if (strVal) {
+      if (strVal && this.componentConfig.locale === 'fa') {
+        // convert jalali to gregorian
         strVal = moment.from(strVal, 'fa', this.componentConfig.format).format(this.componentConfig.format);
       }
       this.selected = this.dayPickerService.convertInputValueToMomentArray(strVal, this.componentConfig);
