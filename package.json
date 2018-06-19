@@ -1,7 +1,7 @@
 {
   "name": "ng2-jalali-date-picker",
   "author": "Mojtaba Zarei",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "license": "MIT",
   "main": "index.js",
   "scripts": {
