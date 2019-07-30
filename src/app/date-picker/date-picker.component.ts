@@ -244,9 +244,6 @@ export class DatePickerComponent implements OnChanges,
   }
 
   writeValue(value: CalendarValue): void {
-    if (this.inputValue === value) {
-      return;
-    }
     this.inputValue = value;
 
     if (value || value === '') {
