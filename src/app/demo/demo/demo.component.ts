@@ -409,7 +409,7 @@ export class DemoComponent {
 
   donateClicked() {
     this.gaService.emitEvent('donate', 'clicked');
-    alert('6104 3377 4540 4952');
+    alert('Thank you for your attention, that was enough');
   }
 
   getGeneratedCode() {
