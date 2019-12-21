@@ -47,8 +47,11 @@ const DAY_PICKER_OPTION_KEYS = [
 ];
 const DAY_TIME_PICKER_OPTION_KEYS = [
   'moveCalendarTo',
+  'closeOnSelect',
+  'closeOnSelectDelay',
   ...PICKER_OPTION_KEYS
 ];
+
 const TIME_PICKER_OPTION_KEYS = [
   ...PICKER_OPTION_KEYS
 ];
@@ -83,6 +86,7 @@ const DAY_CALENDAR_OPTION_KEYS = [
   'showGoToCurrent',
   'unSelectOnClick',
   'moveCalendarTo',
+
   ...MONTH_CALENDAR_OPTION_KEYS
 ];
 const TIME_SELECT_SHARED_OPTION_KEYS = [
@@ -359,6 +363,9 @@ export class DemoComponent {
             ...TIME_SELECT_OPTION_KEYS
           ].indexOf(key) > -1;
       case 'daytimePicker':
+        return [
+          ...DAY_TIME_PICKER_OPTION_KEYS,
+          ...DAY_TIME_CALENDAR_OPTION_KEYS].indexOf(key) > -1;
       case 'daytimeDirective':
         return [
             ...DAY_TIME_PICKER_OPTION_KEYS,
