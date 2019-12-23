@@ -449,21 +449,19 @@ export class DatePickerComponent implements OnChanges,
 
   async onDateClick() {
     if (this.componentConfig.closeOnSelect) {
-        let cond = await this.checkClass();
+        const cond = await this.checkClass();
         if (cond) {
           setTimeout(this.hideCalendar.bind(this), this.componentConfig.closeOnSelectDelay);
         }
     }
    }
- 
 
   checkClass(): any {
     return new Promise(function (resolve, reject) {
         document.onclick = (evt) => {
           if (evt.target['className'].includes('dp-calendar-day')) {
             resolve(true);
-          }
-          else {
+          } else {
             resolve(false);
         }
       }
