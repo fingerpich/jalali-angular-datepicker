@@ -34,7 +34,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  Renderer,
+  Renderer2,
   SimpleChanges,
   ViewChild,
   ViewEncapsulation
@@ -200,7 +200,7 @@ export class DatePickerComponent implements OnChanges,
   constructor(private readonly dayPickerService: DatePickerService,
               private readonly domHelper: DomHelper,
               private readonly elemRef: ElementRef,
-              private readonly renderer: Renderer,
+              private readonly renderer: Renderer2,
               private readonly utilsService: UtilsService,
               public readonly cd: ChangeDetectorRef) {
   }
