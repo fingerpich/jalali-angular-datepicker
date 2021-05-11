@@ -54,7 +54,7 @@ export class UtilsService {
     if (date === '') {
       return true;
     }
-    return moment(date, format, locale, true).isValid();
+    return moment.from(date, locale || 'fa', format).isValid();
     // return moment(date, format, true).isValid();
   }
 
@@ -311,6 +311,9 @@ export class UtilsService {
   }
 
   isDateInRange(date: Moment, from: Moment, to: Moment): boolean {
+    if (!from && !to) {return true}
+    if (!from) return date.isBefore(to, 'day');
+    if (!to) return date.isAfter(from, 'day');
     return date.isBetween(from, to, 'day', '[]');
   }
 

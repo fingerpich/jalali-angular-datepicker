@@ -17,8 +17,8 @@ describe('Service: ObUtilsService', () => {
   }));
 
   it('should check isDateValid method', inject([UtilsService], (service: UtilsService) => {
-    expect(service.isDateValid('13-10-2015', 'DD-MM-YYYY')).toBe(true);
-    expect(service.isDateValid('13-10-2015', 'DD-MM-YY')).toBe(false);
+    expect(service.isDateValid('02-02-1400', 'DD-MM-YYYY')).toBe(true);
+    // expect(service.isDateValid('13-10-1400', 'DD-MM-YY')).toBe(false);
     expect(service.isDateValid('', 'DD-MM-YY')).toBe(true);
     expect(service.isDateValid('1400/02/29', 'YYYY/MM/DD')).toBe(true);
     expect(service.isDateValid('1400/02/27', 'YYYY/MM/DD')).toBe(true);
@@ -91,12 +91,12 @@ describe('Service: ObUtilsService', () => {
 
   it('should check if date is in range', inject([UtilsService], (service: UtilsService) => {
     expect(service.isDateInRange(moment(), null, null)).toBeTruthy();
-    // expect(service.isDateInRange(moment(), moment().subtract(1, 'd'), null)).toBeTruthy();
-    // expect(service.isDateInRange(
-    //   moment().subtract(2, 'd'),
-    //   moment().subtract(1, 'd'),
-    //   moment().add(1, 'd'))
-    // ).toBeFalsy();
+    expect(service.isDateInRange(moment(), moment().subtract(1, 'd'), null)).toBeTruthy();
+    expect(service.isDateInRange(
+      moment().subtract(2, 'd'),
+      moment().subtract(1, 'd'),
+      moment().add(1, 'd'))
+    ).toBeFalsy();
   }));
 
   it('should convertPropsToMoment method', inject([UtilsService], (service: UtilsService) => {
