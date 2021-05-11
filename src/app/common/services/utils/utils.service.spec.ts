@@ -20,6 +20,8 @@ describe('Service: ObUtilsService', () => {
     expect(service.isDateValid('13-10-2015', 'DD-MM-YYYY')).toBe(true);
     expect(service.isDateValid('13-10-2015', 'DD-MM-YY')).toBe(false);
     expect(service.isDateValid('', 'DD-MM-YY')).toBe(true);
+    expect(service.isDateValid('1400/02/29', 'YYYY/MM/DD')).toBe(true);
+    expect(service.isDateValid('1400/02/27', 'YYYY/MM/DD')).toBe(true);
   }));
 
   it('should check updateSelected method for day', inject([UtilsService], (service: UtilsService) => {

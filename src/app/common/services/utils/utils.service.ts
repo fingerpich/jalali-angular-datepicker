@@ -54,8 +54,8 @@ export class UtilsService {
     if (date === '') {
       return true;
     }
-    // return moment(date, format, true, locale).isValid();
-    return moment(date, format, true).isValid();
+    return moment(date, format, locale, true).isValid();
+    // return moment(date, format, true).isValid();
   }
 
   // todo:: add unit test
