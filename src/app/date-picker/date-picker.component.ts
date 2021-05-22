@@ -444,15 +444,28 @@ export class DatePickerComponent implements OnChanges,
   dateSelected(date: IDate, granularity: unitOfTime.Base, ignoreClose?: boolean) {
     this.selected = this.utilsService
       .updateSelected(this.componentConfig.allowMultiSelect, this.selected, date, granularity);
-    if (!ignoreClose) {
-      this.onDateClick();
-    }
+    this.onDateClick();
   }
 
-  onDateClick() {
+  async onDateClick() {
     if (this.componentConfig.closeOnSelect) {
-      setTimeout(this.hideCalendar.bind(this), this.componentConfig.closeOnSelectDelay);
+        const cond = await this.checkClass();
+        if (cond) {
+          setTimeout(this.hideCalendar.bind(this), this.componentConfig.closeOnSelectDelay);
+        }
     }
+   }
+
+  checkClass(): any {
+    return new Promise(function (resolve, reject) {
+        document.onclick = (evt) => {
+          if (evt.target['className'].includes('dp-calendar-day')) {
+            resolve(true);
+          } else {
+            resolve(false);
+        }
+      }
+    })
   }
 
   onKeyPress(event: KeyboardEvent) {
